@@ -24,7 +24,7 @@ export const AutoCalculateToolbar = ({
   if (eligibleCount === 0) return null;
 
   return (
-    <div className="flex flex-wrap items-center gap-2 -mb-2">
+    <div className="mb-2 flex flex-wrap items-center gap-2">
       <Button
         type="button"
         variant="outline"

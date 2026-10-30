@@ -77,7 +77,7 @@ export const formatWeight = (
     }
     case 'kg':
     default:
-      return `${Number(kg.toFixed(precision))} kg`;
+      return `${kg.toLocaleString('tr-TR', { maximumFractionDigits: precision })} kg`;
   }
 };
 

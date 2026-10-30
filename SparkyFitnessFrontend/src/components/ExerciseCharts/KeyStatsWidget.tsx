@@ -9,6 +9,7 @@ interface KeyStatsWidgetProps {
 }
 
 function formatWholeWeight(kg: number, unit: string): string {
+  if (unit === 'kg') return `${Math.round(kg).toLocaleString('tr-TR')} kg`;
   return formatWeight(kg, unit).replace(/\d+\.\d+/g, (value) =>
     String(Math.round(Number(value)))
   );

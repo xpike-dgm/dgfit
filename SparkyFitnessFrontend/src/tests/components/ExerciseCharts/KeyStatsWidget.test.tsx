@@ -43,7 +43,7 @@ describe('KeyStatsWidget', () => {
 
     expect(screen.getByText('Total Volume')).toBeInTheDocument();
     expect(screen.queryByText('Total Tonnage')).not.toBeInTheDocument();
-    expect(screen.getByText('99700 kg')).toBeInTheDocument();
+    expect(screen.getByText('99.700 kg')).toBeInTheDocument();
     expect(screen.queryByText(/99700\.4/)).not.toBeInTheDocument();
   });
 });

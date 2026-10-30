@@ -24,8 +24,8 @@ export const WeeklyGoalPlansSection = ({
   const planInForce = weeklyGoalPlanInForce(weeklyPlans, todayInZone(timezone));
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-2xl font-bold">
+      <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-2 space-y-0 pb-2">
+        <CardTitle>
           {t('goals.goalsSettings.weeklyGoalPlans', 'Weekly Goal Plans (WIP)')}
         </CardTitle>
         <Button size="sm" onClick={handleCreateWeeklyPlanClick}>

@@ -282,13 +282,15 @@ const WorkoutPlansManager = () => {
         cell: ({ row }) => {
           const plan = row.original;
           return (
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
               <CalendarDays className="h-3 w-3" />
-              <span>{new Date(plan.start_date!).toLocaleDateString()}</span>
-              <span>-</span>
+              <span>
+                {new Date(plan.start_date!).toLocaleDateString('tr-TR')}
+              </span>
+              <span>–</span>
               <span>
                 {plan.end_date
-                  ? new Date(plan.end_date).toLocaleDateString()
+                  ? new Date(plan.end_date).toLocaleDateString('tr-TR')
                   : t('workoutPlansManager.ongoingStatus', 'Ongoing')}
               </span>
             </div>

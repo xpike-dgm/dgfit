@@ -307,13 +307,16 @@ const Dashboard = () => {
               unit="dk"
               colorClass="bg-exercise"
             />
-            <ProgressRow
-              label="Kalori"
-              current={exercise.calories}
-              goal={goals.target_exercise_calories_burned ?? 0}
-              unit="kcal"
-              colorClass="bg-exercise"
-            />
+            {(exercise.calories >= 1 ||
+              (goals.target_exercise_calories_burned ?? 0) > 0) && (
+              <ProgressRow
+                label="Kalori"
+                current={exercise.calories}
+                goal={goals.target_exercise_calories_burned ?? 0}
+                unit="kcal"
+                colorClass="bg-exercise"
+              />
+            )}
           </div>
         )}
       </SparkyCard>

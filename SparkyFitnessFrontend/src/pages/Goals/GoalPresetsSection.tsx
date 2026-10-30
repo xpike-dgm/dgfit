@@ -23,8 +23,8 @@ export const GoalPresetsSection = ({
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-2xl font-bold">
+      <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-2 space-y-0 pb-2">
+        <CardTitle>
           {t('goals.goalsSettings.goalPresets', 'Goal Presets')}
         </CardTitle>
         <Button size="sm" onClick={handleCreatePresetClick}>
