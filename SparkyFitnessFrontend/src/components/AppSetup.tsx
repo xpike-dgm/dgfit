@@ -32,13 +32,15 @@ const AppSetup = ({
   const { user, loading } = useAuth();
   const { loggingLevel } = usePreferences();
 
+  // DG FIT ships its own builds: upstream SparkyFitness release notices and
+  // announcements do not apply, so both checks stay off.
   const { data: releaseData, isSuccess } = useLatestReleaseQuery({
-    enabled: !loading && !!user,
+    enabled: false,
   });
 
   const { data: announcementData, isSuccess: isAnnouncementSuccess } =
     useAnnouncementQuery({
-      enabled: !loading && !!user,
+      enabled: false,
     });
 
   useEffect(() => {

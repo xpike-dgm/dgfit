@@ -61,10 +61,16 @@ export default defineConfig(({ mode }) => {
         VitePWA({
           registerType: 'autoUpdate',
           manifest: {
-            name: 'SparkyFitness',
-            short_name: 'SparkyFitness',
-            description: 'Your personal fitness companion',
-            theme_color: '#000000',
+            name: 'DG FIT',
+            short_name: 'DG FIT',
+            description: 'Antrenman, beslenme ve gelişim takibi',
+            lang: 'tr',
+            start_url: '/',
+            scope: '/',
+            display: 'standalone',
+            orientation: 'portrait',
+            background_color: '#0b0f14',
+            theme_color: '#0b0f14',
             icons: [
               {
                 src: 'images/icons/icon-192x192.png',
@@ -75,6 +81,12 @@ export default defineConfig(({ mode }) => {
                 src: 'images/icons/icon-512x512.png',
                 sizes: '512x512',
                 type: 'image/png',
+              },
+              {
+                src: 'images/icons/maskable-512x512.png',
+                sizes: '512x512',
+                type: 'image/png',
+                purpose: 'maskable',
               },
             ],
           },

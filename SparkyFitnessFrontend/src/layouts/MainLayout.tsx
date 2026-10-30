@@ -22,8 +22,6 @@ import {
   Cookie, // Used for Snacks
   UtensilsCrossed, // Used for Dinner
   Salad, // Used for Food Log
-  BookOpen, // Used for the docs link
-  Languages, // Used for the translation link
   HeartPulse, // Used for the delegate-only Symptoms page
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -34,9 +32,6 @@ import AddComp from '@/layouts/AddComp';
 import ThemeToggle from '@/components/ThemeToggle';
 import GlobalSyncButton from '@/components/GlobalSyncButton';
 import ProfileSwitcher from '@/components/ProfileSwitcher';
-import GitHubStarCounter from '@/components/GitHubStarCounter';
-import GitHubSponsorButton from '@/components/GitHubSponsorButton';
-import HeaderLinkPill from '@/components/HeaderLinkPill';
 import GlobalNotificationIcon from '@/components/GlobalNotificationIcon';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
@@ -48,8 +43,6 @@ import { useCurrentVersionQuery } from '@/hooks/useGeneralQueries';
 import { useCycleSettings } from '@/hooks/useCycle';
 import { cn } from '@/lib/utils';
 import { getGridClassNormal } from '@/utils/layout';
-
-const SHOW_SPONSOR_BUTTON = true;
 
 interface AddCompItem {
   value: string;
@@ -70,7 +63,6 @@ interface MainLayoutProps {
 
 const MainLayout: React.FC<MainLayoutProps> = ({
   onShowAboutDialog,
-  onShowNewReleaseDialog,
   onStartOnboarding,
 }) => {
   const { t } = useTranslation();
@@ -479,32 +471,15 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-1">
             <img
-              src="/images/SparkyFitness.webp"
-              alt={t('mainLayout.sparkyFitnessLogo', 'SparkyFitness Logo')}
-              width={54}
-              height={72}
+              src="/images/dgfit-logo.png"
+              alt="DG FIT"
+              width={40}
+              height={40}
+              className="rounded-xl mr-2"
             />
-            <h1 className="text-xl sm:text-2xl font-bold text-foreground dark:text-slate-300">
-              SparkyFitness
+            <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-foreground">
+              DG <span className="text-primary">FIT</span>
             </h1>
-            {!isMobile && (
-              <>
-                <GitHubStarCounter owner="CodeWithCJ" repo="SparkyFitness" />
-                {SHOW_SPONSOR_BUTTON && (
-                  <GitHubSponsorButton owner="CodeWithCJ" />
-                )}
-                <HeaderLinkPill
-                  href="https://codewithcj.github.io/SparkyFitness/"
-                  label={t('layout.docs', 'Docs')}
-                  icon={BookOpen}
-                />
-                <HeaderLinkPill
-                  href="https://weblate.sparkyfitness.com/engage/sparkyfitness/"
-                  label={t('layout.translate', 'Translate')}
-                  icon={Languages}
-                />
-              </>
-            )}
           </div>
           <div className="flex items-center gap-2">
             <ProfileSwitcher />
@@ -649,65 +624,19 @@ const MainLayout: React.FC<MainLayoutProps> = ({
       />
 
       <footer className="text-center text-muted-foreground text-sm py-4">
-        {isMobile ? (
-          <div className="flex flex-col items-center gap-2 mb-14">
-            <div className="flex flex-wrap justify-center gap-2">
-              <GitHubStarCounter owner="CodeWithCJ" repo="SparkyFitness" />
-              {SHOW_SPONSOR_BUTTON && (
-                <GitHubSponsorButton owner="CodeWithCJ" />
-              )}
-              <HeaderLinkPill
-                href="https://codewithcj.github.io/SparkyFitness/"
-                label={t('layout.docs', 'Docs')}
-                icon={BookOpen}
-              />
-              <HeaderLinkPill
-                href="https://weblate.sparkyfitness.com/engage/sparkyfitness/"
-                label={t('layout.translate', 'Translate')}
-                icon={Languages}
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                className="cursor-pointer underline bg-transparent border-0 p-0 text-inherit font-normal text-sm"
-                onClick={onShowAboutDialog}
-              >
-                {t('nav.sparkyFitnessV', 'SparkyFitness v{{version}}', {
-                  version: appVersion?.version ?? '',
-                })}
-              </button>
-              <span>•</span>
-              <button
-                type="button"
-                className="cursor-pointer underline hover:text-foreground bg-transparent border-0 p-0 text-inherit font-normal text-sm"
-                onClick={onShowNewReleaseDialog}
-              >
-                {t('release.whatsNew', "What's New")}
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className="flex justify-center items-center gap-4">
-            <button
-              type="button"
-              className="cursor-pointer underline bg-transparent border-0 p-0 text-inherit font-normal text-sm"
-              onClick={onShowAboutDialog}
-            >
-              {t('nav.sparkyFitnessV', 'SparkyFitness v{{version}}', {
-                version: appVersion?.version ?? '',
-              })}
-            </button>
-            <span>•</span>
-            <button
-              type="button"
-              className="cursor-pointer underline hover:text-foreground bg-transparent border-0 p-0 text-inherit font-normal text-sm"
-              onClick={onShowNewReleaseDialog}
-            >
-              {t('release.whatsNew', "What's New")}
-            </button>
-          </div>
-        )}
+        <div
+          className={`flex justify-center items-center gap-2 ${isMobile ? 'mb-14' : ''}`}
+        >
+          <button
+            type="button"
+            className="cursor-pointer underline bg-transparent border-0 p-0 text-inherit font-normal text-sm"
+            onClick={onShowAboutDialog}
+          >
+            {t('nav.sparkyFitnessV', 'DG FIT v{{version}}', {
+              version: appVersion?.version ?? '',
+            })}
+          </button>
+        </div>
       </footer>
     </div>
   );

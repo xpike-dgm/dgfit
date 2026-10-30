@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ff6a1a"/>
+      <stop offset="1" stop-color="#e8173c"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <g fill="#fff">
+    <!-- dumbbell -->
+    <rect x="96" y="118" width="26" height="76" rx="8"/>
+    <rect x="128" y="100" width="30" height="112" rx="9"/>
+    <rect x="158" y="146" width="196" height="20" rx="6"/>
+    <rect x="354" y="100" width="30" height="112" rx="9"/>
+    <rect x="390" y="118" width="26" height="76" rx="8"/>
+  </g>
+  <text x="256" y="372" text-anchor="middle" font-family="Inter, 'Helvetica Neue', Arial, sans-serif" font-weight="900" font-size="158" letter-spacing="-6" fill="#fff">DG</text>
+  <text x="256" y="440" text-anchor="middle" font-family="Inter, 'Helvetica Neue', Arial, sans-serif" font-weight="800" font-size="58" letter-spacing="22" fill="#fff" fill-opacity="0.92">FIT</text>
+</svg>

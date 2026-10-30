@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import BrandMark from '@/components/BrandMark';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,7 +8,6 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -487,14 +487,7 @@ const Auth = () => {
           <Card className="w-full max-w-md">
             <CardHeader className="text-center">
               <div className="flex items-center justify-center mb-4">
-                <img
-                  src="/images/SparkyFitness.webp"
-                  alt={t('auth.sparkyFitnessLogo', 'SparkyFitness Logo')}
-                  className="h-10 w-10 mr-2"
-                />
-                <CardTitle className="text-2xl font-bold text-gray-900 dark:text-gray-300">
-                  SparkyFitness
-                </CardTitle>
+                <BrandMark />
               </div>
               <CardDescription>
                 {t(

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import BrandMark from '@/components/BrandMark';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -6,7 +7,6 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { usePreferences } from '@/contexts/PreferencesContext';
@@ -50,17 +50,7 @@ const ForgotPassword = () => {
       <Card className="w-full max-w-md dark:bg-gray-">
         <CardHeader className="text-center">
           <div className="flex items-center justify-center mb-4">
-            <img
-              src="/images/SparkyFitness.webp"
-              alt={t(
-                'auth.forgotPasswordPage.sparkyFitnessLogo',
-                'SparkyFitness Logo'
-              )}
-              className="h-10 w-10 mr-2"
-            />
-            <CardTitle className="text-2xl font-bold text-gray-900 dark:text-gray-300">
-              SparkyFitness
-            </CardTitle>
+            <BrandMark />
           </div>
           <CardDescription>
             {t(

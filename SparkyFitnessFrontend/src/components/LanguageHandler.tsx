@@ -1,16 +1,15 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { usePreferences } from '@/contexts/PreferencesContext';
 
 const LanguageHandler = (): null => {
   const { i18n } = useTranslation();
-  const { language } = usePreferences();
 
+  // DG FIT is Turkish-only, whatever language a profile preference holds.
   useEffect(() => {
-    if (language) {
-      i18n.changeLanguage(language);
+    if (i18n.language !== 'tr') {
+      i18n.changeLanguage('tr');
     }
-  }, [language, i18n]);
+  }, [i18n]);
 
   return null;
 };

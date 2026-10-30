@@ -63,7 +63,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   const previousTheme = useRef<ThemeSetting | null>(null);
   const [theme, setThemeState] = useState<ThemeSetting>(() => {
     const saved = localStorage.getItem('theme');
-    const initialTheme = (saved as ThemeSetting) || 'system';
+    const initialTheme = (saved as ThemeSetting) || 'dark';
     info(
       loggingLevel,
       'ThemeProvider: Initial theme loaded from localStorage:',
@@ -73,7 +73,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   });
 
   const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>(() =>
-    resolveTheme((localStorage.getItem('theme') as ThemeSetting) || 'system')
+    resolveTheme((localStorage.getItem('theme') as ThemeSetting) || 'dark')
   );
 
   // Listen for system theme changes when in 'system' mode

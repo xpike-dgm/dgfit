@@ -26,7 +26,8 @@ COPY SparkyFitnessFrontend/ ./SparkyFitnessFrontend/
 COPY shared/ ./shared/
 
 # Build the application
-RUN pnpm --filter sparkyfitnessfrontend run build
+# Validation (typecheck, lint, knip) runs before commit, not in the image build.
+RUN pnpm --filter sparkyfitnessfrontend exec vite build
 
 # Stage 2: Serve the application with Nginx
 FROM nginx:alpine3.22
