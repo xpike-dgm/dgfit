@@ -18,14 +18,7 @@ import { useUpdateFastMutation } from '@/hooks/Fasting/useFasting';
 import { FastingLog } from '@/types/fasting';
 import { CombinedMeasurement } from '@/types/checkin';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
-import {
-  Timer,
-  Activity,
-  Moon,
-  Camera,
-  HeartPulse,
-  Sparkles,
-} from 'lucide-react';
+import { Activity, Camera } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { MindfulnessSection } from './MindfulnessSection';
 
@@ -118,6 +111,7 @@ const CheckIn = () => {
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6 pb-2 border-b">
           {/* Tab Selector on the Left */}
           <div className="flex flex-wrap items-center justify-center lg:justify-start gap-1">
+            {/* DG FIT: weight, measurements and progress photos only. */}
             {[
               {
                 id: 'measurements',
@@ -125,29 +119,9 @@ const CheckIn = () => {
                 icon: Activity,
               },
               {
-                id: 'fasting',
-                label: t('checkIn.tabs.fasting', 'Fasting & Mood'),
-                icon: Timer,
-              },
-              {
-                id: 'mindfulness',
-                label: t('checkIn.tabs.mindfulness', 'Mindfulness'),
-                icon: Sparkles,
-              },
-              {
-                id: 'sleep',
-                label: t('checkIn.tabs.sleep', 'Sleep'),
-                icon: Moon,
-              },
-              {
                 id: 'photos',
                 label: t('checkIn.tabs.photos', 'Photos'),
                 icon: Camera,
-              },
-              {
-                id: 'symptoms',
-                label: t('checkIn.tabs.symptoms', 'Symptoms'),
-                icon: HeartPulse,
               },
             ].map((tab) => {
               const Icon = tab.icon;

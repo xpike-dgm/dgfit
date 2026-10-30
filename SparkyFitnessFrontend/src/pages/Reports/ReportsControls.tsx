@@ -3,14 +3,9 @@ import { DateRangePickerWithPresets } from '@/components/ui/DateRangeWithPresets
 import { Button } from '@/components/ui/button';
 import {
   BarChart3,
-  TrendingUp,
   Dumbbell,
-  BedDouble,
   Activity,
   Table as TableIcon,
-  Pill,
-  HeartPulse,
-  Heart,
   GitCompareArrows,
 } from 'lucide-react';
 
@@ -35,11 +30,13 @@ const ReportsControls = ({
 }: ReportsControlsProps) => {
   const { t } = useTranslation();
 
+  // DG FIT shows the gym-and-food reports; sleep, stress, fasting, heart
+  // rate, medication and symptom tabs stay hidden.
   const reportTypes = [
     {
-      id: 'charts',
-      label: t('reports.nutrientsTab', 'Nutrients'),
-      icon: BarChart3,
+      id: 'exercise-charts',
+      label: t('reports.exerciseProgressTab', 'Exercise'),
+      icon: Dumbbell,
     },
     {
       id: 'measurements',
@@ -47,39 +44,9 @@ const ReportsControls = ({
       icon: Activity,
     },
     {
-      id: 'heart-rate',
-      label: t('reports.heartRateTab', 'Heart Rate'),
-      icon: Heart,
-    },
-    {
-      id: 'fasting',
-      label: t('reports.fasting.insightsTab', 'Fasting'),
-      icon: TrendingUp,
-    },
-    {
-      id: 'exercise-charts',
-      label: t('reports.exerciseProgressTab', 'Exercise'),
-      icon: Dumbbell,
-    },
-    {
-      id: 'sleep-analytics',
-      label: t('reports.sleepTab', 'Sleep'),
-      icon: BedDouble,
-    },
-    {
-      id: 'stress-analytics',
-      label: t('reports.stressTab', 'Stress'),
-      icon: Activity,
-    },
-    {
-      id: 'medications-reports',
-      label: t('reports.medicationsTab', 'Medications'),
-      icon: Pill,
-    },
-    {
-      id: 'symptoms-reports',
-      label: t('reports.symptomsTab', 'Symptoms'),
-      icon: HeartPulse,
+      id: 'charts',
+      label: t('reports.nutrientsTab', 'Nutrients'),
+      icon: BarChart3,
     },
     {
       id: 'table',

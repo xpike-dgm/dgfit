@@ -103,7 +103,7 @@ const Reports = () => {
   );
 
   const [activeTab, setActiveTab] = useState(
-    searchParams.get('tab') || 'charts'
+    searchParams.get('tab') || 'exercise-charts'
   );
 
   const [selectedTable, setSelectedTable] = useState<TableFilterValue>('all');
