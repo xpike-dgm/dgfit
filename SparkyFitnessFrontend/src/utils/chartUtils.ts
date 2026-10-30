@@ -506,3 +506,54 @@ export function axisLabelValue(label: ReactNode): string | number {
 export function axisLabelText(label: ReactNode): string {
   return typeof label === 'string' ? label : String(axisLabelValue(label));
 }
+
+/** The "nice" step (1, 2, 2,5 or 5 times a power of ten) that splits `span` into about `count` parts. */
+function niceStep(span: number, count: number): number {
+  const raw = span / Math.max(1, count);
+  const power = Math.pow(10, Math.floor(Math.log10(raw)));
+  const fraction = raw / power;
+  const nice =
+    fraction <= 1
+      ? 1
+      : fraction <= 2
+        ? 2
+        : fraction <= 2.5
+          ? 2.5
+          : fraction <= 5
+            ? 5
+            : 10;
+  return nice * power;
+}
+
+/**
+ * A y-axis that reads like a person wrote it: round bounds and round ticks
+ * (78 / 79 / 80, 0 / 500 / 1.000 / 1.500) instead of 262 / 762 / 1262 / 2159.
+ * Returns null when there is nothing to plot.
+ */
+export function niceDomain(
+  values: ReadonlyArray<number | null | undefined>,
+  options: { tickCount?: number; zeroBaseline?: boolean } = {}
+): { domain: [number, number]; ticks: number[] } | null {
+  const { tickCount = 4, zeroBaseline = false } = options;
+  const finite = values.filter(
+    (v): v is number => typeof v === 'number' && Number.isFinite(v)
+  );
+  if (finite.length === 0) return null;
+  let min = Math.min(...finite);
+  let max = Math.max(...finite);
+  if (zeroBaseline) min = Math.min(0, min);
+  if (min === max) {
+    const pad = Math.abs(min) > 0 ? Math.abs(min) * 0.05 : 1;
+    min -= pad;
+    max += pad;
+    if (zeroBaseline && min < 0 && finite.every((v) => v >= 0)) min = 0;
+  }
+  const step = niceStep(max - min, tickCount);
+  const lower = Math.floor(min / step) * step;
+  const upper = Math.ceil(max / step) * step;
+  const ticks: number[] = [];
+  for (let tick = lower; tick <= upper + step / 2; tick += step) {
+    ticks.push(Number(tick.toFixed(6)));
+  }
+  return { domain: [lower, upper], ticks };
+}

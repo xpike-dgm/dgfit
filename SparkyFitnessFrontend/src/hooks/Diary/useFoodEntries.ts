@@ -92,8 +92,9 @@ export const useCreateFoodEntryMutation = () => {
   return useMutation({
     mutationFn: createFoodEntry,
     onSuccess: () => invalidate(),
+    // No generic success toast: the Diary says which food was added and its
+    // kcal ("Haşlanmış Yumurta eklendi · 150 kcal").
     meta: {
-      successMessage: t('diary.addSuccess', 'Food added successfully.'),
       errorMessage: t('diary.addError', 'Failed to add food.'),
     },
   });
@@ -141,8 +142,8 @@ export const useDeleteFoodEntryMutation = () => {
   return useMutation({
     mutationFn: removeFoodEntry,
     onSuccess: () => invalidate(),
+    // The Diary names what was deleted ("Döner silindi").
     meta: {
-      successMessage: t('diary.deleteSuccess', 'Entry deleted.'),
       errorMessage: t('diary.deleteError', 'Failed to delete entry.'),
     },
   });
@@ -274,7 +275,6 @@ export const useDeleteFoodEntryMealMutation = () => {
     mutationFn: deleteFoodEntryMeal,
     onSuccess: () => invalidate(),
     meta: {
-      successMessage: t('diary.mealDeleteSuccess', 'Meal deleted.'),
       errorMessage: t('diary.mealDeleteError', 'Failed to delete meal.'),
     },
   });

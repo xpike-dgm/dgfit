@@ -13,7 +13,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
 import { Zap, Loader2, Fingerprint, AlertCircle, Sparkles } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { usePreferences } from '@/contexts/PreferencesContext';
 import { debug, info, error } from '@/utils/logging';
 import {
@@ -35,6 +35,7 @@ import {
   useRegisterUserMutation,
   useRequestMagicLinkMutation,
 } from '@/hooks/Auth/useAuth';
+import { PASSWORD_RULE_HINT, passwordRuleError } from './passwordRules';
 import { MagicLinkRequestDialog } from './MagicLinkRequestDialog';
 
 const DGFIT_ALTERNATIVE_LOGINS: boolean = false;
@@ -43,6 +44,25 @@ import { useQueryClient } from '@tanstack/react-query';
 import { AuthResponse } from '@/types/auth';
 import { getErrorMessage } from '@/utils/api';
 import { useTranslation } from 'react-i18next';
+
+type SignupField = 'fullName' | 'username' | 'inviteCode' | 'email';
+type SignupErrors = Partial<Record<SignupField, string>>;
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/** One inline line under a field, read out by screen readers. */
+const FieldError = ({
+  id,
+  message,
+}: {
+  id: string;
+  message?: string | null;
+}) =>
+  message ? (
+    <p id={id} role="alert" className="text-sm text-danger-text">
+      {message}
+    </p>
+  ) : null;
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -61,6 +81,8 @@ const Auth = () => {
     () => new URLSearchParams(window.location.search).get('invite') ?? ''
   );
   const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [signupErrors, setSignupErrors] = useState<SignupErrors>({});
+  const [signinError, setSigninError] = useState<string | null>(null);
   const { isToggled: showPassword, toggleHandler: passwordToggleHandler } =
     useToggle();
   // State for MFA challenge
@@ -78,9 +100,9 @@ const Auth = () => {
   const { data: loginSettings } = useAuthSettings();
   const passkeyEnabled = loginSettings?.passkey?.enabled !== false;
   const { mutateAsync: loginUser } = useLoginUserMutation();
+  const { mutateAsync: registerUser } = useRegisterUserMutation();
   const { mutateAsync: demoLogin, isPending: isDemoLoginPending } =
     useDemoLoginMutation();
-  const { mutateAsync: registerUser } = useRegisterUserMutation();
   const { mutateAsync: requestMagicLink } = useRequestMagicLinkMutation();
   const { mutateAsync: initiateOidcLogin } = useInitiateOidcLoginMutation();
 
@@ -321,56 +343,57 @@ const Auth = () => {
     [loggingLevel, queryClient]
   );
 
-  const validatePassword = (pwd: string) => {
-    if (pwd.length < 8) {
-      return t('settings.accountSecurity.passwordLengthError');
+  const validatePassword = passwordRuleError;
+
+  const validateSignup = (): SignupErrors => {
+    const errors: SignupErrors = {};
+    if (!fullName.trim()) errors.fullName = 'Adını yaz.';
+    if (!/^[a-z0-9_.]{3,20}$/.test(username.trim())) {
+      errors.username =
+        'Kullanıcı adı 3-20 karakter olmalı: küçük harf, rakam, _ ve .';
     }
-    if (!/[A-Z]/.test(pwd)) {
-      return 'Password must contain at least one uppercase letter.';
+    if (!inviteCode.trim()) errors.inviteCode = 'Davet kodunu yaz.';
+    if (!EMAIL_PATTERN.test(email.trim())) {
+      errors.email = 'Geçerli bir e-posta adresi yaz.';
     }
-    if (!/[a-z]/.test(pwd)) {
-      return 'Password must contain at least one lowercase letter.';
-    }
-    if (!/[0-9]/.test(pwd)) {
-      return 'Password must contain at least one number.';
-    }
-    if (!/[!@#$%^&*(),.?":{}|<>]/.test(pwd)) {
-      return 'Password must contain at least one special character.';
-    }
-    return null; // No error
+    return errors;
   };
 
   const handleSignUp = async (e: React.SubmitEvent) => {
     e.preventDefault();
     info(loggingLevel, 'Auth: Attempting sign up.');
+    setFormError(null);
 
+    const fieldErrors = validateSignup();
     const validationError = validatePassword(password);
-    if (validationError) {
-      setPasswordError(validationError);
-      setLoading(false);
+    setSignupErrors(fieldErrors);
+    setPasswordError(validationError);
+    if (validationError || Object.keys(fieldErrors).length > 0) {
       return;
-    } else {
-      setPasswordError(null);
     }
 
     setLoading(true);
-
-    const data: AuthResponse = await registerUser({
-      email,
-      password,
-      fullName,
-      username: username.trim().toLowerCase(),
-      inviteCode: inviteCode.trim(),
-    });
-    info(loggingLevel, 'Auth: Sign up successful.');
-    signIn(
-      data.userId,
-      data.userId,
-      email,
-      data.role || 'user',
-      true,
-      fullName
-    );
+    try {
+      const data: AuthResponse = await registerUser(
+        email.trim(),
+        password,
+        fullName.trim(),
+        username.trim().toLowerCase(),
+        inviteCode.trim()
+      );
+      info(loggingLevel, 'Auth: Sign up successful.');
+      signIn(
+        data.userId,
+        data.userId,
+        email,
+        data.role || 'user',
+        true,
+        fullName
+      );
+    } catch (err: unknown) {
+      error(loggingLevel, 'Auth: Sign up failed:', err);
+      setFormError(authErrorMessage(err, 'signup'));
+    }
 
     setLoading(false);
     debug(loggingLevel, 'Auth: Sign up loading state set to false.');
@@ -386,11 +409,20 @@ const Auth = () => {
   const handleSignIn = async (e: React.SubmitEvent) => {
     e.preventDefault();
     info(loggingLevel, 'Auth: Attempting sign in.');
+    setFormError(null);
+    if (!EMAIL_PATTERN.test(email.trim()) || !password) {
+      setSigninError(
+        !email.trim() || !password
+          ? 'E-posta ve şifreni yaz.'
+          : 'Geçerli bir e-posta adresi yaz.'
+      );
+      return;
+    }
+    setSigninError(null);
     setLoading(true);
 
     try {
-      setFormError(null);
-      const data: AuthResponse = await loginUser({ email, password });
+      const data: AuthResponse = await loginUser(email.trim(), password);
 
       if (data.status === 'MFA_REQUIRED' || data.twoFactorRedirect) {
         const mfaShown = await triggerMfaChallenge(data, email, {
@@ -422,7 +454,7 @@ const Auth = () => {
       );
     } catch (err: unknown) {
       error(loggingLevel, 'Auth: Sign in failed:', err);
-      setFormError(getErrorMessage(err));
+      setFormError(authErrorMessage(err, 'signin'));
     }
 
     setLoading(false);
@@ -475,11 +507,11 @@ const Auth = () => {
 
   return (
     <>
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
         {loading ? (
-          <div className="flex flex-col items-center justify-center p-8 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-100 dark:border-gray-700 animate-in fade-in zoom-in duration-300">
+          <div className="flex flex-col items-center justify-center p-8 bg-card rounded-2xl shadow-xl border border-border animate-in fade-in zoom-in duration-300">
             <Loader2 className="h-12 w-12 animate-spin text-primary mb-6" />
-            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+            <h2 className="text-xl font-bold text-foreground mb-2">
               {t('auth.almostThere', 'Almost there!')}
             </h2>
             <p className="text-muted-foreground animate-pulse text-sm">
@@ -492,7 +524,7 @@ const Auth = () => {
         ) : showMfaChallenge && mfaChallengeProps ? (
           <MfaChallenge {...mfaChallengeProps} />
         ) : (
-          <Card className="w-full max-w-md">
+          <Card className="w-full max-w-md rounded-2xl border-border bg-card shadow-[0_1px_3px_rgba(15,23,41,0.08),0_1px_2px_rgba(15,23,41,0.05)]">
             <CardHeader className="text-center">
               <div className="flex items-center justify-center mb-4">
                 <BrandMark />
@@ -514,11 +546,8 @@ const Auth = () => {
                 </div>
               )}
               {formError && (
-                <Alert variant="destructive" className="mb-4">
+                <Alert variant="destructive" className="mb-4" role="alert">
                   <AlertCircle className="h-4 w-4" />
-                  <AlertTitle>
-                    {t('auth.authenticationFailed', 'Authentication Failed')}
-                  </AlertTitle>
                   <AlertDescription>{formError}</AlertDescription>
                 </Alert>
               )}
@@ -528,9 +557,10 @@ const Auth = () => {
                   className="w-full"
                 >
                   {!loginSettings?.signup_disabled && (
-                    <TabsList className="h-10 grid w-full grid-cols-2">
+                    <TabsList className="mb-2 grid h-[52px] w-full grid-cols-2">
                       <TabsTrigger
                         value="signin"
+                        className="h-11 text-base"
                         onClick={() => {
                           setFormError(null);
                           debug(loggingLevel, 'Auth: Switched to Sign In tab.');
@@ -540,6 +570,7 @@ const Auth = () => {
                       </TabsTrigger>
                       <TabsTrigger
                         value="signup"
+                        className="h-11 text-base"
                         onClick={() => {
                           setFormError(null);
                           debug(loggingLevel, 'Auth: Switched to Sign Up tab.');
@@ -558,7 +589,11 @@ const Auth = () => {
                     </p>
                   )}
                   <TabsContent value="signin">
-                    <form onSubmit={handleSignIn} className="space-y-4">
+                    <form
+                      onSubmit={handleSignIn}
+                      noValidate
+                      className="space-y-4"
+                    >
                       <div className="space-y-2">
                         <Label htmlFor="signin-email">
                           {t('auth.email', 'Email')}
@@ -578,8 +613,9 @@ const Auth = () => {
                             );
                             setEmail(e.target.value);
                           }}
-                          required
+                          aria-required
                           autoComplete="username webauthn"
+                          className="h-11 text-base"
                         />
                       </div>
                       <div className="space-y-2 relative">
@@ -601,25 +637,27 @@ const Auth = () => {
                             );
                             setPassword(e.target.value);
                           }}
-                          required
+                          aria-required
                           autoComplete="current-password webauthn"
+                          className="h-11 pr-12 text-base"
                         />
                         <PasswordToggle
                           showPassword={showPassword}
                           passwordToggleHandler={passwordToggleHandler}
                         />
+                        <FieldError id="signin-error" message={signinError} />
                       </div>
-                      <div className="text-right text-sm">
+                      <div className="-my-1 text-right text-sm">
                         <a
                           href="/forgot-password"
-                          className="font-medium text-primary hover:underline"
+                          className="inline-flex min-h-11 items-center font-medium text-primary hover:underline"
                         >
                           {t('auth.forgotPassword', 'Forgot password?')}
                         </a>
                       </div>
                       <Button
                         type="submit"
-                        className="w-full"
+                        className="h-12 w-full text-base"
                         disabled={loading}
                       >
                         {loading
@@ -700,7 +738,11 @@ const Auth = () => {
 
                   {!loginSettings?.signup_disabled && (
                     <TabsContent value="signup">
-                      <form onSubmit={handleSignUp} className="space-y-4">
+                      <form
+                        onSubmit={handleSignUp}
+                        noValidate
+                        className="space-y-4"
+                      >
                         <div className="space-y-2">
                           <Label htmlFor="signup-name">
                             {t('auth.fullName', 'Full Name')}
@@ -721,7 +763,13 @@ const Auth = () => {
                               setFullName(e.target.value);
                             }}
                             autoComplete="name"
-                            required
+                            aria-required
+                            aria-invalid={!!signupErrors.fullName}
+                            className="h-11 text-base"
+                          />
+                          <FieldError
+                            id="signup-name-error"
+                            message={signupErrors.fullName}
                           />
                         </div>
                         <div className="space-y-2">
@@ -743,19 +791,28 @@ const Auth = () => {
                                   .replace(/[^a-z0-9_.]/g, '')
                               )
                             }
-                            pattern="[a-z0-9_.]{3,20}"
-                            title={t(
-                              'auth.dgfit.usernameRule',
-                              '3-20 karakter: küçük harf, rakam, _ ve .'
-                            )}
                             autoCapitalize="none"
                             autoComplete="off"
-                            required
+                            aria-required
+                            aria-invalid={!!signupErrors.username}
+                            aria-describedby="signup-username-hint"
+                            className="h-11 text-base"
                           />
-                          <p className="text-xs text-muted-foreground">
+                          <FieldError
+                            id="signup-username-error"
+                            message={signupErrors.username}
+                          />
+                          <p
+                            id="signup-username-hint"
+                            className="text-sm text-muted-foreground"
+                          >
                             {t(
                               'auth.dgfit.usernameHint',
                               'Arkadaşların seni bu adla bulur.'
+                            )}{' '}
+                            {t(
+                              'auth.dgfit.usernameRule',
+                              '3-20 karakter: küçük harf, rakam, _ ve .'
                             )}
                           </p>
                         </div>
@@ -773,8 +830,21 @@ const Auth = () => {
                             }
                             autoCapitalize="characters"
                             autoComplete="off"
-                            required
+                            aria-required
+                            aria-invalid={!!signupErrors.inviteCode}
+                            aria-describedby="signup-invite-hint"
+                            className="h-11 text-base"
                           />
+                          <FieldError
+                            id="signup-invite-error"
+                            message={signupErrors.inviteCode}
+                          />
+                          <p
+                            id="signup-invite-hint"
+                            className="text-sm text-muted-foreground"
+                          >
+                            Kodu seni davet eden arkadaşından iste.
+                          </p>
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="signup-email">
@@ -795,8 +865,14 @@ const Auth = () => {
                               );
                               setEmail(e.target.value);
                             }}
-                            required
+                            aria-required
+                            aria-invalid={!!signupErrors.email}
                             autoComplete="username"
+                            className="h-11 text-base"
+                          />
+                          <FieldError
+                            id="signup-email-error"
+                            message={signupErrors.email}
                           />
                         </div>
                         <div className="space-y-2 relative">
@@ -817,28 +893,37 @@ const Auth = () => {
                                 'Auth: Sign Up password input changed.'
                               );
                               setPassword(e.target.value);
-                              setPasswordError(
-                                validatePassword(e.target.value)
-                              );
+                              if (passwordError) {
+                                setPasswordError(
+                                  validatePassword(e.target.value)
+                                );
+                              }
                             }}
-                            required
-                            minLength={8}
+                            aria-required
+                            aria-invalid={!!passwordError}
+                            aria-describedby="signup-password-hint"
                             autoComplete="new-password"
+                            className="h-11 pr-12 text-base"
                           />
                           <PasswordToggle
                             showPassword={showPassword}
                             passwordToggleHandler={passwordToggleHandler}
                           />
-                          {passwordError && (
-                            <p className="text-red-500 text-sm">
-                              {passwordError}
-                            </p>
-                          )}
+                          <FieldError
+                            id="signup-password-error"
+                            message={passwordError}
+                          />
+                          <p
+                            id="signup-password-hint"
+                            className="text-sm text-muted-foreground"
+                          >
+                            {PASSWORD_RULE_HINT}
+                          </p>
                         </div>
                         <Button
                           type="submit"
-                          className="w-full"
-                          disabled={loading || !!passwordError}
+                          className="h-12 w-full text-base"
+                          disabled={loading}
                         >
                           {loading
                             ? t('auth.creatingAccount', 'Creating account...')

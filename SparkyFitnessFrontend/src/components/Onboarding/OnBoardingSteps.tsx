@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Utensils } from 'lucide-react';
@@ -5,20 +6,109 @@ import { localDateToDay } from '@workspace/shared';
 import { OptionButton } from './OptionButton';
 import { useTranslation } from 'react-i18next';
 import { OnboardingData } from '@/types/onboarding';
-import { UnitInput } from '@/components/ui/UnitInput';
+import { parseDecimalInput } from '@/utils/decimalInput';
+import { fmtTr } from '@/utils/numberFormatting';
+import { cn } from '@/lib/utils';
 
 interface OnboardingStepsProps {
   step: number;
   formData: OnboardingData;
   setFormData: React.Dispatch<React.SetStateAction<OnboardingData>>;
   nextStep: () => void;
+  /** Text under the loading animation; changes while the plan is "built". */
+  loadingMessage?: string;
 }
+
+type NumberField = 'currentWeight' | 'height' | 'targetWeight';
+
+/** Plausible ranges; outside them "Devam" stays off and a hint explains why. */
+const RANGES: Record<NumberField, { min: number; max: number }> = {
+  currentWeight: { min: 30, max: 300 },
+  targetWeight: { min: 30, max: 300 },
+  height: { min: 100, max: 250 },
+};
+
+const BODY_FAT_OPTIONS = [
+  { value: 'Low (<15%)', title: 'Düşük', range: "%15'in altı", width: 6 },
+  { value: 'Medium (15-25%)', title: 'Orta', range: '%15–25', width: 9 },
+  { value: 'High (25-35%)', title: 'Yüksek', range: '%25–35', width: 12 },
+  {
+    value: 'Very High (>35%)',
+    title: 'Çok yüksek',
+    range: "%35'in üstü",
+    width: 15,
+  },
+] as const;
+
+/** A plain standing figure whose waist gets wider bucket by bucket. */
+const BodyFigure = ({ width }: { width: number }) => (
+  <svg viewBox="0 0 40 56" className="h-12 w-10" aria-hidden="true">
+    <circle cx="20" cy="7" r="5" className="fill-current" />
+    <rect
+      x={20 - width / 2 - 2}
+      y="14"
+      width={width + 4}
+      height="22"
+      rx={Math.min(8, width / 2 + 2)}
+      className="fill-current"
+    />
+    <rect x="15" y="34" width="4" height="20" rx="2" className="fill-current" />
+    <rect x="21" y="34" width="4" height="20" rx="2" className="fill-current" />
+  </svg>
+);
+
+/**
+ * One big, full-width number field with its unit, focused on open so the
+ * decimal keyboard is already up. Keeps the typed text ("78,") locally and
+ * hands the parent a number while typing, so "Devam" works on the first tap.
+ */
+const BigNumberField = ({
+  id,
+  label,
+  unit,
+  value,
+  placeholder,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  unit: string;
+  value: number | '';
+  placeholder?: string;
+  onChange: (value: number | '') => void;
+}) => {
+  const [text, setText] = useState(value === '' ? '' : String(value));
+  return (
+    <div className="relative w-full">
+      <Input
+        id={id}
+        type="number"
+        inputMode="decimal"
+        autoFocus
+        aria-label={label}
+        value={text}
+        placeholder={placeholder}
+        onChange={(e) => {
+          const next = e.target.value;
+          setText(next);
+          const parsed = parseDecimalInput(next);
+          onChange(next.trim() === '' || Number.isNaN(parsed) ? '' : parsed);
+        }}
+        className="h-16 rounded-2xl bg-card pr-16 text-center text-3xl font-bold"
+      />
+      <span className="pointer-events-none absolute right-5 top-1/2 -translate-y-1/2 text-lg font-semibold text-muted-foreground">
+        {unit}
+      </span>
+    </div>
+  );
+};
 
 export const OnboardingSteps = ({
   step,
   formData,
   setFormData,
   nextStep,
+  loadingMessage,
 }: OnboardingStepsProps) => {
   const { t } = useTranslation();
   const today = localDateToDay(new Date());
@@ -31,15 +121,67 @@ export const OnboardingSteps = ({
     setTimeout(() => nextStep(), 250);
   };
 
-  const handleInputChange = (
-    field: 'currentWeight' | 'height' | 'targetWeight',
-    value: string
-  ) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value === '' ? '' : parseFloat(value),
-    }));
+  const setNumber = (field: NumberField, value: number | '') =>
+    setFormData((prev) => ({ ...prev, [field]: value }));
+
+  const numberStep = ({
+    field,
+    title,
+    hint,
+    unit,
+    placeholder,
+  }: {
+    field: NumberField;
+    title: string;
+    hint: string;
+    unit: string;
+    placeholder?: string;
+  }) => {
+    const value = formData[field];
+    const { min, max } = RANGES[field];
+    const outOfRange = value !== '' && (value < min || value > max);
+    const canContinue = value !== '' && !outOfRange;
+    return (
+      <form
+        key={field}
+        noValidate
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (canContinue) nextStep();
+        }}
+      >
+        <h1 className="mb-2 text-3xl font-bold text-foreground">{title}</h1>
+        <p className="mb-8 text-muted-foreground">{hint}</p>
+        <BigNumberField
+          id={field}
+          label={title}
+          unit={unit}
+          value={value}
+          placeholder={placeholder}
+          onChange={(next) => setNumber(field, next)}
+        />
+        <p
+          className={cn(
+            'mt-2 min-h-5 text-center text-sm',
+            outOfRange ? 'text-danger-text' : 'text-muted-foreground'
+          )}
+          aria-live="polite"
+        >
+          {outOfRange
+            ? `${fmtTr(min)} ile ${fmtTr(max)} ${unit} arasında bir değer yaz.`
+            : 'Ondalık için virgül kullanabilirsin (ör. 78,5).'}
+        </p>
+        <Button
+          type="submit"
+          disabled={!canContinue}
+          className="mt-8 h-14 w-full rounded-full text-lg"
+        >
+          {t('onboarding.continue', 'Continue')}
+        </Button>
+      </form>
+    );
   };
+
   switch (step) {
     case 1:
       return (
@@ -89,80 +231,33 @@ export const OnboardingSteps = ({
         </>
       );
     case 3:
-      return (
-        <>
-          <h1 className="text-3xl font-bold text-foreground mb-2">
-            {t(
-              'onboarding.currentWeightQuestion',
-              'What is your current weight?'
-            )}
-          </h1>
-          <p className="text-muted-foreground mb-8">
-            {t('onboarding.enterInUnit', 'Enter in {{unit}}.', {
-              unit: 'kg',
-            })}
-          </p>
-
-          <div className="flex items-center justify-center">
-            <UnitInput
-              id="current-weight"
-              type="weight"
-              unit="kg"
-              value={formData.currentWeight}
-              onChange={(val) =>
-                handleInputChange(
-                  'currentWeight',
-                  val !== null ? val.toString() : ''
-                )
-              }
-              className="w-64"
-            />
-          </div>
-          <Button
-            onClick={nextStep}
-            disabled={!formData.currentWeight}
-            className="w-full mt-12 h-14 text-lg rounded-full"
-          >
-            {t('onboarding.continue', 'Continue')}
-          </Button>
-        </>
-      );
+      return numberStep({
+        field: 'currentWeight',
+        title: t(
+          'onboarding.currentWeightQuestion',
+          'What is your current weight?'
+        ),
+        hint: 'Kilonu kg olarak yaz.',
+        unit: 'kg',
+        placeholder: '75',
+      });
     case 4:
-      return (
-        <>
-          <h1 className="text-3xl font-bold text-foreground mb-2">
-            {t('onboarding.heightQuestion', 'What is your height?')}
-          </h1>
-          <p className="text-muted-foreground mb-8">
-            {t('onboarding.enterInUnit', 'Enter in {{unit}}.', {
-              unit: 'cm',
-            })}
-          </p>
-
-          <div className="flex items-center justify-center">
-            <UnitInput
-              id="height"
-              type="height"
-              unit="cm"
-              value={formData.height}
-              onChange={(val) =>
-                handleInputChange('height', val !== null ? val.toString() : '')
-              }
-              className="w-64"
-            />
-          </div>
-          <Button
-            onClick={nextStep}
-            disabled={!formData.height}
-            className="w-full mt-12 h-14 text-lg rounded-full"
-          >
-            {t('onboarding.continue', 'Continue')}
-          </Button>
-        </>
-      );
+      return numberStep({
+        field: 'height',
+        title: t('onboarding.heightQuestion', 'What is your height?'),
+        hint: 'Boyunu cm olarak yaz.',
+        unit: 'cm',
+        placeholder: '175',
+      });
     case 5:
       return (
-        <>
+        <form
+          noValidate
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (formData.birthDate) nextStep();
+          }}
+        >
           <h1 className="text-3xl font-bold text-foreground mb-2">
             {t('onboarding.birthDateQuestion', 'When were you born?')}
           </h1>
@@ -172,123 +267,98 @@ export const OnboardingSteps = ({
               'Age is a key factor in your metabolism.'
             )}
           </p>
-          <div className="flex justify-center">
-            <Input
-              type="date"
-              aria-label={t('onboarding.pickDate', 'Pick a date')}
-              value={formData.birthDate}
-              min="1900-01-01"
-              max={today}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, birthDate: e.target.value }))
-              }
-              className="h-14 w-64 text-lg"
-            />
-          </div>
+          <Input
+            type="date"
+            lang="tr-TR"
+            aria-label={t('onboarding.pickDate', 'Pick a date')}
+            value={formData.birthDate}
+            min="1900-01-01"
+            max={today}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, birthDate: e.target.value }))
+            }
+            className="h-16 w-full rounded-2xl bg-card text-center text-xl font-semibold"
+          />
           <Button
-            onClick={nextStep}
+            type="submit"
             disabled={!formData.birthDate}
             className="w-full mt-12 h-14 text-lg rounded-full"
           >
             {t('onboarding.continue', 'Continue')}
           </Button>
-        </>
+        </form>
       );
     case 6:
       return (
         <>
-          <h1 className="text-3xl font-bold text-foreground mb-2">
+          <h1 className="text-3xl font-bold text-foreground mb-2 text-balance">
             {t('onboarding.bodyFatQuestion', 'Estimate your body fat')}
           </h1>
-          <p className="text-muted-foreground mb-8">
-            {t(
-              'onboarding.bodyFatDescription',
-              'A visual estimate is sufficient.'
-            )}
+          <p className="text-muted-foreground mb-6">
+            İsteğe bağlı. Aynada gördüğüne en yakın olanı seç; bilmiyorsan
+            atlayabilirsin.
           </p>
-          <div className="grid grid-cols-2 gap-4">
-            {(
-              [
-                ['Low (<15%)', 'bodyFatLow'],
-                ['Medium (15-25%)', 'bodyFatMedium'],
-                ['High (25-35%)', 'bodyFatHigh'],
-                ['Very High (>35%)', 'bodyFatVeryHigh'],
-              ] as const
-            ).map(([range, key]) => (
-              <button
-                key={range}
-                onClick={() => handleSelect('bodyFatRange', range)}
-                className={`p-6 rounded-xl border-2 bg-card text-foreground font-semibold transition-all duration-200
-                     ${
-                       formData.bodyFatRange === range
-                         ? 'border-primary'
-                         : 'border-border hover:border-primary/50 hover:shadow-sm'
-                     }`}
-              >
-                {t(`onboarding.${key}`, range)}
-              </button>
-            ))}
-          </div>
-        </>
-      );
-    case 7:
-      return (
-        <>
-          <h1 className="text-3xl font-bold text-foreground mb-2">
-            {t(
-              'onboarding.targetWeightQuestion',
-              'What is your target weight?'
-            )}
-          </h1>
-          <p className="text-muted-foreground mb-8">
-            {t('onboarding.targetWeightDescription', 'Your ultimate goal.')}
-          </p>
-          <div className="flex items-center justify-center">
-            <UnitInput
-              id="target-weight"
-              type="weight"
-              unit="kg"
-              value={formData.targetWeight}
-              onChange={(val) =>
-                handleInputChange(
-                  'targetWeight',
-                  val !== null ? val.toString() : ''
-                )
-              }
-              className="w-64"
-            />
+          <div className="grid grid-cols-2 gap-3">
+            {BODY_FAT_OPTIONS.map((option) => {
+              const selected = formData.bodyFatRange === option.value;
+              return (
+                <button
+                  key={option.value}
+                  type="button"
+                  aria-pressed={selected}
+                  onClick={() => handleSelect('bodyFatRange', option.value)}
+                  className={cn(
+                    'flex flex-col items-center gap-1 rounded-2xl border-2 bg-card px-3 py-4 text-center transition-all duration-200',
+                    selected
+                      ? 'border-primary'
+                      : 'border-border hover:border-primary/50 hover:shadow-sm'
+                  )}
+                >
+                  <span
+                    className={
+                      selected ? 'text-primary' : 'text-muted-foreground'
+                    }
+                  >
+                    <BodyFigure width={option.width} />
+                  </span>
+                  <span className="text-base font-semibold text-foreground">
+                    {option.title}
+                  </span>
+                  <span className="text-sm text-muted-foreground">
+                    {option.range}
+                  </span>
+                </button>
+              );
+            })}
           </div>
           <Button
-            onClick={nextStep}
-            disabled={!formData.targetWeight}
-            className="w-full mt-12 h-14 text-lg rounded-full"
+            type="button"
+            variant="outline"
+            onClick={() => {
+              setFormData((prev) => ({ ...prev, bodyFatRange: '' }));
+              nextStep();
+            }}
+            className="mt-6 h-14 w-full rounded-full text-base"
           >
-            {t('onboarding.continue', 'Continue')}
+            Bilmiyorum, atla
           </Button>
         </>
       );
+    case 7:
+      return numberStep({
+        field: 'targetWeight',
+        title: t(
+          'onboarding.targetWeightQuestion',
+          'What is your target weight?'
+        ),
+        hint: 'Ulaşmak istediğin kiloyu kg olarak yaz.',
+        unit: 'kg',
+        placeholder:
+          formData.currentWeight === ''
+            ? '70'
+            : String(formData.currentWeight).replace('.', ','),
+      });
     case 8:
-      return (
-        <>
-          <h1 className="text-3xl font-bold text-foreground mb-8">
-            {t(
-              'onboarding.mealsQuestion',
-              'How many meals do you eat in a typical day?'
-            )}
-          </h1>
-          {[3, 4, 5, 6].map((num) => (
-            <OptionButton
-              key={num}
-              label={t('onboarding.mealsPerDay', '{{number}} meals per day', {
-                number: num,
-              })}
-              isSelected={formData.mealsPerDay === num}
-              onClick={() => handleSelect('mealsPerDay', num)}
-            />
-          ))}
-        </>
-      );
-    case 9:
       return (
         <>
           <h1 className="text-3xl font-bold text-foreground mb-8">
@@ -332,53 +402,58 @@ export const OnboardingSteps = ({
           />
         </>
       );
-    case 10:
+    case 9:
       return (
         <>
-          <h1 className="text-3xl font-bold text-foreground mb-8">
+          <h1 className="text-3xl font-bold text-foreground mb-3 text-balance">
             {t(
               'onboarding.addBurnedCaloriesTitle',
               'Add burned calories from exercise?'
             )}
           </h1>
           <p className="text-muted-foreground mb-8">
-            {t(
-              'onboarding.addBurnedCaloriesDesc',
-              'If you exercise, should we add those calories back to your daily budget?'
-            )}
+            Evet dersen spor yaptığın gün hakkın artar: antrenmanda 300 kcal
+            yakarsan o gün 300 kcal daha fazla yiyebilirsin. Hayır dersen günlük
+            hedefin sabit kalır; sporun zaten seçtiğin hareket seviyesinde
+            hesaba katıldı.
           </p>
-          <div className="flex gap-4 w-full">
-            <button
-              onClick={() => handleSelect('addBurnedCalories', false)}
-              className={`flex-1 p-6 rounded-full text-lg font-bold border-2 transition-all
-                  ${
-                    formData.addBurnedCalories === false
-                      ? 'bg-primary text-white border-primary'
-                      : 'bg-card text-foreground border-border hover:border-primary/50 hover:shadow-sm'
-                  }
-                `}
-            >
-              {t('common.no', 'No')}
-            </button>
-            <button
-              onClick={() => handleSelect('addBurnedCalories', true)}
-              className={`flex-1 p-6 rounded-full text-lg font-bold border-2 transition-all
-                  ${
-                    formData.addBurnedCalories === true
-                      ? 'bg-primary text-white border-primary'
-                      : 'bg-card text-foreground border-border hover:border-primary/50 hover:shadow-sm'
-                  }
-                `}
-            >
-              {t('common.yes', 'Yes')}
-            </button>
+          <div className="flex w-full gap-3">
+            {(
+              [
+                [false, t('common.no', 'No'), true],
+                [true, t('common.yes', 'Yes'), false],
+              ] as const
+            ).map(([value, label, recommended]) => {
+              const selected = formData.addBurnedCalories === value;
+              return (
+                <button
+                  key={label}
+                  type="button"
+                  aria-pressed={selected}
+                  onClick={() => handleSelect('addBurnedCalories', value)}
+                  className={cn(
+                    'relative flex min-h-16 flex-1 flex-col items-center justify-center rounded-2xl border-2 bg-card px-3 py-4 text-lg font-bold text-foreground transition-all',
+                    selected
+                      ? 'border-primary text-primary'
+                      : 'border-input hover:border-primary/50 hover:shadow-sm'
+                  )}
+                >
+                  {label}
+                  {recommended && (
+                    <span className="mt-1 rounded-full bg-primary/12 px-2 py-0.5 text-xs font-semibold text-primary">
+                      Önerilen
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </>
       );
-    case 11:
+    case 10:
       return (
-        <div className="flex flex-col items-center justify-center h-full animate-in fade-in duration-700">
-          <div className="relative flex h-32 w-32 mb-8">
+        <div className="flex flex-1 flex-col items-center justify-center pt-10 pb-16 animate-in fade-in duration-700">
+          <div className="relative mb-10 flex h-32 w-32">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-20"></span>
             <span className="relative inline-flex rounded-full h-32 w-32 bg-card items-center justify-center border-4 border-primary">
               <Utensils className="h-12 w-12 text-primary" />
@@ -390,11 +465,15 @@ export const OnboardingSteps = ({
               'Preparing your personalized plan...'
             )}
           </h2>
-          <p className="text-muted-foreground mt-4">
-            {t(
-              'onboarding.preparingPlanDescription',
-              'Crunching the numbers based on your unique profile.'
-            )}
+          <p
+            className="mt-4 text-center text-muted-foreground"
+            aria-live="polite"
+          >
+            {loadingMessage ??
+              t(
+                'onboarding.preparingPlanDescription',
+                'Crunching the numbers based on your unique profile.'
+              )}
           </p>
         </div>
       );

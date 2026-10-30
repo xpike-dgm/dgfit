@@ -52,7 +52,7 @@ export const ChatToolCategoriesSelector: FC = () => {
           type="button"
           variant="ghost"
           size="icon"
-          className="relative size-8"
+          className="relative size-11"
           aria-label={t('chat.toolCategories.tooltip', 'Choose chatbot tools')}
         >
           <SlidersHorizontalIcon className="size-4" />

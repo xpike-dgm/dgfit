@@ -1,8 +1,6 @@
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Separator } from '@/components/ui/separator';
 import {
-  ChevronDown,
   Settings as SettingsIcon,
   ListChecks,
   Tag,
@@ -12,12 +10,12 @@ import {
   ShieldAlert,
   Target,
   Database,
+  Download,
+  ShieldCheck,
 } from 'lucide-react';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible';
+import { Button } from '@/components/ui/button';
+import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible';
+import { SETTINGS_CARD, SettingsGroupToggle } from './SettingsGroupToggle';
 import { DgfitSocialSettings } from './DgfitSocialSettings';
 import { DgfitNotificationSettings } from './DgfitNotificationSettings';
 import { useAuth } from '@/hooks/useAuth';
@@ -54,12 +52,18 @@ export interface PasswordFormState {
   new_password: string;
   confirm_password: string;
 }
-// DG FIT: one flat list. Rarely used sections live under "Gelişmiş ayarlar"
-// (closed by default) and admin-only integrations under "Geliştirici".
+// DG FIT: one flat list. "Gelişmiş ayarlar" (closed) keeps the few extras a
+// friend may want (heart-rate zones, allergens, diary download); the expert
+// tools (imports, synced-data delete, nutrient and calculation tuning, custom
+// categories and meal types) sit one level deeper under "Uzman ayarları", and
+// admin-only integrations under "Geliştirici".
 const ADVANCED_SECTIONS = new Set([
   'heart-rate-zones',
-  'data-management',
   'allergen-preferences',
+  'data-export',
+]);
+const EXPERT_SECTIONS = new Set([
+  'data-management',
   'custom-nutrients',
   'nutrient-display',
   'nutrient-goal-direction',
@@ -75,15 +79,8 @@ const DEVELOPER_SECTIONS = new Set([
   'developer-resources',
 ]);
 
-const CARD =
-  'mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none';
-
-const GroupToggle = ({ label }: { label: string }) => (
-  <CollapsibleTrigger className="group mb-3 flex w-full items-center justify-between px-1 pt-2 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground">
-    {label}
-    <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
-  </CollapsibleTrigger>
-);
+const CARD = SETTINGS_CARD;
+const TRIGGER = 'flex items-center gap-2 p-4 hover:no-underline';
 
 const Settings = () => {
   const { t } = useTranslation();
@@ -96,6 +93,7 @@ const Settings = () => {
       ? 'food-and-exercise-data-providers'
       : (queryParams.get('section') ?? queryParams.get('tab'));
   const defaultExpanded = section ? [section] : [];
+  const openExpert = !!section && EXPERT_SECTIONS.has(section);
 
   return (
     <div className="w-full">
@@ -127,8 +125,15 @@ const Settings = () => {
         </Accordion>
       </div>
 
-      <Collapsible defaultOpen={!!section && ADVANCED_SECTIONS.has(section)}>
-        <GroupToggle label="Gelişmiş ayarlar" />
+      <Collapsible
+        defaultOpen={
+          !!section && (ADVANCED_SECTIONS.has(section) || openExpert)
+        }
+      >
+        <SettingsGroupToggle
+          label="Gelişmiş ayarlar"
+          hint="Nabız bölgeleri, alerjenler, verilerini indir"
+        />
         <CollapsibleContent>
           <Accordion
             type="multiple"
@@ -138,25 +143,9 @@ const Settings = () => {
             <AccordionItem value="heart-rate-zones" className={CARD}>
               <HeartRateZoneSettings />
             </AccordionItem>
-            <AccordionItem value="data-management" className={CARD}>
-              <AccordionTrigger
-                className="flex items-center gap-2 p-4 hover:no-underline"
-                description={t(
-                  'settings.dataManagement.subtitle',
-                  'Import, export, or manage your data'
-                )}
-              >
-                <Database className="h-5 w-5" />
-                {t('settings.dataManagement.sectionTitle', 'Data Management')}
-              </AccordionTrigger>
-              <AccordionContent className="p-4 pt-0 space-y-6">
-                <DataImportSettings />
-                <DataManagementSettings />
-              </AccordionContent>
-            </AccordionItem>
             <AccordionItem value="allergen-preferences" className={CARD}>
               <AccordionTrigger
-                className="flex items-center gap-2 p-4 hover:no-underline"
+                className={TRIGGER}
                 description={t(
                   'settings.allergenPreferences.description',
                   'Track allergens you want to be warned about in foods'
@@ -172,110 +161,165 @@ const Settings = () => {
                 <AllergenSettings />
               </AccordionContent>
             </AccordionItem>
-            <AccordionItem value="custom-nutrients" className={CARD}>
+            <AccordionItem value="data-export" className={CARD}>
               <AccordionTrigger
-                className="flex items-center gap-2 p-4 hover:no-underline"
-                description={t(
-                  'settings.customNutrients.subtitle',
-                  'Manage your custom nutrient definitions'
-                )}
+                className={TRIGGER}
+                description="Yemek günlüğünü CSV dosyası olarak indir"
               >
-                <ListChecks className="h-5 w-5" />
-                {t('settings.customNutrients.title', 'Custom Nutrients')}
+                <Download className="h-5 w-5" />
+                Verilerini indir
               </AccordionTrigger>
               <AccordionContent className="p-4 pt-0">
-                <CustomNutrientsSettings />
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="nutrient-display" className={CARD}>
-              <AccordionTrigger
-                className="flex items-center gap-2 p-4 hover:no-underline"
-                description={t(
-                  'settings.nutrientDisplay.description',
-                  'Choose which nutrients to display in food and meal views'
-                )}
-              >
-                <ListChecks className="h-5 w-5" />
-                {t('settings.nutrientDisplay.title', 'Nutrient Display')}
-              </AccordionTrigger>
-              <AccordionContent className="p-4 pt-0">
-                <NutrientDisplaySettings />
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="nutrient-goal-direction" className={CARD}>
-              <AccordionTrigger
-                className="flex items-center gap-2 p-4 hover:no-underline"
-                description={t(
-                  'settings.nutrientGoalDirection.description',
-                  'Choose whether each nutrient goal is a minimum to reach, a maximum to stay under, or a target range to hit'
-                )}
-              >
-                <Target className="h-5 w-5" />
-                {t(
-                  'settings.nutrientGoalDirection.title',
-                  'Nutrient Goal Direction'
-                )}
-              </AccordionTrigger>
-              <AccordionContent className="p-4 pt-0">
-                <NutrientGoalDirectionSettings />
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="custom-meals" className={CARD}>
-              <AccordionTrigger
-                className="flex items-center gap-2 p-4 hover:no-underline"
-                description={t(
-                  'settings.customMeals.subtitle',
-                  'Create and manage custom meal types'
-                )}
-              >
-                <UtensilsCrossed className="h-5 w-5" />
-                {t('settings.customMeals.title', 'Custom Meals')}
-              </AccordionTrigger>
-              <AccordionContent className="p-4 pt-0">
-                <MealTypeManager />
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="calculation-settings" className={CARD}>
-              <AccordionTrigger
-                className="flex items-center gap-2 p-4 hover:no-underline"
-                description={t(
-                  'settings.calculationSettings.description',
-                  'Manage BMR formulas, body fat algorithms, daily energy adjustments, goal deficit modes, and safety floors.'
-                )}
-              >
-                <SettingsIcon className="h-5 w-5" />
-                {t(
-                  'settings.calculationSettings.title',
-                  'Calculation Settings'
-                )}
-              </AccordionTrigger>
-              <AccordionContent className="p-4 pt-0 space-y-4">
-                <CalculationSettings />
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="custom-categories" className={CARD}>
-              <AccordionTrigger
-                className="flex items-center gap-2 p-4 hover:no-underline"
-                description={t(
-                  'settings.customCategories.description',
-                  'Create and manage custom measurement categories'
-                )}
-              >
-                <Tag className="h-5 w-5" />
-                {t('settings.customCategories.title', 'Custom Categories')}
-              </AccordionTrigger>
-              <AccordionContent className="p-4 pt-0">
-                <CustomCategoryManager />
+                <DataManagementSettings parts="export" />
               </AccordionContent>
             </AccordionItem>
           </Accordion>
+
+          <Collapsible defaultOpen={openExpert}>
+            <SettingsGroupToggle
+              label="Uzman ayarları"
+              hint="İçe aktarma, öğün türleri, besin ve kalori hesaplama ayarları. Çoğu kişinin değiştirmesi gerekmez."
+            />
+            <CollapsibleContent>
+              <Accordion
+                type="multiple"
+                className="w-full"
+                defaultValue={defaultExpanded}
+              >
+                <AccordionItem value="custom-meals" className={CARD}>
+                  <AccordionTrigger
+                    className={TRIGGER}
+                    description={t(
+                      'settings.customMeals.subtitle',
+                      'Create and manage custom meal types'
+                    )}
+                  >
+                    <UtensilsCrossed className="h-5 w-5" />
+                    {t('settings.customMeals.title', 'Custom Meals')}
+                  </AccordionTrigger>
+                  <AccordionContent className="p-4 pt-0">
+                    <MealTypeManager />
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="data-management" className={CARD}>
+                  <AccordionTrigger
+                    className={TRIGGER}
+                    description="CSV/FIT içe aktarma ve senkronize verileri silme"
+                  >
+                    <Database className="h-5 w-5" />
+                    {t(
+                      'settings.dataManagement.sectionTitle',
+                      'Data Management'
+                    )}
+                  </AccordionTrigger>
+                  <AccordionContent className="space-y-6 p-4 pt-0">
+                    <DataImportSettings />
+                    <div className="border-t pt-6">
+                      <DataManagementSettings parts="synced" />
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="custom-nutrients" className={CARD}>
+                  <AccordionTrigger
+                    className={TRIGGER}
+                    description={t(
+                      'settings.customNutrients.subtitle',
+                      'Manage your custom nutrient definitions'
+                    )}
+                  >
+                    <ListChecks className="h-5 w-5" />
+                    {t('settings.customNutrients.title', 'Custom Nutrients')}
+                  </AccordionTrigger>
+                  <AccordionContent className="p-4 pt-0">
+                    <CustomNutrientsSettings />
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="nutrient-display" className={CARD}>
+                  <AccordionTrigger
+                    className={TRIGGER}
+                    description={t(
+                      'settings.nutrientDisplay.description',
+                      'Choose which nutrients to display in food and meal views'
+                    )}
+                  >
+                    <ListChecks className="h-5 w-5" />
+                    {t('settings.nutrientDisplay.title', 'Nutrient Display')}
+                  </AccordionTrigger>
+                  <AccordionContent className="p-4 pt-0">
+                    <NutrientDisplaySettings />
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="nutrient-goal-direction" className={CARD}>
+                  <AccordionTrigger
+                    className={TRIGGER}
+                    description={t(
+                      'settings.nutrientGoalDirection.description',
+                      'Choose whether each nutrient goal is a minimum to reach, a maximum to stay under, or a target range to hit'
+                    )}
+                  >
+                    <Target className="h-5 w-5" />
+                    {t(
+                      'settings.nutrientGoalDirection.title',
+                      'Nutrient Goal Direction'
+                    )}
+                  </AccordionTrigger>
+                  <AccordionContent className="p-4 pt-0">
+                    <NutrientGoalDirectionSettings />
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="calculation-settings" className={CARD}>
+                  <AccordionTrigger
+                    className={TRIGGER}
+                    description={t(
+                      'settings.calculationSettings.description',
+                      'Manage BMR formulas, body fat algorithms, daily energy adjustments, goal deficit modes, and safety floors.'
+                    )}
+                  >
+                    <SettingsIcon className="h-5 w-5" />
+                    {t(
+                      'settings.calculationSettings.title',
+                      'Calculation Settings'
+                    )}
+                  </AccordionTrigger>
+                  <AccordionContent className="space-y-4 p-4 pt-0">
+                    <CalculationSettings />
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="custom-categories" className={CARD}>
+                  <AccordionTrigger
+                    className={TRIGGER}
+                    description={t(
+                      'settings.customCategories.description',
+                      'Create and manage custom measurement categories'
+                    )}
+                  >
+                    <Tag className="h-5 w-5" />
+                    {t('settings.customCategories.title', 'Custom Categories')}
+                  </AccordionTrigger>
+                  <AccordionContent className="p-4 pt-0">
+                    <CustomCategoryManager />
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </CollapsibleContent>
+          </Collapsible>
         </CollapsibleContent>
       </Collapsible>
 
       {user?.role === 'admin' && (
         <Collapsible defaultOpen={!!section && DEVELOPER_SECTIONS.has(section)}>
-          <GroupToggle label="Geliştirici (yalnızca yönetici)" />
+          <SettingsGroupToggle
+            label="Geliştirici (yalnızca yönetici)"
+            hint="Veri sağlayıcıları, API anahtarları, kişisel AI ayarları"
+          />
           <CollapsibleContent>
+            <TooltipWarning
+              warningMsg={t(
+                'settings.foodExerciseDataProviders.invalidKeyLengthWarning',
+                'If you encounter an "Invalid key length" error, ensure your encryption key in the server\'s env variables are 64 hex.'
+              )}
+            />
+            <div className="mb-3" />
             <Accordion
               type="multiple"
               className="w-full"
@@ -286,7 +330,7 @@ const Settings = () => {
                 className={CARD}
               >
                 <AccordionTrigger
-                  className="flex items-center gap-2 p-4 hover:no-underline"
+                  className={TRIGGER}
                   description={t(
                     'settings.foodExerciseDataProviders.description',
                     'Configure external food and exercise data sources and synchronize data with Garmin Connect'
@@ -298,35 +342,31 @@ const Settings = () => {
                     'Food & Exercise Data Providers'
                   )}
                 </AccordionTrigger>
-                <AccordionContent className="p-4 pt-0 space-y-4">
-                  <TooltipWarning
-                    warningMsg={t(
-                      'settings.foodExerciseDataProviders.invalidKeyLengthWarning',
-                      'If you encounter an "Invalid key length" error, ensure your encryption key in the server\'s env variables are 64 hex.'
-                    )}
-                  />
+                <AccordionContent className="min-w-0 space-y-4 p-4 pt-0">
                   <ExternalProviderSettings />
-                  <Separator />
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="ai-service" className={CARD}>
                 <AccordionTrigger
-                  className="flex items-center gap-2 p-4 hover:no-underline"
-                  description={t(
-                    'settings.aiService.description',
-                    'Manage settings for AI-powered features'
-                  )}
+                  className={TRIGGER}
+                  description="Ses girişi, sohbet geçmişi ve kişisel AI hizmetleri"
                 >
                   <Sparkles className="h-5 w-5" />
-                  {t('settings.aiService.title', 'AI Service')}
+                  Kişisel AI ayarları
                 </AccordionTrigger>
-                <AccordionContent className="p-4 pt-0">
-                  <TooltipWarning
-                    warningMsg={t(
-                      'settings.aiService.invalidKeyLengthWarning',
-                      'If you encounter an "Invalid key length" error, ensure your encryption key in the server\'s env variables are 64 hex.'
-                    )}
-                  />
+                <AccordionContent className="min-w-0 space-y-4 p-4 pt-0">
+                  <div className="flex flex-col gap-3 rounded-xl bg-accent p-3 text-sm">
+                    <p className="flex items-start gap-2">
+                      <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                      <span>
+                        PT AI'nın herkes için ortak Claude anahtarı burada
+                        değil, Yönetim'de ayarlanır.
+                      </span>
+                    </p>
+                    <Button asChild variant="outline" className="h-11">
+                      <Link to="/admin">Yönetim'e git</Link>
+                    </Button>
+                  </div>
                   <AIServiceSettings />
                 </AccordionContent>
               </AccordionItem>

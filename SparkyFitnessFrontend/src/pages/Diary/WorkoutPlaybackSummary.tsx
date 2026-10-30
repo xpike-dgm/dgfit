@@ -1,84 +1,77 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ArrowLeft,
-  Flag,
-  Pause,
-  Play,
-  SkipForward,
+  ChevronDown,
+  Clock,
+  LogOut,
+  MoreHorizontal,
+  Trash2,
   X,
-  AlertTriangle,
 } from 'lucide-react';
-import { Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-} from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { TimeInput } from '@/components/ui/TimeInput';
 import { Label } from '@/components/ui/label';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import {
   instantHourMinute,
   userHourMinute,
   WORKOUT_LOCATION_MAX_LENGTH,
 } from '@workspace/shared';
 import { useWorkoutLocations } from '@/hooks/Exercises/useExerciseEntries';
-import type {
-  WorkoutPlaybackDraft,
-  WorkoutPlaybackStats,
+import {
+  formatWorkoutDurationTr,
+  type WorkoutPlaybackDraft,
+  type WorkoutPlaybackStats,
 } from '@/utils/workoutPlayback';
-import { formatSecondsClock } from '@/utils/timeFormatters';
-
-const DEFAULT_REST_DISPLAY = '0:00';
-
-function formatWorkoutVolume(totalVolume: number): string {
-  return `${Number(totalVolume.toFixed(1))}`;
-}
+import { fmtTr } from '@/utils/numberFormatting';
 
 interface WorkoutPlaybackSummaryProps {
   draft: WorkoutPlaybackDraft;
   elapsedSeconds: number;
   totalVolume: number;
   stats: WorkoutPlaybackStats | null;
-  restRemaining: string;
-  isRestActive: boolean;
-  saveError: string | null;
-  isSaving: boolean;
   timezone: string;
+  /** Unit label for the volume tile ("kg" / "lb"). */
+  volumeUnit: string;
   onCloseKeepDraft: () => void;
   onDiscard: () => void;
-  onFinishWorkout: () => void;
-  onPauseResumeRest: () => void;
-  onSkipRest: () => void;
   onSessionNotesChange: (value: string) => void;
   onLocationChange: (value: string) => void;
   onStartTimeChange: (value: string) => void;
 }
 
+/**
+ * Top of the live player: back (the draft stays on the phone), a ⋯ menu that
+ * holds the destructive "delete this workout", three stat tiles with units and
+ * the rarely needed start time / gym / note fields folded away so the first
+ * set is near the top of the screen. Rest and Finish live in the sticky
+ * bottom bar.
+ */
 const WorkoutPlaybackSummary = ({
   draft,
   elapsedSeconds,
   totalVolume,
   stats,
-  restRemaining,
-  isRestActive,
-  saveError,
-  isSaving,
   timezone,
+  volumeUnit,
   onCloseKeepDraft,
   onDiscard,
-  onFinishWorkout,
-  onPauseResumeRest,
-  onSkipRest,
   onSessionNotesChange,
   onLocationChange,
   onStartTimeChange,
 }: WorkoutPlaybackSummaryProps) => {
   const { t } = useTranslation();
   const { data: locationSuggestions = [] } = useWorkoutLocations();
+  const [detailsOpen, setDetailsOpen] = useState(false);
 
   const startTime = (() => {
     if (!draft.started_at) return '';
@@ -90,128 +83,124 @@ const WorkoutPlaybackSummary = ({
     }
   })();
 
+  const tiles = [
+    {
+      label: t('exercise.workoutPlaybackPage.elapsedTime', 'Duration'),
+      value: formatWorkoutDurationTr(elapsedSeconds),
+    },
+    {
+      label: t('exercise.workoutPlaybackPage.volume', 'Volume'),
+      value: `${fmtTr(totalVolume, 1)} ${volumeUnit}`,
+    },
+    {
+      label: t('exercise.workoutPlaybackPage.progress', 'Sets'),
+      value: `${stats?.completedSets ?? 0}/${stats?.totalSets ?? 0}`,
+    },
+  ];
+
+  const detailsSummary = [
+    startTime ? `Başlangıç ${startTime}` : null,
+    draft.location || null,
+    draft.notes ? 'not var' : null,
+  ]
+    .filter(Boolean)
+    .join(' · ');
+
   return (
-    <>
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div className="space-y-3">
+      <div className="flex items-center justify-between gap-2">
         <Button
           type="button"
           variant="ghost"
-          className="w-fit gap-2"
+          className="h-11 gap-2 px-2"
           onClick={onCloseKeepDraft}
         >
-          <ArrowLeft className="h-4 w-4" />
+          <ArrowLeft className="h-5 w-5" />
           {t('common.back', 'Back')}
         </Button>
-        <div className="flex flex-wrap gap-2">
-          <Button type="button" variant="outline" onClick={onCloseKeepDraft}>
-            <X className="mr-1 h-4 w-4" />
-            {t('exercise.workoutPlaybackDialog.closeKeepDraft', 'Close')}
-          </Button>
-          <Button type="button" variant="outline" onClick={onDiscard}>
-            {t('exercise.workoutPlaybackDialog.discard', 'Discard')}
-          </Button>
-          <Button type="button" onClick={onFinishWorkout} disabled={isSaving}>
-            <Flag className="mr-1 h-4 w-4" />
-            {isSaving
-              ? t('exercise.workoutPlaybackDialog.finishing', 'Saving...')
-              : t('exercise.workoutPlaybackDialog.finish', 'Finish Workout')}
-          </Button>
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-11 w-11"
+              aria-label="Antrenman seçenekleri"
+            >
+              <MoreHorizontal className="h-5 w-5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="min-w-[15rem]">
+            <DropdownMenuItem className="py-3" onClick={onCloseKeepDraft}>
+              <LogOut className="mr-2 h-4 w-4" />
+              Çık, sonra devam et
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="py-3 text-destructive focus:text-destructive"
+              onClick={onDiscard}
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              Antrenmanı sil (kaydetmeden)
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
-      <Card className="border-0 bg-transparent shadow-none">
-        <CardHeader className="space-y-1 px-0 pb-2 pt-0">
-          <h1 className="text-sm font-semibold leading-tight">{draft.name}</h1>
-          <CardDescription className="text-[11px] leading-tight">
-            {t(
-              'exercise.workoutPlaybackPage.description',
-              'Track your sets live, follow rest countdowns, and save when you finish.'
-            )}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-1 px-0 pt-0">
-          <div className="grid w-full grid-cols-2 gap-px overflow-hidden rounded-sm border border-border/60 bg-border text-center sm:grid-cols-4">
-            <div className="flex min-w-0 flex-col items-center justify-center bg-background px-1 py-2">
-              <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
-                {t('exercise.workoutPlaybackPage.elapsedTime', 'Duration')}
-              </span>
-              <span className="mt-0.5 text-sm font-medium tabular-nums text-foreground">
-                {formatSecondsClock(elapsedSeconds)}
-              </span>
-            </div>
-            <div className="flex min-w-0 flex-col items-center justify-center bg-background px-1 py-2">
-              <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
-                {t('exercise.workoutPlaybackPage.volume', 'Volume')}
-              </span>
-              <span className="mt-0.5 text-sm font-medium tabular-nums text-foreground">
-                {formatWorkoutVolume(totalVolume)}
-              </span>
-            </div>
-            <div className="flex min-w-0 flex-col items-center justify-center bg-background px-1 py-2">
-              <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
-                {t('exercise.workoutPlaybackPage.progress', 'Sets')}
-              </span>
-              <span className="mt-0.5 text-sm font-medium tabular-nums text-foreground">
-                {stats?.completedSets ?? 0}/{stats?.totalSets ?? 0}
-              </span>
-            </div>
-            <div className="flex min-w-0 flex-col items-center justify-center bg-background px-1 py-2">
-              <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
-                {t('exercise.workoutPlaybackPage.restTimer', 'Rest')}
-              </span>
-              <span className="mt-0.5 text-sm font-medium tabular-nums text-foreground">
-                {draft.rest_timer.state === 'idle'
-                  ? DEFAULT_REST_DISPLAY
-                  : restRemaining}
-              </span>
-              {isRestActive && (
-                <div className="mt-1 flex items-center gap-0.5">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="h-5 w-5"
-                    aria-label={
-                      draft.rest_timer.state === 'running'
-                        ? t('common.pause', 'Pause')
-                        : t('common.resume', 'Resume')
-                    }
-                    onClick={onPauseResumeRest}
-                  >
-                    {draft.rest_timer.state === 'running' ? (
-                      <Pause className="h-3 w-3" />
-                    ) : (
-                      <Play className="h-3 w-3" />
-                    )}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="h-5 w-5"
-                    aria-label={t('common.skip', 'Skip')}
-                    onClick={onSkipRest}
-                  >
-                    <SkipForward className="h-3 w-3" />
-                  </Button>
-                </div>
-              )}
-            </div>
-          </div>
+      <h1 className="text-xl font-bold leading-tight">{draft.name}</h1>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-            {/* Start Time */}
+      <div className="grid grid-cols-3 gap-2">
+        {tiles.map((tile) => (
+          <div
+            key={tile.label}
+            className="flex min-w-0 flex-col items-center justify-center rounded-xl bg-card px-1 py-2.5 text-center shadow-sm ring-1 ring-border/60"
+          >
+            <span className="text-[11px] font-medium text-muted-foreground">
+              {tile.label}
+            </span>
+            <span className="mt-0.5 truncate text-base font-semibold tabular-nums text-foreground">
+              {tile.value}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      <div className="rounded-xl ring-1 ring-border/60">
+        <button
+          type="button"
+          className="flex min-h-11 w-full items-center justify-between gap-2 px-3 py-2 text-left text-sm"
+          aria-expanded={detailsOpen}
+          onClick={() => setDetailsOpen((open) => !open)}
+        >
+          <span className="min-w-0">
+            <span className="font-medium">Saat, salon ve not</span>
+            {detailsSummary && (
+              <span className="block truncate text-xs text-muted-foreground">
+                {detailsSummary}
+              </span>
+            )}
+          </span>
+          <ChevronDown
+            className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform ${
+              detailsOpen ? 'rotate-180' : ''
+            }`}
+          />
+        </button>
+        {detailsOpen && (
+          <div className="space-y-3 border-t border-border/60 px-3 pb-3 pt-3">
             <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-2">
                 <Label id="startTime-label" className="text-sm">
                   {t('diary.workoutPlaybackSummary.startTime', 'Start Time')}
                 </Label>
-                <div className="flex items-center gap-1.5">
-                  <button
+                <div className="flex items-center gap-2">
+                  <Button
                     type="button"
+                    variant="outline"
+                    size="sm"
                     onClick={() => onStartTimeChange('')}
                     disabled={!startTime}
-                    className="inline-flex items-center gap-1 rounded-md border border-input bg-background px-3 py-1 text-sm font-medium text-muted-foreground shadow-sm hover:bg-destructive/10 hover:text-destructive transition-colors disabled:opacity-40 disabled:pointer-events-none"
+                    className="h-9 gap-1 text-muted-foreground"
                     title={t(
                       'diary.workoutPlaybackSummary.clearTime',
                       'Clear time'
@@ -219,16 +208,18 @@ const WorkoutPlaybackSummary = ({
                   >
                     <X className="h-4 w-4" />
                     {t('diary.workoutPlaybackSummary.clear', 'Clear')}
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     type="button"
+                    variant="outline"
+                    size="sm"
                     onClick={() => {
                       const { hour, minute } = userHourMinute(timezone);
                       onStartTimeChange(
                         `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
                       );
                     }}
-                    className="inline-flex items-center gap-1 rounded-md border border-input bg-background px-3 py-1 text-sm font-medium text-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors"
+                    className="h-9 gap-1"
                     title={t(
                       'diary.workoutPlaybackSummary.setToCurrentLocalTime',
                       'Set to current local time'
@@ -236,7 +227,7 @@ const WorkoutPlaybackSummary = ({
                   >
                     <Clock className="h-4 w-4" />
                     {t('diary.workoutPlaybackSummary.now', 'Now')}
-                  </button>
+                  </Button>
                 </div>
               </div>
               <TimeInput
@@ -244,11 +235,10 @@ const WorkoutPlaybackSummary = ({
                 aria-labelledby="startTime-label"
                 value={startTime}
                 onChange={onStartTimeChange}
-                className="text-sm h-9"
+                className="h-11 text-sm"
               />
             </div>
 
-            {/* Gym / Location */}
             <div className="space-y-1.5">
               <Label htmlFor="location" className="text-sm">
                 {t('exercise.workoutPlaybackDialog.location', 'Gym / Location')}
@@ -265,7 +255,7 @@ const WorkoutPlaybackSummary = ({
                 maxLength={WORKOUT_LOCATION_MAX_LENGTH}
                 list="workout-location-suggestions"
                 autoComplete="off"
-                className="text-sm h-9"
+                className="h-11 text-sm"
               />
               <datalist id="workout-location-suggestions">
                 {locationSuggestions.map((location) => (
@@ -273,33 +263,24 @@ const WorkoutPlaybackSummary = ({
                 ))}
               </datalist>
             </div>
-          </div>
 
-          <div className="space-y-1">
-            <label className="text-sm font-medium">
-              {t('exercise.logExerciseEntryDialog.sessionNotes', 'Notes')}
-            </label>
-            <Textarea
-              value={draft.notes ?? ''}
-              rows={2}
-              className="resize-none text-sm"
-              placeholder={t(
-                'exercise.logExerciseEntryDialog.notesPlaceholder',
-                'Any notes about this session...'
-              )}
-              onChange={(event) => onSessionNotesChange(event.target.value)}
-            />
-          </div>
-
-          {saveError && (
-            <div className="flex gap-2 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
-              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
-              <span>{saveError}</span>
+            <div className="space-y-1.5">
+              <Label htmlFor="workout-notes" className="text-sm">
+                {t('exercise.logExerciseEntryDialog.sessionNotes', 'Notes')}
+              </Label>
+              <Textarea
+                id="workout-notes"
+                value={draft.notes ?? ''}
+                rows={2}
+                className="resize-none text-sm"
+                placeholder="Bu antrenmanla ilgili notların…"
+                onChange={(event) => onSessionNotesChange(event.target.value)}
+              />
             </div>
-          )}
-        </CardContent>
-      </Card>
-    </>
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 

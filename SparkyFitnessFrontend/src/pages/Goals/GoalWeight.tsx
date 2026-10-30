@@ -98,6 +98,8 @@ export const GoalWeight = () => {
           </Label>
           <Input
             id="goal-weight"
+            className="h-11"
+            placeholder="örn. 75"
             type="number"
             min={0}
             step="0.1"
@@ -120,14 +122,19 @@ export const GoalWeight = () => {
         </div>
         <div className="flex gap-2">
           <Button
-            className="flex-1"
+            className="h-11 flex-1"
             onClick={handleSave}
             disabled={saving || draft === null || !isValid}
           >
             {t('goals.goalsSettings.goalWeightSave', 'Save goal weight')}
           </Button>
           {savedDisplay !== '' && (
-            <Button variant="outline" onClick={handleClear} disabled={saving}>
+            <Button
+              variant="outline"
+              className="h-11"
+              onClick={handleClear}
+              disabled={saving}
+            >
               {t('goals.goalsSettings.goalWeightClear', 'Clear')}
             </Button>
           )}

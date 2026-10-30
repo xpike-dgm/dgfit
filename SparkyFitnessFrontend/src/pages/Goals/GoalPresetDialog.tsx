@@ -9,7 +9,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { SegmentedControl } from './SegmentedControl';
 import MealPercentageManager from '@/components/MealPercentageManager';
 import { Separator } from '@/components/ui/separator';
 
@@ -202,26 +202,21 @@ export const GoalPresetDialog = ({
               </div>
               <div className="space-y-1.5">
                 <Label>{t('goals.goalsSettings.macrosBy', 'Macros By')}</Label>
-                <RadioGroup
-                  className="flex h-10 items-center gap-4 border rounded-md px-3"
+                <SegmentedControl
+                  label={t('goals.goalsSettings.macrosBy', 'Macros By')}
                   value={macroInputType}
-                  onValueChange={(v: 'grams' | 'percentages') =>
-                    setMacroInputType(v)
-                  }
-                >
-                  <div className="flex items-center gap-1.5">
-                    <RadioGroupItem value="grams" id="p-g" />
-                    <Label htmlFor="p-g" className="text-xs">
-                      {t('goalPresetDialog.grams', 'Grams')}
-                    </Label>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <RadioGroupItem value="percentages" id="p-p" />
-                    <Label htmlFor="p-p" className="text-xs">
-                      {t('goalPresetDialog.percentages', 'Percentages')}
-                    </Label>
-                  </div>
-                </RadioGroup>
+                  onChange={setMacroInputType}
+                  options={[
+                    {
+                      value: 'grams',
+                      label: t('goalPresetDialog.grams', 'Grams'),
+                    },
+                    {
+                      value: 'percentages',
+                      label: t('goalPresetDialog.percentages', 'Percentages'),
+                    },
+                  ]}
+                />
               </div>
             </div>
 
@@ -245,7 +240,7 @@ export const GoalPresetDialog = ({
               </div>
               {(['protein', 'carbs', 'fat'] as const).map((m) => (
                 <div key={m} className="space-y-1.5">
-                  <Label className="text-xs capitalize">
+                  <Label className="text-xs">
                     {t(
                       CENTRAL_NUTRIENT_CONFIG[m]?.label ?? String(m),
                       String(m)

@@ -14,6 +14,17 @@ import {
 } from '@/api/Auth/auth';
 import { authKeys } from '@/api/keys/auth';
 import { getErrorMessage } from '@/utils/api';
+import type { AuthResponse } from '@/types/auth';
+import { authErrorMessage } from './authErrors';
+
+/**
+ * Sign-in / sign-up outcome. Failures resolve (not reject) with a Turkish
+ * sentence so the page shows one inline message and the global mutation
+ * handler adds no second, English toast.
+ */
+export type AuthResult =
+  | { ok: true; data: AuthResponse }
+  | { ok: false; message: string };
 
 export const useDemoLoginMutation = () => {
   const { t } = useTranslation();
@@ -29,38 +40,26 @@ export const useDemoLoginMutation = () => {
   });
 };
 
-export const useLoginUserMutation = () => {
-  const { t } = useTranslation();
-  return useMutation({
-    mutationFn: ({ email, password }: { email: string; password: string }) =>
-      loginUser(email, password),
-    meta: {
-      successMessage: t('auth.loginSuccess', 'Login successful!'),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      errorMessage: (error: any) => {
-        const msg = getErrorMessage(error);
-        if (msg === 'Invalid credentials.') {
-          return t(
-            'auth.loginError',
-            'Login failed. Please check your credentials.'
-          );
-        }
-        if (msg === 'Invalid origin') {
-          return t(
-            'auth.invalidOrigin',
-            "Access denied: This connection's origin is not recognized. If you are accessing from a local network (LAN), this address must be explicitly trusted."
-          );
-        }
-        return msg;
-      },
+export const useLoginUserMutation = () =>
+  useMutation({
+    mutationFn: async ({
+      email,
+      password,
+    }: {
+      email: string;
+      password: string;
+    }): Promise<AuthResult> => {
+      try {
+        return { ok: true, data: await loginUser(email, password) };
+      } catch (err) {
+        return { ok: false, message: authErrorMessage(err, 'signin') };
+      }
     },
   });
-};
 
-export const useRegisterUserMutation = () => {
-  const { t } = useTranslation();
-  return useMutation({
-    mutationFn: ({
+export const useRegisterUserMutation = () =>
+  useMutation({
+    mutationFn: async ({
       email,
       password,
       fullName,
@@ -72,23 +71,23 @@ export const useRegisterUserMutation = () => {
       fullName: string;
       username: string;
       inviteCode: string;
-    }) => registerUser(email, password, fullName, username, inviteCode),
-    meta: {
-      successMessage: t(
-        'auth.registerSuccess',
-        'Account created successfully!'
-      ),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      errorMessage: (error: any) =>
-        error.code === '23505'
-          ? t('auth.emailExists', 'User with this email already exists.')
-          : t(
-              'auth.registerError',
-              'An unexpected error occurred during sign up.'
-            ),
+    }): Promise<AuthResult> => {
+      try {
+        return {
+          ok: true,
+          data: await registerUser(
+            email,
+            password,
+            fullName,
+            username,
+            inviteCode
+          ),
+        };
+      } catch (err) {
+        return { ok: false, message: authErrorMessage(err, 'signup') };
+      }
     },
   });
-};
 
 export const useRequestMagicLinkMutation = () => {
   const { t } = useTranslation();
@@ -131,11 +130,8 @@ export const useRequestPasswordResetMutation = () => {
   const { t } = useTranslation();
   return useMutation({
     mutationFn: requestPasswordReset,
+    // The page shows the outcome inline; a toast on top would repeat it.
     meta: {
-      successMessage: t(
-        'auth.resetEmailSent',
-        'If an account exists, a password reset email has been sent.'
-      ),
       errorMessage: t(
         'auth.resetEmailError',
         'Failed to request password reset.'

@@ -5,7 +5,9 @@ import {
   CardTitle,
   CardDescription,
 } from '@/components/ui/card';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
 import { Trash2, ClipboardList, Pencil } from 'lucide-react';
 
 import { Timer, Activity } from 'lucide-react';
@@ -16,8 +18,28 @@ import {
 } from '@/contexts/PreferencesContext';
 import { useTranslation } from 'react-i18next';
 import { CombinedMeasurement } from '@/types/checkin';
-import { formatWeight, formatHeight } from '@/utils/numberFormatting';
+import { fmtTr, formatWeight, formatHeight } from '@/utils/numberFormatting';
+import { formatDayTr } from '@/utils/formatDay';
 import { healthMetricLabel } from '@/utils/healthMetricLabels';
+
+/** Turkish names for the standard check-in rows (stored as English keys). */
+const STANDARD_NAMES: Record<string, string> = {
+  Weight: 'Kilo',
+  Neck: 'Boyun',
+  Waist: 'Bel',
+  Hips: 'Kalça',
+  Height: 'Boy',
+  Steps: 'Adım',
+  'Body Fat %': 'Vücut yağı',
+};
+
+const UNIT_NAMES: Record<string, string> = { steps: 'adım' };
+
+/** A number the Turkish way ("23,7"); text values pass through. */
+const formatPlain = (raw: string | number, decimals: number): string => {
+  const num = Number(raw);
+  return raw === '' || Number.isNaN(num) ? String(raw) : fmtTr(num, decimals);
+};
 
 interface RecentActivityProps {
   convertMeasurement: (
@@ -56,6 +78,8 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
     formatTime,
   } = usePreferences();
   const { t } = useTranslation();
+  const [pendingDelete, setPendingDelete] =
+    useState<CombinedMeasurement | null>(null);
 
   return (
     <>
@@ -117,14 +141,16 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
                       measurement.custom_categories.measurement_type === 'N/A'
                         ? ''
                         : measurement.custom_categories.measurement_type;
-                    const num = Number(measurement.value);
-                    const val =
-                      measurement.value === '' || isNaN(num)
-                        ? measurement.value
-                        : Number(num.toFixed(measurementDecimalPlaces));
+                    const val = formatPlain(
+                      measurement.value,
+                      measurementDecimalPlaces
+                    );
                     displayString = `${val} ${unit}`.trim();
                   }
                 } else if (measurement.type === 'standard') {
+                  measurementName =
+                    STANDARD_NAMES[measurement.display_name] ??
+                    measurement.display_name;
                   if (measurement.display_name === 'Weight') {
                     displayString = formatWeight(
                       Number(measurement.value),
@@ -140,15 +166,15 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
                       defaultMeasurementUnit
                     );
                   } else {
-                    const unit =
+                    const rawUnit =
                       measurement.display_unit === 'N/A'
                         ? ''
                         : measurement.display_unit || '';
-                    const num = Number(measurement.value);
-                    const val =
-                      measurement.value === '' || isNaN(num)
-                        ? measurement.value
-                        : Number(num.toFixed(measurementDecimalPlaces));
+                    const unit = UNIT_NAMES[rawUnit] ?? rawUnit;
+                    const val = formatPlain(
+                      measurement.value,
+                      measurementDecimalPlaces
+                    );
                     displayString = `${val} ${unit}`.trim();
                   }
                 } else if (measurement.type === 'stress') {
@@ -168,20 +194,26 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
                     measurement.display_unit === 'N/A'
                       ? ''
                       : measurement.display_unit || '';
-                  const num = Number(measurement.value);
-                  const val =
-                    measurement.value === '' || isNaN(num)
-                      ? measurement.value
-                      : Math.round(num);
+                  const val = formatPlain(measurement.value, 0);
                   displayString = `${val} ${unit}`.trim();
                 }
+
+                // The saved time only belongs to the row when it was saved
+                // on the measured day; an edit made later would mislead.
+                const day = String(measurement.entry_date).slice(0, 10);
+                const showTime =
+                  !!measurement.entry_timestamp &&
+                  formatDateInUserTimezone(
+                    measurement.entry_timestamp,
+                    'yyyy-MM-dd'
+                  ) === day;
 
                 return (
                   <div
                     key={measurement.id}
-                    className="flex items-center justify-between p-4 hover:bg-muted/5 transition-colors"
+                    className="flex items-center justify-between gap-2 py-2 pl-4 pr-2 hover:bg-muted/5 transition-colors"
                   >
-                    <div className="flex items-center gap-3">
+                    <div className="flex min-w-0 items-center gap-3">
                       <div
                         className={`p-2 rounded-full ${measurement.type === 'fasting' ? 'bg-orange-100 text-orange-600' : 'bg-primary/10 text-primary'}`}
                       >
@@ -197,16 +229,15 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
                             ? measurement.fasting_type
                             : measurementName}
                         </p>
-                        <p className="text-xs text-muted-foreground">
-                          {formatTime(measurement.entry_timestamp)} &middot;{' '}
-                          {formatDateInUserTimezone(
-                            measurement.entry_timestamp,
-                            'MMM d'
-                          )}
+                        <p className="text-xs text-muted-foreground tabular-nums">
+                          {formatDayTr(day)}
+                          {showTime
+                            ? ` ${formatTime(measurement.entry_timestamp)}`
+                            : ''}
                         </p>
                       </div>
                     </div>
-                    <div className="font-semibold tabular-nums text-right">
+                    <div className="flex items-center gap-1 font-semibold tabular-nums text-right">
                       {measurement.type === 'fasting' ? (
                         <span className="text-orange-600">{displayString}</span>
                       ) : (
@@ -219,12 +250,11 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-6 w-6 ml-2 text-muted-foreground hover:text-destructive"
-                          onClick={() =>
-                            handleDeleteMeasurementClick(measurement)
-                          }
+                          aria-label={`${measurementName} kaydını sil`}
+                          className="h-11 w-11 shrink-0 text-muted-foreground hover:text-destructive"
+                          onClick={() => setPendingDelete(measurement)}
                         >
-                          <Trash2 className="w-3 h-3" />
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       )}
                       {measurement.type === 'fasting' && (
@@ -233,21 +263,21 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-6 w-6 ml-2 text-muted-foreground hover:text-foreground"
+                              aria-label="Düzenle"
+                              className="h-11 w-11 shrink-0 text-muted-foreground hover:text-foreground"
                               onClick={() => handleEditFastClick(measurement)}
                             >
-                              <Pencil className="w-3 h-3" />
+                              <Pencil className="h-4 w-4" />
                             </Button>
                           )}
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-6 w-6 ml-2 text-muted-foreground hover:text-destructive"
-                            onClick={() =>
-                              handleDeleteMeasurementClick(measurement)
-                            }
+                            aria-label="Sil"
+                            className="h-11 w-11 shrink-0 text-muted-foreground hover:text-destructive"
+                            onClick={() => setPendingDelete(measurement)}
                           >
-                            <Trash2 className="w-3 h-3" />
+                            <Trash2 className="h-4 w-4" />
                           </Button>
                         </>
                       )}
@@ -259,6 +289,19 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
           </div>
         </CardContent>
       </Card>
+      <ConfirmationDialog
+        open={pendingDelete !== null}
+        onOpenChange={(open) => !open && setPendingDelete(null)}
+        title="Bu kayıt silinsin mi?"
+        description="Silinen ölçüm geri alınamaz."
+        variant="destructive"
+        confirmLabel="Sil"
+        onConfirm={() => {
+          const target = pendingDelete;
+          setPendingDelete(null);
+          if (target) void handleDeleteMeasurementClick(target);
+        }}
+      />
     </>
   );
 };

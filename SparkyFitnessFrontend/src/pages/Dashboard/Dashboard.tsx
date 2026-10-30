@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Check,
@@ -10,7 +10,7 @@ import {
   Scale,
   Sparkles,
   Trophy,
-  UtensilsCrossed,
+  WifiOff,
 } from 'lucide-react';
 import {
   entryCaloriesCounted,
@@ -22,15 +22,15 @@ import { Button } from '@/components/ui/button';
 import { useActiveUser } from '@/contexts/ActiveUserContext';
 import { useChatbotVisibility } from '@/contexts/ChatbotVisibilityContext';
 import { usePreferences } from '@/contexts/PreferencesContext';
-import { useWaterContainer } from '@/contexts/WaterContainerContext';
 import { useDailySummary } from '@/hooks/Diary/useDailyProgress';
-import { useUpdateWaterIntakeMutation } from '@/hooks/Diary/useWaterIntake';
+import { useMealTypes } from '@/hooks/Diary/useMealTypes';
 import { useFeed } from '@/hooks/Dgfit/useFriends';
 import { useWorkoutPlanTemplates } from '@/hooks/Exercises/useWorkoutPlans';
 import { useStartPlanSession } from '@/hooks/Exercises/useStartPlanSession';
 import { useAuth } from '@/hooks/useAuth';
 import { UserAvatar } from '@/pages/Friends/UserAvatar';
-import type { WaterContainer } from '@/types/settings';
+import { useOnlineStatus } from '@/layouts/useOnlineStatus';
+import { fmtTr, fmtTrUnit } from '@/utils/numberFormatting';
 import { timeAgo } from '@/utils/timeAgo';
 import type { WorkoutPlanTemplate } from '@/types/workout';
 import {
@@ -40,6 +40,7 @@ import {
   SparkyCard,
   SparkyCardHeader,
 } from './DashboardCards';
+import { useQuickWater } from '@/hooks/Dashboard/useQuickWater';
 
 type Nutrient = 'protein' | 'carbs' | 'fat' | 'dietary_fiber';
 
@@ -68,17 +69,6 @@ const sessionStats = (sessions: ExerciseSessionResponse[]) => {
   return { minutes, calories };
 };
 
-/** Millilitres one press of the water button adds. */
-const containerMl = (container: WaterContainer | null | undefined) => {
-  if (!container) return 250;
-  const factor =
-    container.unit === 'liter' ? 1000 : container.unit === 'oz' ? 29.5735 : 1;
-  return Math.round(
-    (container.volume * factor) /
-      Math.max(1, container.servings_per_container || 1)
-  );
-};
-
 const Dashboard = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -94,9 +84,16 @@ const Dashboard = () => {
     setSearchParams(next === today ? {} : { date: next });
 
   const { data: summary, isLoading } = useDailySummary(date);
-  const { activeContainer } = useWaterContainer();
-  const { mutate: updateWater, isPending: waterPending } =
-    useUpdateWaterIntakeMutation();
+  const { addDrinks, pressMl } = useQuickWater();
+  const online = useOnlineStatus();
+  const { data: mealTypes } = useMealTypes();
+  // Brief "+250 ml" next to the total after a tap; the key restarts the fade.
+  const [waterNote, setWaterNote] = useState<{ text: string; key: number }>();
+  useEffect(() => {
+    if (!waterNote) return;
+    const timer = setTimeout(() => setWaterNote(undefined), 1200);
+    return () => clearTimeout(timer);
+  }, [waterNote]);
   const { data: plans = [] } = useWorkoutPlanTemplates(userId);
   const startPlanSession = useStartPlanSession(date, userId);
   const { data: feed } = useFeed();
@@ -169,16 +166,29 @@ const Dashboard = () => {
   const workoutDone = summary.exerciseSessions.length > 0;
   const waterGoal = adjusted?.water_goal_ml ?? goals.water_goal_ml ?? 2500;
   const waterMl = summary.waterIntake || 0;
-  const pressMl = containerMl(activeContainer);
   const diaryLink = `/gunluk${date === today ? '' : `?date=${date}`}`;
+  const quickLogMeals = (mealTypes ?? []).filter(
+    (mt) => mt.show_in_quick_log !== false
+  );
+  // DG FIT keeps one food list, so open its search straight away.
+  const openFoodLog = () =>
+    navigate(
+      diaryLink,
+      quickLogMeals.length === 1
+        ? {
+            state: {
+              openFoodSearchForMeal: quickLogMeals[0]!.name.toLowerCase(),
+            },
+          }
+        : undefined
+    );
 
   const changeWater = (drinks: number) => {
     if (!userId) return;
-    updateWater({
-      user_id: userId,
-      entry_date: date,
-      change_drinks: drinks,
-      container_id: activeContainer?.id ?? null,
+    addDrinks(userId, date, drinks);
+    setWaterNote({
+      text: `${drinks > 0 ? '+' : '−'}${fmtTr(pressMl)} ml`,
+      key: Date.now(),
     });
   };
 
@@ -194,6 +204,7 @@ const Dashboard = () => {
         burned={burned}
         remaining={remaining}
         progress={progress / 100}
+        onAddFood={summary.foodEntries.length === 0 ? openFoodLog : undefined}
       />
 
       <button
@@ -224,12 +235,21 @@ const Dashboard = () => {
           </div>
         </SparkyCard>
       ) : (
-        <SparkyCard onClick={() => navigate(diaryLink)}>
-          <h2 className="mb-4 text-base font-bold text-foreground">Yemek</h2>
-          <p className="mb-4 flex items-center justify-center gap-2 text-sm text-caption">
-            <UtensilsCrossed className="h-4 w-4" />
-            Yemek eklemek için dokun
+        <SparkyCard>
+          <SparkyCardHeader title="Yemek" />
+          <p className="mb-3 text-sm text-muted-foreground">
+            {date === today
+              ? 'Bugün henüz yemek eklemedin.'
+              : 'Bu gün için yemek eklenmemiş.'}
           </p>
+          <Button
+            type="button"
+            onClick={openFoodLog}
+            className="h-11 w-full rounded-full text-base"
+          >
+            <Plus className="h-5 w-5" />
+            Yemek ekle
+          </Button>
         </SparkyCard>
       )}
 
@@ -258,8 +278,7 @@ const Dashboard = () => {
             </div>
             {!workoutDone && (
               <Button
-                size="sm"
-                className="rounded-full px-4"
+                className="h-11 rounded-full px-4"
                 onClick={() => startPlanSession(activePlan, dayAssignments[0]!)}
               >
                 <Play className="h-4 w-4 fill-current" />
@@ -267,25 +286,53 @@ const Dashboard = () => {
               </Button>
             )}
           </div>
-        ) : (
+        ) : workoutDone ? (
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/12 text-primary">
-              {workoutDone ? (
-                <Check className="h-5 w-5" />
-              ) : (
-                <Moon className="h-5 w-5" />
-              )}
+              <Check className="h-5 w-5" />
+            </div>
+            <div className="min-w-0 flex-1 text-base font-semibold text-foreground">
+              Bugün antrenman yaptın 💪
+            </div>
+          </div>
+        ) : activePlan ? (
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/12 text-primary">
+              <Moon className="h-5 w-5" />
             </div>
             <div className="min-w-0 flex-1">
               <div className="text-base font-semibold text-foreground">
-                {workoutDone ? 'Antrenman yapıldı' : 'Dinlenme günü'}
+                Dinlenme günü
               </div>
               <div className="text-sm text-muted-foreground">
-                {activePlan
-                  ? 'Bugün programında antrenman yok'
-                  : 'Haftalık program seç'}
+                Bugün programında antrenman yok
               </div>
             </div>
+          </div>
+        ) : (
+          <div>
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/12 text-primary">
+                <Dumbbell className="h-5 w-5" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="text-base font-semibold text-foreground">
+                  Program seçilmedi
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  Haftalık bir program seç, her gün ne yapacağın burada
+                  görünsün.
+                </div>
+              </div>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => navigate('/antrenman')}
+              className="mt-3 h-11 w-full rounded-full text-base"
+            >
+              Program seç
+            </Button>
           </div>
         )}
         {(exercise.minutes > 0 || exercise.calories > 0) && (
@@ -316,25 +363,34 @@ const Dashboard = () => {
         <div className="flex items-center gap-3">
           <button
             type="button"
-            aria-label="Su azalt"
-            disabled={waterPending || waterMl <= 0}
+            aria-label={`Su azalt (${fmtTr(pressMl)} ml)`}
+            disabled={waterMl <= 0}
             onClick={() => changeWater(-1)}
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/12 text-primary disabled:opacity-40"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary/12 text-primary transition-transform active:scale-95 disabled:opacity-40"
           >
             <Minus className="h-5 w-5" />
           </button>
           <div className="min-w-0 flex-1">
-            <div className="mb-2 flex items-baseline justify-center gap-1">
+            <div className="relative mb-2 flex items-baseline justify-center gap-1">
               <span className="text-2xl font-bold text-foreground">
-                {Math.round(waterMl).toLocaleString('tr-TR')}
+                {fmtTr(Math.round(waterMl), 0)}
               </span>
               <span className="text-sm text-muted-foreground">
-                / {Math.round(waterGoal).toLocaleString('tr-TR')} ml
+                / {fmtTrUnit(Math.round(waterGoal), 'ml', 0)}
               </span>
+              {waterNote && (
+                <span
+                  key={waterNote.key}
+                  aria-hidden="true"
+                  className="pointer-events-none absolute -top-4 left-1/2 -translate-x-1/2 rounded-full bg-hydration/15 px-2 text-xs font-semibold text-foreground animate-in fade-in slide-in-from-bottom-1 duration-200"
+                >
+                  {waterNote.text}
+                </span>
+              )}
             </div>
             <div className="h-2 overflow-hidden rounded bg-progress-track">
               <div
-                className="h-full rounded bg-hydration transition-[width] duration-500"
+                className="h-full rounded bg-hydration transition-[width] duration-300"
                 style={{
                   width: `${Math.min(waterGoal > 0 ? waterMl / waterGoal : 0, 1) * 100}%`,
                 }}
@@ -343,16 +399,25 @@ const Dashboard = () => {
           </div>
           <button
             type="button"
-            aria-label="Su ekle"
-            disabled={waterPending}
+            aria-label={`Su ekle (${fmtTr(pressMl)} ml)`}
             onClick={() => changeWater(1)}
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm disabled:opacity-40"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm transition-transform active:scale-95"
           >
             <Plus className="h-5 w-5" />
           </button>
         </div>
-        <p className="mt-2 text-center text-xs text-caption">
-          Her dokunuşta {pressMl} ml
+        <p
+          className="mt-2 flex items-center justify-center gap-1 text-center text-xs text-muted-foreground"
+          aria-live="polite"
+        >
+          {online ? (
+            `Her dokunuşta ${fmtTr(pressMl)} ml`
+          ) : (
+            <>
+              <WifiOff className="h-3.5 w-3.5" aria-hidden="true" />
+              Çevrimdışısın; su bağlanınca kaydedilir.
+            </>
+          )}
         </p>
       </SparkyCard>
 
@@ -363,9 +428,19 @@ const Dashboard = () => {
           onLink={() => navigate('/arkadaslar')}
         />
         {feedItems.length === 0 ? (
-          <p className="py-2 text-sm text-caption">
-            Henüz arkadaş etkinliği yok.
-          </p>
+          <div className="py-1">
+            <p className="mb-3 text-sm text-muted-foreground">
+              Henüz arkadaş etkinliği yok.
+            </p>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => navigate('/arkadaslar')}
+              className="h-11 w-full rounded-full text-base"
+            >
+              Arkadaşını ekle
+            </Button>
+          </div>
         ) : (
           <div className="divide-y divide-border">
             {feedItems.map((item) => {
@@ -375,26 +450,28 @@ const Dashboard = () => {
                   key={`${item.type}-${item.user_id}-${item.at}`}
                   type="button"
                   onClick={() => navigate(`/arkadaslar/${item.user_id}`)}
-                  className="flex w-full items-center gap-3 py-2.5 text-left"
+                  className="flex min-h-14 w-full items-center gap-3 py-2.5 text-left"
                 >
                   <UserAvatar user={friend} className="h-9 w-9" />
                   <div className="min-w-0 flex-1">
                     <div className="truncate text-sm text-foreground">
                       <span className="font-semibold">
                         {friend?.name ?? '—'}
-                      </span>{' '}
+                      </span>
+                      {' · '}
                       {item.type === 'workout'
-                        ? `${item.name} antrenmanını yaptı`
-                        : `kilosunu güncelledi: ${item.weight_kg} kg`}
+                        ? item.name
+                        : `Kilo ${fmtTrUnit(Number(item.weight_kg), 'kg')}`}
                     </div>
-                    <div className="text-xs text-caption">
-                      {timeAgo(item.at)}
-                      {item.type === 'workout' && ` · ${item.set_count} set`}
+                    <div className="truncate text-xs text-muted-foreground">
+                      {item.type === 'workout'
+                        ? `${item.set_count} set · ${timeAgo(item.at)}`
+                        : timeAgo(item.at)}
                     </div>
                   </div>
                   {item.type === 'workout' ? (
                     item.has_pr ? (
-                      <Trophy className="h-4 w-4 text-pr" />
+                      <Trophy className="h-4 w-4 text-pr" aria-label="Rekor" />
                     ) : (
                       <Dumbbell className="h-4 w-4 text-caption" />
                     )

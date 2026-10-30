@@ -14,6 +14,8 @@ export const OptionButton = ({
   onClick,
 }: OptionButtonProps) => (
   <button
+    type="button"
+    aria-pressed={isSelected}
     onClick={onClick}
     className={`
       w-full text-left p-5 my-3 rounded-xl border-2 transition-all duration-200
@@ -34,7 +36,7 @@ export const OptionButton = ({
       )}
     </div>
     {subLabel && (
-      <span className="text-muted-foreground text-sm mt-1">{subLabel}</span>
+      <span className="text-muted-foreground text-base mt-1">{subLabel}</span>
     )}
   </button>
 );

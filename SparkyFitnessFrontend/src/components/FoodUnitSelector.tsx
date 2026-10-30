@@ -1,13 +1,29 @@
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { Check, Sparkles, Clock, CalendarDays, X } from 'lucide-react';
+import {
+  Check,
+  ChevronDown,
+  Sparkles,
+  Clock,
+  CalendarDays,
+  X,
+} from 'lucide-react';
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
+import { Textarea } from '@/components/ui/textarea';
+import { cn } from '@/lib/utils';
+import { mealTypeLabel } from '@/pages/Diary/mealTypeLabel';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { TimeInput } from '@/components/ui/TimeInput';
@@ -46,8 +62,9 @@ import {
   type ConfidenceTone,
 } from '@workspace/shared';
 import {
-  formatQuantityServingLabel,
-  formatServingLabel,
+  unitLabelTr,
+  variantChipLabel,
+  variantUnitLabel,
 } from '@/utils/foodServing';
 import {
   getAiConfidenceLabel,
@@ -68,6 +85,19 @@ const AI_ESTIMATE_BADGE_TONE_CLASSES: Record<ConfidenceTone, string> = {
   error: 'bg-rose-50 text-rose-700 dark:bg-rose-950 dark:text-rose-300',
 };
 
+// Units offered for conversion in the amount picker (see `offeredUnits`).
+const OFFERED_CONVERSION_UNITS = new Set([
+  'g',
+  'kg',
+  'ml',
+  'piece',
+  'serving',
+  'slice',
+  'tbsp',
+  'tsp',
+  'cup',
+]);
+
 const getValidAiConfidence = (
   confidence: FoodVariant['ai_confidence']
 ): AiConfidence | null => {
@@ -78,7 +108,6 @@ const getValidAiConfidence = (
 import { AiEstimateSection } from '@/components/FoodUnitSelector/AiEstimateSection';
 import FavoriteStarButton from '@/components/FavoriteStarButton';
 import { MarkdownView } from '@/components/ui/MarkdownView';
-import { MarkdownEditor } from '@/components/ui/MarkdownEditor';
 import { usableFoodImages } from '@/utils/foodImages';
 
 interface FoodUnitSelectorProps {
@@ -101,6 +130,8 @@ interface FoodUnitSelectorProps {
   showTimeInput?: boolean;
   initialTime?: string;
   defaultMealTime?: string | null;
+  /** Shown as "Öğüne ekle: <name>" under the food name. */
+  mealLabel?: string;
   showMealTypeSelect?: boolean;
   availableMealTypes?: Array<{
     id: string;
@@ -121,6 +152,7 @@ const FoodUnitSelector = ({
   showTimeInput,
   initialTime,
   defaultMealTime,
+  mealLabel,
   showMealTypeSelect,
   availableMealTypes,
 }: FoodUnitSelectorProps) => {
@@ -467,9 +499,7 @@ const FoodUnitSelector = ({
     if (isConverting) {
       const convertedVariant = buildConvertedVariant();
       if (!convertedVariant) {
-        setConversionError(
-          'Please enter a valid unit name and conversion factor.'
-        );
+        setConversionError('Geçerli bir birim adı ve çevirme oranı gir.');
         return;
       }
       setConversionError('');
@@ -496,7 +526,7 @@ const FoodUnitSelector = ({
         setQuantity(1);
       } catch (err) {
         error(loggingLevel, 'Error creating converted variant:', err);
-        setConversionError('Failed to save the new unit. Please try again.');
+        setConversionError('Yeni birim kaydedilemedi. Tekrar dene.');
       }
       return;
     }
@@ -535,11 +565,6 @@ const FoodUnitSelector = ({
     () => usableFoodImages(food?.images),
     [food?.images]
   );
-  const foodImageOptions = useMemo(
-    () => foodImagePaths.map((src) => ({ path: src, src })),
-    [foodImagePaths]
-  );
-
   const nutrition = (() => {
     if (!activeVariant || quantity === undefined) return null;
     const ratio = quantity / (activeVariant.serving_size || 1);
@@ -563,17 +588,55 @@ const FoodUnitSelector = ({
     }
   }, [open, loading]);
 
-  const displayUnit = isConverting
-    ? pendingUnit.trim() || '?'
-    : selectedVariant?.serving_unit || '';
-  const displayServing =
-    quantity === undefined
-      ? ''
-      : isConverting
-        ? `${quantity} ${displayUnit}`.trim()
-        : selectedVariant
-          ? formatQuantityServingLabel(quantity, selectedVariant)
-          : `${quantity} ${displayUnit}`.trim();
+  // Ready-made amounts: each saved serving (100 g, 1 porsiyon (250 g), ...)
+  // plus 100 g / 100 ml when the base unit is weight or volume, so the common
+  // case is one tap instead of typing.
+  const quickAmounts = useMemo(() => {
+    const chips: {
+      key: string;
+      variantId: string;
+      amount: number;
+      label: string;
+    }[] = [];
+    const seen = new Set<string>();
+    const push = (variant: FoodVariant, amount: number) => {
+      if (!variant.id) return;
+      const label =
+        amount === variant.serving_size
+          ? variantChipLabel(variant)
+          : `${amount.toLocaleString('tr-TR')} ${unitLabelTr(variant.serving_unit)}`;
+      if (seen.has(label)) return;
+      seen.add(label);
+      chips.push({
+        key: `${variant.id}-${amount}`,
+        variantId: variant.id,
+        amount,
+        label,
+      });
+    };
+    for (const variant of variants) {
+      const unit = variant.serving_unit?.toLowerCase();
+      if ((unit === 'g' || unit === 'ml') && variant.serving_size !== 100) {
+        push(variant, 100);
+      }
+      push(variant, variant.serving_size || 1);
+    }
+    return chips.slice(0, 4);
+  }, [variants]);
+
+  // The full conversion table is long (kg, mg, oz, lb, lbs, ...); a Turkish
+  // kitchen needs a handful. Anything else stays reachable via "Özel birim".
+  const offeredUnits = convertibleUnits.filter((u) =>
+    OFFERED_CONVERSION_UNITS.has(u.toLowerCase())
+  );
+
+  const [showMore, setShowMore] = useState(false);
+  useEffect(() => {
+    if (open) setShowMore(false);
+  }, [open]);
+
+  const fmt1 = (value: number) =>
+    value.toLocaleString('tr-TR', { maximumFractionDigits: 1 });
 
   return (
     <Dialog
@@ -583,17 +646,7 @@ const FoodUnitSelector = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <span>
-              {initialQuantity
-                ? t('foodUnitSelector.editTitle', {
-                    name: food?.name,
-                    defaultValue: `Edit ${food?.name}`,
-                  })
-                : t('foodUnitSelector.addTitle', {
-                    name: food?.name,
-                    defaultValue: `Add ${food?.name} to Meal`,
-                  })}
-            </span>
+            <span className="min-w-0 break-words">{food?.name}</span>
             {/* Only persisted local/saved foods can be favorited (external
                 provider search results are not saved yet, so they have no
                 stable id to star). */}
@@ -602,28 +655,23 @@ const FoodUnitSelector = ({
             )}
           </DialogTitle>
           <DialogDescription>
-            {initialQuantity
-              ? t('foodUnitSelector.editDescription', {
-                  name: food?.name,
-                  defaultValue: `Edit the quantity and unit for ${food?.name}.`,
-                })
-              : t(
-                  'foodUnitSelector.addDescription',
-                  'Select the quantity and unit for your food entry.'
-                )}
+            {mealLabel
+              ? `Öğüne ekle: ${mealLabel}`
+              : initialQuantity
+                ? 'Miktarı düzenle'
+                : 'Ne kadar yedin?'}
+            {food?.brand ? ` · ${food.brand}` : ''}
           </DialogDescription>
         </DialogHeader>
 
         {loading ? (
           <div>{t('foodUnitSelector.loadingUnits', 'Loading units...')}</div>
         ) : (
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="quantity">
-                    {t('foodUnitSelector.quantity', 'Quantity')}
-                  </Label>
+              <div className="space-y-1.5">
+                <Label htmlFor="quantity">Miktar</Label>
+                <div className="flex items-center gap-2">
                   <NumericInput
                     allowExpressions
                     ref={quantityInputRef}
@@ -632,104 +680,154 @@ const FoodUnitSelector = ({
                     min="0.01"
                     decimals={3}
                     required
+                    className="h-11 min-w-0 flex-1 text-base"
                     value={quantity}
                     onValueChange={(newQuantity) => {
                       debug(loggingLevel, 'Quantity changed:', newQuantity);
                       setQuantity(newQuantity);
                     }}
                   />
-                </div>
-                <div>
-                  <Label htmlFor="unit">
-                    {t('foodUnitSelector.unit', 'Unit')}
-                  </Label>
-                  <div className="flex items-center gap-2">
-                    <Select
-                      value={dropdownValue}
-                      onValueChange={handleUnitChange}
+                  <Select
+                    value={dropdownValue}
+                    onValueChange={handleUnitChange}
+                  >
+                    <SelectTrigger
+                      id="unit"
+                      aria-label={t('foodUnitSelector.unit', 'Unit')}
+                      className="h-11 w-[44%] max-w-[11rem] shrink-0"
                     >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {variants.map((variant) => {
-                          const aiConfidence = getValidAiConfidence(
-                            variant.ai_confidence
-                          );
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {variants.map((variant) => {
+                        const aiConfidence = getValidAiConfidence(
+                          variant.ai_confidence
+                        );
 
-                          return (
-                            variant.id && (
-                              <SelectItem key={variant.id} value={variant.id}>
+                        return (
+                          variant.id && (
+                            <SelectItem key={variant.id} value={variant.id}>
+                              <span className="flex items-center gap-1.5">
+                                {variantUnitLabel(variant)}
+                                {variant.source === 'ai_estimate' &&
+                                  aiConfidence && (
+                                    <Sparkles
+                                      className={`h-3 w-3 ${AI_PICKER_ICON_TONE_CLASSES[CONFIDENCE_TONES[aiConfidence]]}`}
+                                      aria-label={getAiEstimateLabel(
+                                        t,
+                                        'foodUnitSelector',
+                                        aiConfidence
+                                      )}
+                                    />
+                                  )}
+                              </span>
+                            </SelectItem>
+                          )
+                        );
+                      })}
+                      {offeredUnits.length > 0 && (
+                        <>
+                          <SelectSeparator />
+                          {offeredUnits.map((u) => {
+                            const compatible = canAutoConvertToUnit(
+                              variants,
+                              selectedVariant,
+                              u
+                            );
+                            return (
+                              <SelectItem key={u} value={u}>
                                 <span className="flex items-center gap-1.5">
-                                  {formatServingLabel(variant)}
-                                  {variant.source === 'ai_estimate' &&
-                                    aiConfidence && (
-                                      <Sparkles
-                                        className={`h-3 w-3 ${AI_PICKER_ICON_TONE_CLASSES[CONFIDENCE_TONES[aiConfidence]]}`}
-                                        aria-label={getAiEstimateLabel(
-                                          t,
-                                          'foodUnitSelector',
-                                          aiConfidence
-                                        )}
-                                      />
-                                    )}
+                                  {unitLabelTr(u)}
+                                  {compatible && (
+                                    <Check className="h-3 w-3 text-green-500" />
+                                  )}
                                 </span>
                               </SelectItem>
-                            )
-                          );
-                        })}
-                        {convertibleUnits.length > 0 && (
-                          <>
-                            <SelectSeparator />
-                            {convertibleUnits.map((u) => {
-                              const compatible = canAutoConvertToUnit(
-                                variants,
-                                selectedVariant,
-                                u
-                              );
-                              return (
-                                <SelectItem key={u} value={u}>
-                                  <span className="flex items-center gap-1.5">
-                                    {u}
-                                    {compatible && (
-                                      <Check className="h-3 w-3 text-green-500" />
-                                    )}
-                                  </span>
-                                </SelectItem>
-                              );
-                            })}
-                          </>
-                        )}
-                        <SelectSeparator />
-                        <SelectItem value="__custom__">
-                          {t('foodUnitSelector.customUnit', 'Custom unit...')}
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                    {selectedVariant?.source === 'ai_estimate' &&
-                      selectedAiConfidence && (
-                        <Sparkles
-                          className={`h-4 w-4 ${AI_PICKER_ICON_TONE_CLASSES[CONFIDENCE_TONES[selectedAiConfidence]]}`}
-                          aria-label={getAiEstimateLabel(
-                            t,
-                            'foodUnitSelector',
-                            selectedAiConfidence
-                          )}
-                        />
+                            );
+                          })}
+                        </>
                       )}
-                  </div>
+                      <SelectSeparator />
+                      <SelectItem value="__custom__">
+                        {t('foodUnitSelector.customUnit', 'Custom unit...')}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {selectedVariant?.source === 'ai_estimate' &&
+                    selectedAiConfidence && (
+                      <Sparkles
+                        className={`h-4 w-4 shrink-0 ${AI_PICKER_ICON_TONE_CLASSES[CONFIDENCE_TONES[selectedAiConfidence]]}`}
+                        aria-label={getAiEstimateLabel(
+                          t,
+                          'foodUnitSelector',
+                          selectedAiConfidence
+                        )}
+                      />
+                    )}
                 </div>
+                {quickAmounts.length > 1 && (
+                  <div
+                    className="flex flex-wrap gap-2 pt-1"
+                    aria-label="Hazır miktarlar"
+                  >
+                    {quickAmounts.map((chip) => {
+                      const active =
+                        !isConverting &&
+                        selectedVariant?.id === chip.variantId &&
+                        quantity === chip.amount;
+                      return (
+                        <button
+                          key={chip.key}
+                          type="button"
+                          aria-pressed={active}
+                          onClick={() => {
+                            handleUnitChange(chip.variantId);
+                            setQuantity(chip.amount);
+                          }}
+                          className={cn(
+                            'min-h-9 rounded-full border px-3 text-sm font-medium transition-colors',
+                            active
+                              ? 'border-primary bg-primary text-primary-foreground'
+                              : 'border-border bg-secondary text-foreground hover:bg-accent'
+                          )}
+                        >
+                          {chip.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
+
+              {nutrition && (
+                <div className="flex items-baseline justify-between gap-3 rounded-xl bg-muted px-3 py-2.5">
+                  <span className="text-lg font-bold tabular-nums">
+                    {Math.round(
+                      convertEnergy(nutrition.calories, 'kcal', energyUnit)
+                    ).toLocaleString('tr-TR')}{' '}
+                    <span className="text-sm font-normal text-muted-foreground">
+                      {getEnergyUnitString(energyUnit)}
+                    </span>
+                  </span>
+                  <span className="text-right text-sm text-muted-foreground tabular-nums">
+                    <span className="font-medium text-foreground">P</span>{' '}
+                    {fmt1(nutrition.protein)} g ·{' '}
+                    <span className="font-medium text-foreground">K</span>{' '}
+                    {fmt1(nutrition.carbs)} g ·{' '}
+                    <span className="font-medium text-foreground">Y</span> {fmt1(nutrition.fat)} g
+                  </span>
+                </div>
+              )}
 
               {showMealTypeSelect &&
                 availableMealTypes &&
-                availableMealTypes.length > 0 && (
+                availableMealTypes.length > 1 && (
                   <div className="space-y-1">
                     <Label htmlFor="mealType">
                       {t('foodUnitSelector.meal', 'Meal')}
                     </Label>
                     <Select value={mealType} onValueChange={setMealType}>
-                      <SelectTrigger id="mealType" className="w-full text-sm">
+                      <SelectTrigger id="mealType" className="h-11 w-full">
                         <SelectValue
                           placeholder={t(
                             'foodUnitSelector.selectMeal',
@@ -740,68 +838,13 @@ const FoodUnitSelector = ({
                       <SelectContent>
                         {availableMealTypes.map((t) => (
                           <SelectItem key={t.id} value={t.name}>
-                            {t.name}
+                            {mealTypeLabel(t.name)}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
                 )}
-
-              {showTimeInput && (
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between">
-                    <Label id="entryTime-label">
-                      {t('foodUnitSelector.timeOptional', 'Time (optional)')}
-                    </Label>
-                    <div className="flex items-center gap-1.5">
-                      <button
-                        type="button"
-                        onClick={() => setEntryTime('')}
-                        disabled={!entryTime}
-                        className="inline-flex items-center gap-1 rounded-md border border-input bg-background px-3 py-1 text-sm font-medium text-muted-foreground shadow-sm hover:bg-destructive/10 hover:text-destructive transition-colors disabled:opacity-40 disabled:pointer-events-none"
-                        title={t('foodUnitSelector.clearTime', 'Clear time')}
-                      >
-                        <X className="h-4 w-4" />
-                        {t('foodUnitSelector.clear', 'Clear')}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handleSetCurrentTime}
-                        className="inline-flex items-center gap-1 rounded-md border border-input bg-background px-3 py-1 text-sm font-medium text-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors"
-                        title={t(
-                          'foodUnitSelector.setCurrentTime',
-                          'Set to current local time'
-                        )}
-                      >
-                        <Clock className="h-4 w-4" />
-                        {t('foodUnitSelector.now', 'Now')}
-                      </button>
-                      {resolvedDefaultMealTime && (
-                        <button
-                          type="button"
-                          onClick={handleSetDefaultTime}
-                          className="inline-flex items-center gap-1 rounded-md border border-input bg-background px-3 py-1 text-sm font-medium text-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors"
-                          title={t('foodUnitSelector.setMealDefault', {
-                            time: toHourMinute(resolvedDefaultMealTime),
-                            defaultValue: `Set to meal default (${toHourMinute(resolvedDefaultMealTime)})`,
-                          })}
-                        >
-                          <CalendarDays className="h-4 w-4" />
-                          {t('foodUnitSelector.default', 'Default')}
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                  <TimeInput
-                    id="entryTime"
-                    aria-labelledby="entryTime-label"
-                    value={entryTime}
-                    onChange={setEntryTime}
-                  />
-                </div>
-              )}
-
               {/* Custom unit name input */}
               {pendingUnitIsCustom && (
                 <div className="border rounded-lg p-3 space-y-3 bg-muted/50">
@@ -975,112 +1018,139 @@ const FoodUnitSelector = ({
                   </div>
                 )}
 
-              {nutrition && (
-                <div className="bg-muted p-3 rounded-lg">
-                  <h4 className="font-medium mb-2">
-                    {t('foodUnitSelector.nutritionFor', {
-                      defaultValue: 'Nutrition for {{serving}}:',
-                      serving: displayServing,
-                    })}
-                  </h4>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div>
-                      {Math.round(
-                        convertEnergy(nutrition.calories, 'kcal', energyUnit)
-                      )}{' '}
-                      {getEnergyUnitString(energyUnit)}
+              {/* Time and notes are rarely changed: tucked away so the
+                  amount and the Add button fit one phone screen. */}
+              <Collapsible open={showMore} onOpenChange={setShowMore}>
+                <CollapsibleTrigger asChild>
+                  <button
+                    type="button"
+                    className="flex min-h-11 w-full items-center justify-between rounded-xl px-1 text-sm font-medium text-muted-foreground hover:text-foreground"
+                  >
+                    <span>
+                      Daha fazla
+                      {showTimeInput && entryTime ? ` · Saat ${entryTime}` : ''}
+                      {entryNotes.trim() ? ' · Not var' : ''}
+                    </span>
+                    <ChevronDown
+                      className={cn(
+                        'h-4 w-4 transition-transform',
+                        showMore && 'rotate-180'
+                      )}
+                    />
+                  </button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="space-y-4 pt-2">
+                  {showTimeInput && (
+                    <div className="space-y-1">
+                      <Label id="entryTime-label">Saat</Label>
+                      <div className="flex items-center gap-2">
+                        <TimeInput
+                          id="entryTime"
+                          aria-labelledby="entryTime-label"
+                          value={entryTime}
+                          onChange={setEntryTime}
+                          className="flex-1"
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="h-11 shrink-0"
+                          onClick={handleSetCurrentTime}
+                          title={t(
+                            'foodUnitSelector.setCurrentTime',
+                            'Set to current local time'
+                          )}
+                        >
+                          <Clock className="h-4 w-4" />
+                          Şimdi
+                        </Button>
+                        {resolvedDefaultMealTime && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            className="h-11 shrink-0 px-2"
+                            onClick={handleSetDefaultTime}
+                            title={t('foodUnitSelector.setMealDefault', {
+                              time: toHourMinute(resolvedDefaultMealTime),
+                              defaultValue: `Set to meal default (${toHourMinute(resolvedDefaultMealTime)})`,
+                            })}
+                          >
+                            <CalendarDays className="h-4 w-4" />
+                          </Button>
+                        )}
+                        {entryTime && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            className="h-11 w-11 shrink-0 p-0"
+                            onClick={() => setEntryTime('')}
+                            aria-label={t(
+                              'foodUnitSelector.clearTime',
+                              'Clear time'
+                            )}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
                     </div>
-                    <div>
-                      {t('foodUnitSelector.proteinAmount', {
-                        defaultValue: '{{amount}}g protein',
-                        amount: nutrition.protein.toFixed(1),
-                      })}
-                    </div>
-                    <div>
-                      {t('foodUnitSelector.carbsAmount', {
-                        defaultValue: '{{amount}}g carbs',
-                        amount: nutrition.carbs.toFixed(1),
-                      })}
-                    </div>
-                    <div>
-                      {t('foodUnitSelector.fatAmount', {
-                        defaultValue: '{{amount}}g fat',
-                        amount: nutrition.fat.toFixed(1),
-                      })}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/*
-                Below the nutrition panel on purpose: the figures are what this
-                dialog is opened to check, and a long note above them would push
-                them off-screen.
-              */}
-              {food?.notes ? (
-                <div className="space-y-1">
-                  <Label>
-                    {t('foodUnitSelector.foodNotes', 'About this food')}
-                  </Label>
-                  <div className="rounded-md border bg-muted/40 px-3 py-2 max-h-48 overflow-y-auto">
-                    <MarkdownView images={foodImagePaths}>
-                      {food.notes}
-                    </MarkdownView>
-                  </div>
-                </div>
-              ) : null}
-
-              {/*
-                Not gated on `showTimeInput`: a per-occasion note has nothing to
-                do with whether the time picker is shown.
-              */}
-              <div className="space-y-1">
-                <Label htmlFor="entryNotes">
-                  {t(
-                    'foodUnitSelector.entryNotes',
-                    'Note for this entry (optional)'
                   )}
-                </Label>
-                <MarkdownEditor
-                  id="entryNotes"
-                  value={entryNotes}
-                  onChange={setEntryNotes}
-                  rows={3}
-                  placeholder={t(
-                    'foodUnitSelector.entryNotesPlaceholder',
-                    'Anything specific about this time you ate it'
-                  )}
-                  imageOptions={foodImageOptions}
-                />
-              </div>
 
-              <div className="flex justify-end space-x-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => onOpenChange(false)}
-                >
-                  {t('common.cancel', 'Cancel')}
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={
-                    createFoodVariantMutation.isPending ||
-                    (!isConverting && !selectedVariant) ||
-                    (isConverting &&
-                      (!pendingUnit.trim() ||
-                        (autoConversionFactor === null &&
-                          (!conversionFactor || conversionFactor <= 0))))
-                  }
-                >
-                  {createFoodVariantMutation.isPending
-                    ? t('common.saving', 'Saving...')
-                    : initialQuantity
-                      ? t('foodUnitSelector.updateFood', 'Update Food')
-                      : t('foodUnitSelector.addToMeal', 'Add to Meal')}
-                </Button>
-              </div>
+                  {/*
+                    Not gated on `showTimeInput`: a per-occasion note has
+                    nothing to do with whether the time picker is shown.
+                  */}
+                  <div className="space-y-1">
+                    <Label htmlFor="entryNotes">Not (isteğe bağlı)</Label>
+                    <Textarea
+                      id="entryNotes"
+                      value={entryNotes}
+                      onChange={(e) => setEntryNotes(e.target.value)}
+                      rows={2}
+                      placeholder="Örn. yarım porsiyon, az yağlı"
+                    />
+                  </div>
+
+                  {food?.notes ? (
+                    <div className="space-y-1">
+                      <Label>Bu yiyecek hakkında</Label>
+                      <div className="max-h-48 overflow-y-auto rounded-md border bg-muted/40 px-3 py-2 text-sm">
+                        <MarkdownView images={foodImagePaths}>
+                          {food.notes}
+                        </MarkdownView>
+                      </div>
+                    </div>
+                  ) : null}
+                </CollapsibleContent>
+              </Collapsible>
             </div>
+
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+              >
+                {t('common.cancel', 'Cancel')}
+              </Button>
+              <Button
+                type="submit"
+                disabled={
+                  createFoodVariantMutation.isPending ||
+                  (!isConverting && !selectedVariant) ||
+                  (isConverting &&
+                    (!pendingUnit.trim() ||
+                      (autoConversionFactor === null &&
+                        (!conversionFactor || conversionFactor <= 0))))
+                }
+              >
+                {createFoodVariantMutation.isPending
+                  ? t('common.saving', 'Saving...')
+                  : initialQuantity
+                    ? 'Kaydet'
+                    : 'Ekle'}
+              </Button>
+            </DialogFooter>
           </form>
         )}
       </DialogContent>

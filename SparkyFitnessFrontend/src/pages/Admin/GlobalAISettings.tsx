@@ -15,7 +15,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Plus, Globe } from 'lucide-react';
+import { Plus, Sparkles } from 'lucide-react';
+import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible';
+import {
+  SETTINGS_CARD,
+  SettingsGroupToggle,
+} from '@/pages/Settings/SettingsGroupToggle';
+import { PtAiKeySetup, claudeModelLabel } from './PtAiKeySetup';
+import { PT_AI_DEFAULT_MODEL, findPtAiService } from '@/hooks/AI/usePtAiSetup';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -86,7 +93,7 @@ const GlobalAISettings = () => {
       api_key: '',
       custom_url: '',
       system_prompt: '',
-      is_active: false,
+      is_active: true,
       model_name: '',
       showCustomModelInput: false,
       custom_model_name: '',
@@ -196,7 +203,7 @@ const GlobalAISettings = () => {
         api_key: '',
         custom_url: '',
         system_prompt: '',
-        is_active: false,
+        is_active: true,
         model_name: '',
         showCustomModelInput: false,
         custom_model_name: '',
@@ -295,199 +302,212 @@ const GlobalAISettings = () => {
     setDeleteDialogOpen(true);
   };
 
+  // PT AI uses the shared key only: once the admin saves it through the simple
+  // form, per-user AI services are switched off (safe default; can be turned
+  // back on under "Gelişmiş").
+  const handlePtAiSaved = () => {
+    if (globalSettings && globalSettings.allow_user_ai_config !== false) {
+      updateSettings(
+        { ...globalSettings, allow_user_ai_config: false },
+        { onSuccess: () => invalidateAiConfig() }
+      );
+    }
+  };
+
+  const ptService = findPtAiService(services);
+  const anyActive = services.find((s) => s.is_active);
+  const statusLine = ptService?.is_active
+    ? `Açık · ${claudeModelLabel(ptService.model_name ?? PT_AI_DEFAULT_MODEL)}`
+    : anyActive
+      ? `Açık · ${anyActive.service_name}`
+      : 'Kapalı · Claude API anahtarını gir';
+
   return (
     <Accordion type="multiple" className="w-full">
-      <AccordionItem
-        value="global-ai-settings"
-        className="mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
-      >
+      <AccordionItem value="global-ai-settings" className={SETTINGS_CARD}>
         <AccordionTrigger
           className="flex items-center gap-2 p-4 hover:no-underline"
-          description={t('settings.aiService.globalSettings.description')}
+          description={statusLine}
         >
-          <Globe className="h-5 w-5" />
-          {t('settings.aiService.globalSettings.title')}
+          <Sparkles className="h-5 w-5" />
+          PT AI (Claude)
         </AccordionTrigger>
-        <AccordionContent className="p-4 pt-0 space-y-4">
-          {/* User AI Config Toggle */}
-          {globalSettings && (
-            <div className="flex items-center justify-between p-4 border rounded-md mb-4">
-              <div className="flex-1">
-                <Label htmlFor="allow_user_ai_config" className="font-medium">
-                  {t('settings.aiService.globalSettings.allowUserConfig')}
-                </Label>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {t(
-                    'settings.aiService.globalSettings.allowUserConfigDescription'
-                  )}
-                </p>
-              </div>
-              <Switch
-                id="allow_user_ai_config"
-                checked={globalSettings.allow_user_ai_config !== false}
-                onCheckedChange={handleAllowUserConfigChange}
-                disabled={settingsLoading}
-              />
-            </div>
-          )}
+        <AccordionContent className="min-w-0 space-y-4 p-4 pt-0">
+          <PtAiKeySetup services={services} onSaved={handlePtAiSaved} />
 
-          {/* Allow Non-Admin Private Network AI Toggle */}
-          {globalSettings && (
-            <div className="flex items-center justify-between p-4 border rounded-md mb-4">
-              <div className="flex-1">
-                <Label
-                  htmlFor="allow_private_network_ai"
-                  className="font-medium"
-                >
-                  {t(
-                    'settings.aiService.globalSettings.allowPrivateNetworkAi',
-                    'Allow Private / LAN AI Endpoints'
-                  )}
-                </Label>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {t(
-                    'settings.aiService.globalSettings.allowPrivateNetworkAiDescription',
-                    'Allow non-admin users to connect custom AI services (e.g. Ollama) to private LAN IP addresses.'
-                  )}
-                </p>
-              </div>
-              <Switch
-                id="allow_private_network_ai"
-                checked={globalSettings.allow_private_network_ai === true}
-                onCheckedChange={(checked) => {
-                  updateSettings({
-                    ...globalSettings,
-                    allow_private_network_ai: checked,
-                  });
-                }}
-                disabled={settingsLoading}
-              />
-            </div>
-          )}
-
-          {/* Global vision default: writes default_vision_ai_service_id, the
-              service the server routes vision tasks to for users who are on the
-              global default (no personal service configured). "None" clears it
-              so those users fall back to the global text default. */}
-          {globalSettings && activeGlobalServices.length > 0 && (
-            <div className="space-y-2 mb-4">
-              <Label htmlFor="global-vision-ai-service-select">
-                {t(
-                  'settings.aiService.globalSettings.visionService',
-                  'Global vision AI service'
-                )}
-              </Label>
-              <Select
-                value={visionDefaultId ?? GLOBAL_VISION_NONE}
-                onValueChange={handleVisionDefaultChange}
-              >
-                <SelectTrigger
-                  id="global-vision-ai-service-select"
-                  className="max-w-sm"
-                >
-                  <SelectValue
-                    placeholder={t(
-                      'settings.aiService.globalSettings.visionService',
-                      'Global vision AI service'
-                    )}
+          <Collapsible>
+            <SettingsGroupToggle
+              label="Gelişmiş"
+              hint="Diğer AI hizmetleri ve kullanıcı izinleri"
+              className="mb-0 border bg-transparent shadow-none dark:shadow-none"
+            />
+            <CollapsibleContent className="space-y-4 pt-4">
+              {/* User AI Config Toggle */}
+              {globalSettings && (
+                <div className="flex items-center justify-between gap-3 rounded-xl border p-4">
+                  <div className="min-w-0 flex-1">
+                    <Label
+                      htmlFor="allow_user_ai_config"
+                      className="font-medium"
+                    >
+                      Arkadaşlar kendi AI anahtarını ekleyebilsin
+                    </Label>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Kapalıyken (önerilen) herkes yukarıdaki ortak anahtarı
+                      kullanır.
+                    </p>
+                  </div>
+                  <Switch
+                    id="allow_user_ai_config"
+                    checked={globalSettings.allow_user_ai_config !== false}
+                    onCheckedChange={handleAllowUserConfigChange}
+                    disabled={settingsLoading}
                   />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={GLOBAL_VISION_NONE}>
-                    {t('settings.aiService.globalSettings.visionNone', 'None')}
-                  </SelectItem>
-                  {activeGlobalServices.map((service) => (
-                    <SelectItem key={service.id} value={service.id}>
-                      {service.service_name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
+                </div>
+              )}
 
-          {!showAddForm && (
-            <Button
-              onClick={() => {
-                resetTestStatus();
-                setShowAddForm(true);
-              }}
-              variant="outline"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              {t('settings.aiService.globalSettings.addNewService')}
-            </Button>
-          )}
+              {/* Allow Non-Admin Private Network AI Toggle */}
+              {globalSettings && (
+                <div className="flex items-center justify-between gap-3 rounded-xl border p-4">
+                  <div className="min-w-0 flex-1">
+                    <Label
+                      htmlFor="allow_private_network_ai"
+                      className="font-medium"
+                    >
+                      Yerel ağdaki AI sunucularına izin ver
+                    </Label>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Yalnızca evde kendi AI sunucunu (ör. Ollama)
+                      çalıştırıyorsan aç. Kapalı kalması önerilir.
+                    </p>
+                  </div>
+                  <Switch
+                    id="allow_private_network_ai"
+                    checked={globalSettings.allow_private_network_ai === true}
+                    onCheckedChange={(checked) => {
+                      updateSettings({
+                        ...globalSettings,
+                        allow_private_network_ai: checked,
+                      });
+                    }}
+                    disabled={settingsLoading}
+                  />
+                </div>
+              )}
 
-          {showAddForm && (
-            <div className="border rounded-lg p-4">
-              <h3 className="text-lg font-medium mb-4">
-                {t('settings.aiService.globalSettings.addNewService')}
-              </h3>
-              <ServiceForm
-                formData={newService}
-                onFormDataChange={(data) =>
-                  setNewService((prev) => ({ ...prev, ...data }))
+              {/* Global vision default: writes default_vision_ai_service_id, the
+                  service the server routes vision tasks to for users who are on
+                  the global default (no personal service configured). "None"
+                  clears it so those users fall back to the global text default. */}
+              {globalSettings && activeGlobalServices.length > 0 && (
+                <div className="space-y-2">
+                  <Label htmlFor="global-vision-ai-service-select">
+                    Fotoğraflar için hizmet
+                  </Label>
+                  <Select
+                    value={visionDefaultId ?? GLOBAL_VISION_NONE}
+                    onValueChange={handleVisionDefaultChange}
+                  >
+                    <SelectTrigger
+                      id="global-vision-ai-service-select"
+                      className="h-11 w-full"
+                    >
+                      <SelectValue
+                        placeholder={t(
+                          'settings.aiService.globalSettings.visionService',
+                          'Global vision AI service'
+                        )}
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={GLOBAL_VISION_NONE}>
+                        Sohbetle aynı hizmet
+                      </SelectItem>
+                      {activeGlobalServices.map((service) => (
+                        <SelectItem key={service.id} value={service.id}>
+                          {service.service_name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              {!showAddForm && (
+                <Button
+                  onClick={() => {
+                    resetTestStatus();
+                    setShowAddForm(true);
+                  }}
+                  variant="outline"
+                  className="h-auto min-h-11 w-full whitespace-normal"
+                >
+                  <Plus className="mr-2 h-4 w-4 shrink-0" />
+                  Başka bir AI hizmeti ekle
+                </Button>
+              )}
+
+              {showAddForm && (
+                <div className="rounded-xl border p-3">
+                  <h3 className="mb-4 text-lg font-medium">
+                    Başka bir AI hizmeti ekle
+                  </h3>
+                  <ServiceForm
+                    formData={newService}
+                    onFormDataChange={(data) =>
+                      setNewService((prev) => ({ ...prev, ...data }))
+                    }
+                    onSubmit={handleAddService}
+                    onCancel={() => {
+                      resetTestStatus();
+                      setShowAddForm(false);
+                    }}
+                    loading={loading}
+                    translationPrefix="settings.aiService.globalSettings"
+                    onTestConnection={(model) =>
+                      testConnection({
+                        service_type: newService.service_type,
+                        api_key: newService.api_key,
+                        custom_url: newService.custom_url ?? undefined,
+                        model_name: model,
+                      })
+                    }
+                    testing={isTesting}
+                    testStatus={testStatus}
+                  />
+                </div>
+              )}
+
+              <ServiceList
+                services={services}
+                editingService={editingService}
+                editData={editData}
+                onEditDataChange={(data) =>
+                  setEditData((prev) => ({ ...prev, ...data }))
                 }
-                onSubmit={handleAddService}
-                onCancel={() => {
-                  resetTestStatus();
-                  setShowAddForm(false);
-                }}
+                onStartEdit={startEditing}
+                onCancelEdit={cancelEditing}
+                onUpdate={handleUpdateService}
+                onDelete={openDeleteDialog}
                 loading={loading}
                 translationPrefix="settings.aiService.globalSettings"
-                onTestConnection={(model) =>
+                showGlobalBadge={true}
+                onTestConnection={(serviceId, model) => {
+                  const original = services.find((s) => s.id === serviceId);
                   testConnection({
-                    service_type: newService.service_type,
-                    api_key: newService.api_key,
-                    custom_url: newService.custom_url ?? undefined,
+                    id: serviceId,
+                    service_type:
+                      editData.service_type || original?.service_type || '',
+                    api_key: editData.api_key,
+                    custom_url: editData.custom_url ?? undefined,
                     model_name: model,
-                  })
-                }
+                  });
+                }}
                 testing={isTesting}
                 testStatus={testStatus}
               />
-            </div>
-          )}
-
-          <ServiceList
-            services={services}
-            editingService={editingService}
-            editData={editData}
-            onEditDataChange={(data) =>
-              setEditData((prev) => ({ ...prev, ...data }))
-            }
-            onStartEdit={startEditing}
-            onCancelEdit={cancelEditing}
-            onUpdate={handleUpdateService}
-            onDelete={openDeleteDialog}
-            loading={loading}
-            translationPrefix="settings.aiService.globalSettings"
-            showGlobalBadge={true}
-            onTestConnection={(serviceId, model) => {
-              const original = services.find((s) => s.id === serviceId);
-              testConnection({
-                id: serviceId,
-                service_type:
-                  editData.service_type || original?.service_type || '',
-                api_key: editData.api_key,
-                custom_url: editData.custom_url ?? undefined,
-                model_name: model,
-              });
-            }}
-            testing={isTesting}
-            testStatus={testStatus}
-          />
-
-          {services.length === 0 && !showAddForm && (
-            <div className="text-center py-8 text-muted-foreground">
-              <Globe className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>{t('settings.aiService.globalSettings.noServices')}</p>
-              <p className="text-sm">
-                {t('settings.aiService.globalSettings.noServicesDescription')}
-              </p>
-            </div>
-          )}
+            </CollapsibleContent>
+          </Collapsible>
 
           <AlertDialog
             open={deleteDialogOpen}

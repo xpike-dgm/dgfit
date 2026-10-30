@@ -43,6 +43,8 @@ import { ActivityDetailKeyValuePair } from '@/types/exercises';
 import { SortableSetItem } from '../Exercises/SortableWorkoutSet';
 import { SetColumnHeaders } from '../Exercises/SetHeader';
 import { cn } from '@/lib/utils';
+import { formatDayTr } from '@/utils/formatDay';
+import PhotoPickerButton from '@/components/Exercises/PhotoPickerButton';
 import { CardioLog } from '../Exercises/CardioLog';
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -326,7 +328,7 @@ const LogExerciseEntryDialog: React.FC<LogExerciseEntryDialogProps> = ({
             {t(
               'exercise.logExerciseEntryDialog.enterDetails',
               'Enter details for your exercise session on {{selectedDate}}.',
-              { selectedDate }
+              { selectedDate: formatDayTr(selectedDate) }
             )}
           </DialogDescription>
         </DialogHeader>
@@ -393,84 +395,14 @@ const LogExerciseEntryDialog: React.FC<LogExerciseEntryDialogProps> = ({
               <Button
                 type="button"
                 variant="outline"
-                size="sm"
                 onClick={handleAddSet}
-                className="mt-1"
+                className="mt-2 h-11 w-full gap-1.5"
               >
-                <Plus className="h-3.5 w-3.5 mr-1.5" />
+                <Plus className="h-4 w-4" />
                 {t('exercise.logExerciseEntryDialog.addSet', 'Add Set')}
               </Button>
             </div>
           )}
-
-          {/* Start Time (optional) */}
-          <div className="space-y-1.5 max-w-[280px]">
-            <div className="flex items-center justify-between">
-              <Label id="entryTime-label" className="text-sm">
-                {t(
-                  'diary.logExerciseEntryDialog.startTimeOptional',
-                  'Start Time (optional)'
-                )}
-              </Label>
-              <div className="flex items-center gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => setEntryTime('')}
-                  disabled={!entryTime}
-                  className="inline-flex items-center gap-1 rounded-md border border-input bg-background px-3 py-1 text-sm font-medium text-muted-foreground shadow-sm hover:bg-destructive/10 hover:text-destructive transition-colors disabled:opacity-40 disabled:pointer-events-none"
-                  title={t(
-                    'diary.logExerciseEntryDialog.clearTime',
-                    'Clear time'
-                  )}
-                >
-                  <X className="h-4 w-4" />
-                  {t('diary.logExerciseEntryDialog.clear', 'Clear')}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const { hour, minute } = userHourMinute(timezone);
-                    setEntryTime(
-                      `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
-                    );
-                  }}
-                  className="inline-flex items-center gap-1 rounded-md border border-input bg-background px-3 py-1 text-sm font-medium text-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors"
-                  title={t(
-                    'diary.logExerciseEntryDialog.setToCurrentLocalTime',
-                    'Set to current local time'
-                  )}
-                >
-                  <Clock className="h-4 w-4" />
-                  {t('diary.logExerciseEntryDialog.now', 'Now')}
-                </button>
-              </div>
-            </div>
-            <TimeInput
-              id="entryTime"
-              aria-labelledby="entryTime-label"
-              value={entryTime}
-              onChange={setEntryTime}
-              className="text-sm h-9"
-            />
-          </div>
-
-          {/* ── Notes ── */}
-          <div className="space-y-1.5">
-            <Label htmlFor="notes" className="text-sm">
-              {t('exercise.logExerciseEntryDialog.sessionNotes', 'Notes')}
-            </Label>
-            <Textarea
-              id="notes"
-              value={notes}
-              rows={2}
-              className="resize-none text-sm"
-              placeholder={t(
-                'exercise.logExerciseEntryDialog.notesPlaceholder',
-                'Any notes about this session...'
-              )}
-              onChange={(e) => setNotes(e.target.value)}
-            />
-          </div>
 
           {/* ── Exercise history ── */}
           {exercise && <ExerciseHistoryDisplay exerciseId={exercise.id} />}
@@ -480,8 +412,7 @@ const LogExerciseEntryDialog: React.FC<LogExerciseEntryDialogProps> = ({
             <CollapsibleTrigger asChild>
               <Button
                 variant="ghost"
-                size="sm"
-                className="w-full justify-start text-muted-foreground hover:text-foreground px-2"
+                className="h-11 w-full justify-start gap-2 px-2 text-muted-foreground hover:text-foreground"
               >
                 <ChevronDown
                   className={cn(
@@ -489,13 +420,82 @@ const LogExerciseEntryDialog: React.FC<LogExerciseEntryDialogProps> = ({
                     advancedOpen && 'rotate-180'
                   )}
                 />
-                <span className="text-xs font-medium uppercase tracking-wide">
-                  {t('common.advanced', 'Advanced')}
+                <span className="text-sm font-medium">
+                  Daha fazla (saat, not, kalori, fotoğraf)
                 </span>
               </Button>
             </CollapsibleTrigger>
 
             <CollapsibleContent className="space-y-3 pt-2">
+              {/* Start Time (optional) */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <Label id="entryTime-label" className="text-sm">
+                    {t(
+                      'diary.logExerciseEntryDialog.startTimeOptional',
+                      'Start Time (optional)'
+                    )}
+                  </Label>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setEntryTime('')}
+                      disabled={!entryTime}
+                      className="inline-flex h-9 items-center gap-1 rounded-lg border border-input bg-background px-3 text-sm font-medium text-muted-foreground shadow-sm hover:bg-destructive/10 hover:text-destructive transition-colors disabled:opacity-40 disabled:pointer-events-none"
+                      title={t(
+                        'diary.logExerciseEntryDialog.clearTime',
+                        'Clear time'
+                      )}
+                    >
+                      <X className="h-4 w-4" />
+                      {t('diary.logExerciseEntryDialog.clear', 'Clear')}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const { hour, minute } = userHourMinute(timezone);
+                        setEntryTime(
+                          `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
+                        );
+                      }}
+                      className="inline-flex h-9 items-center gap-1 rounded-lg border border-input bg-background px-3 text-sm font-medium text-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors"
+                      title={t(
+                        'diary.logExerciseEntryDialog.setToCurrentLocalTime',
+                        'Set to current local time'
+                      )}
+                    >
+                      <Clock className="h-4 w-4" />
+                      {t('diary.logExerciseEntryDialog.now', 'Now')}
+                    </button>
+                  </div>
+                </div>
+                <TimeInput
+                  id="entryTime"
+                  aria-labelledby="entryTime-label"
+                  value={entryTime}
+                  onChange={setEntryTime}
+                  className="text-sm h-11"
+                />
+              </div>
+
+              {/* ── Notes ── */}
+              <div className="space-y-1.5">
+                <Label htmlFor="notes" className="text-sm">
+                  {t('exercise.logExerciseEntryDialog.sessionNotes', 'Notes')}
+                </Label>
+                <Textarea
+                  id="notes"
+                  value={notes}
+                  rows={2}
+                  className="resize-none text-sm"
+                  placeholder={t(
+                    'exercise.logExerciseEntryDialog.notesPlaceholder',
+                    'Any notes about this session...'
+                  )}
+                  onChange={(e) => setNotes(e.target.value)}
+                />
+              </div>
+
               {/* Calories — only for strength (cardio shows it in CardioLog) */}
               {!cardioForm && (
                 <div className="space-y-1.5">
@@ -582,11 +582,10 @@ const LogExerciseEntryDialog: React.FC<LogExerciseEntryDialogProps> = ({
                 <Label htmlFor="image" className="text-sm">
                   {t('exercise.logExerciseEntryDialog.uploadImage', 'Photo')}
                 </Label>
-                <Input
+                <PhotoPickerButton
                   id="image"
-                  type="file"
-                  accept="image/*"
                   onChange={handleImageUpload}
+                  selectedLabel={imageFile?.name ?? null}
                 />
                 {previewUrl && (
                   <div className="relative w-24 h-24 mt-1">
@@ -602,7 +601,8 @@ const LogExerciseEntryDialog: React.FC<LogExerciseEntryDialogProps> = ({
                       variant="destructive"
                       size="icon"
                       onClick={handleClearImage}
-                      className="absolute -top-2 -right-2 h-6 w-6 rounded-full"
+                      className="absolute -top-3 -right-3 h-8 w-8 rounded-full"
+                      aria-label="Fotoğrafı kaldır"
                     >
                       <XCircle className="h-4 w-4" />
                     </Button>

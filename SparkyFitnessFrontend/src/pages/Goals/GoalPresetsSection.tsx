@@ -4,6 +4,7 @@ import { PlusCircle, Edit, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { usePreferences } from '@/contexts/PreferencesContext';
 import { GoalPreset } from '@/types/goals';
+import { fmtTr } from '@/utils/numberFormatting';
 
 interface GoalPresetsSectionProps {
   handleCreatePresetClick: () => void;
@@ -27,14 +28,14 @@ export const GoalPresetsSection = ({
         <CardTitle>
           {t('goals.goalsSettings.goalPresets', 'Goal Presets')}
         </CardTitle>
-        <Button size="sm" onClick={handleCreatePresetClick}>
+        <Button className="h-11" onClick={handleCreatePresetClick}>
           <PlusCircle className="w-4 h-4 mr-2" />{' '}
           {t('goals.goalsSettings.createNewPreset', 'Create New Preset')}
         </Button>
       </CardHeader>
       <CardContent>
         {goalPresets.length === 0 ? (
-          <p className="text-gray-500">
+          <p className="text-sm text-muted-foreground">
             {t(
               'goals.goalsSettings.noGoalPresets',
               'No goal presets defined yet. Create one to get started!'
@@ -45,40 +46,43 @@ export const GoalPresetsSection = ({
             {goalPresets.map((preset) => (
               <div
                 key={preset.id}
-                className="flex items-center justify-between p-3 border rounded-md"
+                className="flex items-center justify-between gap-2 rounded-xl border py-2 pl-3 pr-1"
               >
-                <div>
+                <div className="min-w-0">
                   <h4 className="font-semibold">{preset.preset_name}</h4>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-muted-foreground">
                     {t('goals.goalsSettings.presetKcalMacros', {
-                      calories: Math.round(
-                        convertEnergy(preset.calories, 'kcal', energyUnit)
+                      calories: fmtTr(
+                        convertEnergy(preset.calories, 'kcal', energyUnit),
+                        0
                       ),
-                      protein: Math.round(preset.protein || 0),
-                      carbs: Math.round(preset.carbs || 0),
-                      fat: Math.round(preset.fat || 0),
+                      protein: fmtTr(preset.protein || 0, 0),
+                      carbs: fmtTr(preset.carbs || 0, 0),
+                      fat: fmtTr(preset.fat || 0, 0),
                       energyUnit: getEnergyUnitString(energyUnit),
                       defaultValue:
                         '{{calories}} {{energyUnit}}, {{protein}}g P, {{carbs}}g C, {{fat}}g F',
                     })}
                   </p>
                 </div>
-                <div className="flex space-x-2">
+                <div className="flex shrink-0">
                   <Button
-                    variant="outline"
-                    size="sm"
+                    variant="ghost"
+                    size="icon"
+                    className="h-11 w-11"
+                    aria-label={t('goals.goalsSettings.edit', 'Edit')}
                     onClick={() => handleEditPresetClick(preset)}
                   >
-                    <Edit className="w-4 h-4" />{' '}
-                    {t('goals.goalsSettings.edit', 'Edit')}
+                    <Edit className="w-4 h-4" />
                   </Button>
                   <Button
-                    variant="destructive"
-                    size="sm"
+                    variant="ghost"
+                    size="icon"
+                    className="h-11 w-11 text-destructive hover:text-destructive"
+                    aria-label={t('goals.goalsSettings.delete', 'Delete')}
                     onClick={() => preset.id && handleDeletePreset(preset.id)}
                   >
-                    <Trash2 className="w-4 h-4" />{' '}
-                    {t('goals.goalsSettings.delete', 'Delete')}
+                    <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>
               </div>

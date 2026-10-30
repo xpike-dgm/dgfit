@@ -35,19 +35,19 @@ const ForgotPassword = () => {
     try {
       await requestPasswordReset(email);
       setMessage(
-        'If an account with that email exists, a password reset link has been sent.'
+        'Bu e-postayla bir hesap varsa sıfırlama bağlantısını gönderdik. E-posta birkaç dakikada gelmezse seni davet eden arkadaşına ya da yöneticiye yaz.'
       );
     } catch (err: unknown) {
       const message = getErrorMessage(err);
-      setMessage(message || 'An unexpected error occurred.');
+      setMessage(message || 'Bir şeyler ters gitti. Tekrar dene.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-      <Card className="w-full max-w-md dark:bg-gray-">
+    <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
+      <Card className="w-full max-w-md rounded-2xl border-border bg-card">
         <CardHeader className="text-center">
           <div className="flex items-center justify-center mb-4">
             <BrandMark />
@@ -76,20 +76,31 @@ const ForgotPassword = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 autoComplete="email"
+                className="h-11 text-base"
               />
             </div>
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button
+              type="submit"
+              className="h-12 w-full text-base"
+              disabled={loading}
+            >
               {loading
                 ? t('auth.forgotPasswordPage.sending', 'Sending...')
                 : t('auth.forgotPasswordPage.sendResetLink', 'Send Reset Link')}
             </Button>
             {message && (
-              <p className="text-center text-sm text-muted-foreground">
+              <p
+                className="text-center text-sm text-muted-foreground"
+                role="status"
+              >
                 {message}
               </p>
             )}
             <div className="text-center text-sm">
-              <a href="/" className="font-medium text-primary hover:underline">
+              <a
+                href="/login"
+                className="inline-flex min-h-11 items-center font-medium text-primary hover:underline"
+              >
                 {t('auth.forgotPasswordPage.backToSignIn', 'Back to Sign In')}
               </a>
             </div>

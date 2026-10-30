@@ -358,12 +358,16 @@ export const DROPDOWN_GUIDES = [
  */
 export type SetTableModality = Exclude<ExerciseModality, 'duration_distance'>;
 
+export type SetMainField = 'reps' | 'weight' | 'distance' | 'duration';
+
 export const SET_TABLE_LAYOUT: Record<
   SetTableModality,
   {
-    gridClass: string;
-    /** Same grid with one extra column for RIR (diary entries only). */
-    gridClassWithRir: string;
+    /**
+     * The one or two big fields a set row shows on a phone; everything else
+     * (type, RPE, RIR, rest, ...) opens under the row's ⋯ button.
+     */
+    main: readonly SetMainField[];
     showReps: boolean;
     showWeight: boolean;
     /** Carries record a distance (metres/yards) in place of reps. */
@@ -376,38 +380,28 @@ export const SET_TABLE_LAYOUT: Record<
   }
 > = {
   weight_reps: {
-    gridClass:
-      'grid grid-cols-[20px_140px_1fr_1fr_1fr_1fr_1fr_72px] gap-1.5 grow',
-    gridClassWithRir:
-      'grid grid-cols-[20px_140px_1fr_1fr_1fr_1fr_1fr_1fr_72px] gap-1.5 grow',
+    main: ['reps', 'weight'],
     showReps: true,
     showWeight: true,
     showDistance: false,
     signedWeight: false,
   },
   bodyweight_reps: {
-    gridClass:
-      'grid grid-cols-[20px_140px_1fr_1fr_1fr_1fr_1fr_72px] gap-1.5 grow',
-    gridClassWithRir:
-      'grid grid-cols-[20px_140px_1fr_1fr_1fr_1fr_1fr_1fr_72px] gap-1.5 grow',
+    main: ['reps', 'weight'],
     showReps: true,
     showWeight: true,
     showDistance: false,
     signedWeight: true,
   },
   reps_only: {
-    gridClass: 'grid grid-cols-[20px_140px_1fr_1fr_1fr_1fr_72px] gap-1.5 grow',
-    gridClassWithRir:
-      'grid grid-cols-[20px_140px_1fr_1fr_1fr_1fr_1fr_72px] gap-1.5 grow',
+    main: ['reps'],
     showReps: true,
     showWeight: false,
     showDistance: false,
     signedWeight: false,
   },
   duration: {
-    gridClass: 'grid grid-cols-[20px_140px_1fr_1fr_1fr_72px] gap-1.5 grow',
-    gridClassWithRir:
-      'grid grid-cols-[20px_140px_1fr_1fr_1fr_1fr_72px] gap-1.5 grow',
+    main: ['duration'],
     showReps: false,
     showWeight: false,
     showDistance: false,
@@ -415,9 +409,7 @@ export const SET_TABLE_LAYOUT: Record<
   },
   // Loaded holds: weight plus the always-present duration column.
   weight_duration: {
-    gridClass: 'grid grid-cols-[20px_140px_1fr_1fr_1fr_1fr_72px] gap-1.5 grow',
-    gridClassWithRir:
-      'grid grid-cols-[20px_140px_1fr_1fr_1fr_1fr_1fr_72px] gap-1.5 grow',
+    main: ['weight', 'duration'],
     showReps: false,
     showWeight: true,
     showDistance: false,
@@ -425,16 +417,19 @@ export const SET_TABLE_LAYOUT: Record<
   },
   // Carries: weight and distance (in the reps slot) plus optional duration.
   weight_distance: {
-    gridClass:
-      'grid grid-cols-[20px_140px_1fr_1fr_1fr_1fr_1fr_72px] gap-1.5 grow',
-    gridClassWithRir:
-      'grid grid-cols-[20px_140px_1fr_1fr_1fr_1fr_1fr_1fr_72px] gap-1.5 grow',
+    main: ['distance', 'weight'],
     showReps: false,
     showWeight: true,
     showDistance: true,
     signedWeight: false,
   },
 };
+
+/** Set number | main field(s) | ⋯ — fits a 360 px phone without scrolling. */
+export const setRowGridClass = (mainCount: number): string =>
+  mainCount >= 2
+    ? 'grid grid-cols-[2.25rem_minmax(0,1fr)_minmax(0,1fr)_2.75rem] items-center gap-1.5'
+    : 'grid grid-cols-[2.25rem_minmax(0,1fr)_2.75rem] items-center gap-1.5';
 
 export const toSetTableModality = (
   modality: ExerciseModality
@@ -457,3 +452,77 @@ export const SET_TYPE_STYLES: Record<string, string> = {
   Isometric:
     'bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300',
 };
+
+/**
+ * DG FIT: set types as the gym says them. Stored values stay the English
+ * ones the server and the mobile app use; only the labels are Turkish.
+ * "Working Set" and "Normal" mean the same thing, so both read "Normal" and
+ * only "Normal" is offered.
+ */
+export const SET_TYPE_LABELS_TR: Record<string, string> = {
+  Normal: 'Normal',
+  'Working Set': 'Normal',
+  'Warm-up': 'Isınma',
+  'Drop Set': 'Azaltmalı set',
+  Failure: 'Tükeniş',
+  AMRAP: 'Maksimum tekrar (AMRAP)',
+  'Back-off': 'Hafifletme seti',
+  'Rest-Pause': 'Dinlen-devam',
+  Cluster: 'Küme seti',
+  Technique: 'Teknik seti',
+  Isometric: 'İzometrik',
+};
+
+/** Short tag for a set's type, e.g. "I" for a warm-up; empty for normal. */
+export const SET_TYPE_SHORT_TR: Record<string, string> = {
+  'Warm-up': 'I',
+  'Drop Set': 'A',
+  Failure: 'T',
+  AMRAP: 'M',
+  'Back-off': 'H',
+  'Rest-Pause': 'D',
+  Cluster: 'K',
+  Technique: 'Te',
+  Isometric: 'İz',
+};
+
+export const SET_TYPE_MAIN_CHOICES = [
+  'Normal',
+  'Warm-up',
+  'Drop Set',
+  'Failure',
+] as const;
+
+export const SET_TYPE_OTHER_CHOICES = [
+  'AMRAP',
+  'Back-off',
+  'Rest-Pause',
+  'Cluster',
+  'Technique',
+] as const;
+
+/** The choice a stored set type shows as ("Working Set" and blank are Normal). */
+export const setTypeChoice = (setType: string | null | undefined): string => {
+  if (!setType || setType.toLowerCase() === 'working set') return 'Normal';
+  const known = Object.keys(SET_TYPE_LABELS_TR).find(
+    (type) => type.toLowerCase() === setType.toLowerCase()
+  );
+  return known ?? setType;
+};
+
+export const setTypeLabelTr = (setType: string | null | undefined): string =>
+  SET_TYPE_LABELS_TR[setTypeChoice(setType)] ?? setType ?? 'Normal';
+
+export const isNormalSetType = (setType: string | null | undefined): boolean =>
+  setTypeChoice(setType) === 'Normal';
+
+/** Monday-first week in Turkish; `id` is the JS getDay() number plans store. */
+export const DAYS_OF_WEEK_TR = [
+  { id: 1, name: 'Pazartesi', short: 'Pzt' },
+  { id: 2, name: 'Salı', short: 'Sal' },
+  { id: 3, name: 'Çarşamba', short: 'Çar' },
+  { id: 4, name: 'Perşembe', short: 'Per' },
+  { id: 5, name: 'Cuma', short: 'Cum' },
+  { id: 6, name: 'Cumartesi', short: 'Cmt' },
+  { id: 0, name: 'Pazar', short: 'Paz' },
+];

@@ -1,5 +1,4 @@
 import { useState, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 import { usePreferences } from '@/contexts/PreferencesContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -18,6 +17,13 @@ import { ResetOnboarding } from './ResetOnboarding';
 import { GoalPresetDialog } from './GoalPresetDialog';
 import { useCustomNutrients } from '@/hooks/Foods/useCustomNutrients';
 import { DEFAULT_GOALS } from '@/constants/goals';
+import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
+import { ChevronDown } from 'lucide-react';
 
 export const GoalsContent = ({
   today,
@@ -26,7 +32,6 @@ export const GoalsContent = ({
   initialData: ExpandedGoals;
   today: string;
 }) => {
-  const { t } = useTranslation();
   const { formatDateInUserTimezone, nutrientDisplayPreferences } =
     usePreferences();
 
@@ -59,17 +64,21 @@ export const GoalsContent = ({
     setIsPresetDialogOpen(true);
   };
 
-  const handleDeletePreset = async (presetId: string) => {
-    if (
-      !confirm(
-        t(
-          'goals.goalsSettings.deletePresetConfirm',
-          'Are you sure you want to delete this preset?'
-        )
-      )
-    )
-      return;
-    await deleteGoalPreset(presetId);
+  // Deletes wait for a confirmation sheet instead of the browser's confirm().
+  const [pendingDelete, setPendingDelete] = useState<{
+    kind: 'preset' | 'plan';
+    id: string;
+  } | null>(null);
+
+  const handleDeletePreset = (presetId: string) =>
+    setPendingDelete({ kind: 'preset', id: presetId });
+
+  const confirmDelete = async () => {
+    const target = pendingDelete;
+    setPendingDelete(null);
+    if (!target) return;
+    if (target.kind === 'preset') await deleteGoalPreset(target.id);
+    else await deleteWeeklyGoalPlan(target.id);
   };
 
   // Weekly Plan Functions
@@ -96,18 +105,8 @@ export const GoalsContent = ({
     setIsWeeklyPlanDialogOpen(true);
   };
 
-  const handleDeleteWeeklyPlan = async (planId: string) => {
-    if (
-      !confirm(
-        t(
-          'goals.goalsSettings.deleteWeeklyPlanConfirm',
-          'Are you sure you want to delete this weekly plan?'
-        )
-      )
-    )
-      return;
-    await deleteWeeklyGoalPlan(planId);
-  };
+  const handleDeleteWeeklyPlan = (planId: string) =>
+    setPendingDelete({ kind: 'plan', id: planId });
 
   const isMobile = useIsMobile();
   const platform = isMobile ? 'mobile' : 'desktop';
@@ -144,10 +143,8 @@ export const GoalsContent = ({
         Hedefler
       </h1>
 
-      {/* Goal Weight */}
-      <GoalWeight />
-
-      {/* Daily Goals */}
+      {/* Daily goals first: calories, macros and water are what people
+          come here to change. */}
       <DailyGoals
         today={today}
         goals={goals}
@@ -155,15 +152,39 @@ export const GoalsContent = ({
         visibleNutrients={visibleNutrients}
       />
 
-      {/* Goal Presets Section */}
-      <GoalPresetsSection
-        goalPresets={goalPresets}
-        handleCreatePresetClick={handleCreatePresetClick}
-        handleDeletePreset={handleDeletePreset}
-        handleEditPresetClick={handleEditPresetClick}
-      />
+      <GoalWeight />
 
-      {/* Goal Preset Dialog */}
+      {/* Rarely used: ready-made goals, weekly plans and the onboarding reset. */}
+      <Collapsible className="rounded-2xl border bg-card">
+        <CollapsibleTrigger className="group flex min-h-14 w-full items-center justify-between gap-3 px-4 py-3 text-left">
+          <span>
+            <span className="block text-base font-semibold text-foreground">
+              Gelişmiş
+            </span>
+            <span className="block text-sm text-muted-foreground">
+              Hazır hedefler, haftalık plan, başlangıç anketi
+            </span>
+          </span>
+          <ChevronDown className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+        </CollapsibleTrigger>
+        <CollapsibleContent className="space-y-4 px-2 pb-2 sm:px-4 sm:pb-4">
+          <GoalPresetsSection
+            goalPresets={goalPresets}
+            handleCreatePresetClick={handleCreatePresetClick}
+            handleDeletePreset={handleDeletePreset}
+            handleEditPresetClick={handleEditPresetClick}
+          />
+          <WeeklyGoalPlansSection
+            hasPresets={goalPresets.length > 0}
+            handleCreatePresetClick={handleCreatePresetClick}
+            handleCreateWeeklyPlanClick={handleCreateWeeklyPlanClick}
+            handleDeleteWeeklyPlan={handleDeleteWeeklyPlan}
+            handleEditWeeklyPlanClick={handleEditWeeklyPlanClick}
+          />
+          <ResetOnboarding />
+        </CollapsibleContent>
+      </Collapsible>
+
       <GoalPresetDialog
         key={presetToEdit?.id || (isPresetDialogOpen ? 'new' : 'closed')}
         open={isPresetDialogOpen}
@@ -171,23 +192,25 @@ export const GoalsContent = ({
         preset={presetToEdit}
         visibleNutrients={visibleNutrients}
       />
-      {/* Weekly Goal Plans Section */}
-      <WeeklyGoalPlansSection
-        handleCreateWeeklyPlanClick={handleCreateWeeklyPlanClick}
-        handleDeleteWeeklyPlan={handleDeleteWeeklyPlan}
-        handleEditWeeklyPlanClick={handleEditWeeklyPlanClick}
-      />
-
-      {/* Weekly Goal Plan Dialog */}
       <WeeklyGoalPlanDialog
         open={isWeeklyPlanDialogOpen}
         onOpenChange={setIsWeeklyPlanDialogOpen}
         goalPresets={goalPresets}
         plan={currentWeeklyPlan}
       />
-
-      {/* Reset Onboarding: destructive, so it sits last. */}
-      <ResetOnboarding />
+      <ConfirmationDialog
+        open={pendingDelete !== null}
+        onOpenChange={(open) => !open && setPendingDelete(null)}
+        title={
+          pendingDelete?.kind === 'plan'
+            ? 'Haftalık plan silinsin mi?'
+            : 'Hazır hedef silinsin mi?'
+        }
+        description="Bu işlem geri alınamaz. Geçmiş günlerin hedefleri değişmez."
+        variant="destructive"
+        confirmLabel="Sil"
+        onConfirm={() => void confirmDelete()}
+      />
     </div>
   );
 };

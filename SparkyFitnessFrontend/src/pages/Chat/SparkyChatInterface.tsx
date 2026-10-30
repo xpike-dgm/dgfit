@@ -157,15 +157,16 @@ const SparkyChatInner = ({
       invalidateChat();
       void queryClient.invalidateQueries({ queryKey: ['foodAssistant'] });
     },
-    onError: (error) => {
+    onError: () => {
+      // The raw provider message ("An error occurred.") means nothing to a
+      // friend; the message itself shows a retry button (and the detail for
+      // admins), so the toast only says what to do.
       toast({
         title: t('chat.sparkyChatInterface.chatError', 'Chat Error'),
-        description:
-          error.message ||
-          t(
-            'chat.sparkyChatInterface.failedToProcessMessagePlease',
-            'Failed to process message. Please check your AI service settings.'
-          ),
+        description: t(
+          'chat.sparkyChatInterface.failedToProcessMessagePlease',
+          'Failed to process message. Please check your AI service settings.'
+        ),
         variant: 'destructive',
       });
     },

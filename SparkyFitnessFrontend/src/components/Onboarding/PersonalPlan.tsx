@@ -6,12 +6,6 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import type { ExpandedGoals } from '@/types/goals';
-import {
-  FatBreakdownAlgorithm,
-  MineralCalculationAlgorithm,
-  VitaminCalculationAlgorithm,
-  SugarCalculationAlgorithm,
-} from '@workspace/shared';
 import { ChevronDown } from 'lucide-react';
 import { useSaveGoalsMutation } from '@/hooks/Goals/useGoals';
 import { calculateBasePlan } from '@/utils/nutritionCalculations';
@@ -22,14 +16,12 @@ import { useSubmitOnboarding } from '@/hooks/Onboarding/useOnboarding';
 import { format } from 'date-fns';
 import { useSaveCheckInMeasurementsMutation } from '@/hooks/CheckIn/useCheckIn';
 import { DietApproach } from './DietApproach';
-import { CalculationSettings } from './CalculationSettings';
-import { NutrientGoals } from './NutrientGoals';
 import { PersonalPlanHeader } from './PersonalPlanHeader';
 import { createInitialPlan } from '@/utils/onboarding';
 import { useUpdateProfileMutation } from '@/hooks/Settings/useProfile';
 import { useAuth } from '@/hooks/useAuth';
 import { OnboardingData } from '@/types/onboarding';
-import { MealPercentages } from '@/types/meal';
+import { cn } from '@/lib/utils';
 
 interface PersonalPlanProps {
   formData: OnboardingData;
@@ -74,16 +66,17 @@ const PersonalPlan = ({
   } = usePreferences();
   const { t } = useTranslation();
   const { user } = useAuth();
-  const [showDietApproach, setShowDietApproach] = useState(false);
-  const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
-  const [localFatBreakdownAlgorithm, setLocalFatBreakdownAlgorithm] =
-    useState<FatBreakdownAlgorithm>(fatBreakdownAlgorithm);
-  const [localMineralAlgorithm, setLocalMineralAlgorithm] =
-    useState<MineralCalculationAlgorithm>(mineralCalculationAlgorithm);
-  const [localVitaminAlgorithm, setLocalVitaminAlgorithm] =
-    useState<VitaminCalculationAlgorithm>(vitaminCalculationAlgorithm);
-  const [localSugarAlgorithm, setLocalSugarAlgorithm] =
-    useState<SugarCalculationAlgorithm>(sugarCalculationAlgorithm);
+  // The plan screen only offers the diet approach and meals per day; the
+  // nutrient algorithms, micronutrients and meal split keep their defaults
+  // and are edited later in Menü → Hedefler.
+  const [showDietApproach, setShowDietApproach] = useState(true);
+  const [mealsPerDay, setMealsPerDay] = useState<number>(
+    formData.mealsPerDay || 3
+  );
+  const localFatBreakdownAlgorithm = fatBreakdownAlgorithm;
+  const localMineralAlgorithm = mineralCalculationAlgorithm;
+  const localVitaminAlgorithm = vitaminCalculationAlgorithm;
+  const localSugarAlgorithm = sugarCalculationAlgorithm;
   // DG FIT always uses kcal.
   const localEnergyUnit = 'kcal' as const;
   const [localSelectedDiet, setLocalSelectedDiet] =
@@ -99,9 +92,6 @@ const PersonalPlan = ({
     protein: false,
     fat: false,
   });
-  const [localWaterUnit, setLocalWaterUnit] = useState<'ml' | 'oz' | 'liter'>(
-    'ml'
-  );
   const [editedPlan, setEditedPlan] = useState<ExpandedGoals | null>(() => {
     return createInitialPlan(
       formData,
@@ -262,7 +252,7 @@ const PersonalPlan = ({
       currentWeight: metricWeight,
       height: metricHeight,
       targetWeight: metricTargetWeight,
-      mealsPerDay: !formData.mealsPerDay ? 3 : Number(formData.mealsPerDay),
+      mealsPerDay,
     };
 
     // Update user preferences with selected units and algorithms.
@@ -372,43 +362,22 @@ const PersonalPlan = ({
     }
   };
 
-  const memoizedInitialPercentages = useMemo(
-    () => ({
-      breakfast: editedPlan?.breakfast_percentage ?? 25,
-      lunch: editedPlan?.lunch_percentage ?? 25,
-      dinner: editedPlan?.dinner_percentage ?? 25,
-      snacks: editedPlan?.snacks_percentage ?? 25,
-    }),
-    [
-      editedPlan?.breakfast_percentage,
-      editedPlan?.lunch_percentage,
-      editedPlan?.dinner_percentage,
-      editedPlan?.snacks_percentage,
-    ]
-  );
-
-  const handlePercentagesChange = (newPercentages: MealPercentages) => {
-    setEditedPlan((prev) =>
-      prev
-        ? {
-            ...prev,
-            breakfast_percentage: newPercentages['breakfast'] ?? 0,
-            lunch_percentage: newPercentages['lunch'] ?? 0,
-            dinner_percentage: newPercentages['dinner'] ?? 0,
-            snacks_percentage: newPercentages['snacks'] ?? 0,
-          }
-        : null
-    );
-  };
-
   if (!plan) return null;
+
+  const startButton = (
+    <Button
+      onClick={handleSubmit}
+      disabled={isSubmitting}
+      className="h-14 w-full rounded-full text-lg font-bold disabled:opacity-70"
+    >
+      {isSubmitting ? t('common.saving', 'Saving...') : 'Planı başlat'}
+    </Button>
+  );
 
   return (
     <div className="animate-in fade-in duration-300 pb-8">
       <div className="text-center mb-6">
-        <h1 className="text-3xl font-bold text-foreground">
-          {t('onboarding.plan.title', 'Your Personal Plan')}
-        </h1>
+        <h1 className="text-3xl font-bold text-foreground">Kişisel planın</h1>
         <p className="text-muted-foreground mt-2">
           {t(
             'onboarding.plan.goalDescription',
@@ -429,25 +398,24 @@ const PersonalPlan = ({
         setEditedPlan={setEditedPlan}
       />
 
-      <Button
-        onClick={handleSubmit}
-        disabled={isSubmitting}
-        className="h-14 w-full rounded-full text-lg font-bold disabled:opacity-70"
-      >
-        {isSubmitting ? t('common.saving', 'Saving...') : 'Planı başlat'}
-      </Button>
-      <p className="mt-2 mb-6 text-center text-xs text-caption">
-        Hedeflerini sonra Menü → Hedefler'den değiştirebilirsin.
+      {startButton}
+      <p className="mt-2 mb-6 text-center text-sm text-muted-foreground">
+        Mikro besinler ve öğün dağılımı önerilen değerlerle başlar. Hepsini
+        sonra Menü → Hedefler'den değiştirebilirsin.
       </p>
 
-      {/* Everything below is optional fine-tuning, closed by default. */}
+      {/* Optional fine-tuning, closed by default. */}
       <Collapsible>
-        <CollapsibleTrigger className="group flex w-full items-center justify-between rounded-2xl bg-card px-4 py-3 text-left text-sm font-semibold text-foreground">
-          Gelişmiş ayarlar (diyet, mikro besinler, öğünler)
-          <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+        <CollapsibleTrigger className="group flex min-h-14 w-full items-center justify-between rounded-2xl bg-card px-4 py-3 text-left text-base font-semibold text-foreground">
+          <span>
+            Gelişmiş ayarlar
+            <span className="block text-sm font-normal text-muted-foreground">
+              Beslenme yaklaşımı ve öğün sayısı
+            </span>
+          </span>
+          <ChevronDown className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
         </CollapsibleTrigger>
         <CollapsibleContent className="pt-4">
-          {/* Diet Selection */}
           <DietApproach
             customPercentages={customPercentages}
             handleMacroValueChange={handleMacroValueChange}
@@ -460,38 +428,49 @@ const PersonalPlan = ({
             showDietApproach={showDietApproach}
           />
 
-          {/* Advanced Calculation Settings */}
-          <CalculationSettings
-            localFatBreakdownAlgorithm={localFatBreakdownAlgorithm}
-            localMineralAlgorithm={localMineralAlgorithm}
-            localSugarAlgorithm={localSugarAlgorithm}
-            localVitaminAlgorithm={localVitaminAlgorithm}
-            setLocalFatBreakdownAlgorithm={setLocalFatBreakdownAlgorithm}
-            setLocalMineralAlgorithm={setLocalMineralAlgorithm}
-            setLocalSugarAlgorithm={setLocalSugarAlgorithm}
-            setLocalVitaminAlgorithm={setLocalVitaminAlgorithm}
-            setShowAdvancedSettings={setShowAdvancedSettings}
-            showAdvancedSettings={showAdvancedSettings}
-          />
+          <div className="mb-6 rounded-2xl border border-border bg-card p-4">
+            <div
+              id="meals-per-day-label"
+              className="mb-1 font-semibold text-foreground"
+            >
+              {t(
+                'onboarding.mealsQuestion',
+                'How many meals do you eat in a typical day?'
+              )}
+            </div>
+            <p className="mb-3 text-sm text-muted-foreground">
+              Ara öğünler dahil. Sadece bilgi amaçlı; hedeflerini değiştirmez.
+            </p>
+            <div
+              role="radiogroup"
+              aria-labelledby="meals-per-day-label"
+              className="flex rounded-xl bg-raised p-1"
+            >
+              {[3, 4, 5, 6].map((num) => (
+                <button
+                  key={num}
+                  type="button"
+                  role="radio"
+                  aria-checked={mealsPerDay === num}
+                  onClick={() => setMealsPerDay(num)}
+                  className={cn(
+                    'h-11 flex-1 rounded-lg text-base font-semibold',
+                    mealsPerDay === num
+                      ? 'bg-card text-foreground shadow-sm'
+                      : 'text-muted-foreground'
+                  )}
+                >
+                  {num}
+                </button>
+              ))}
+            </div>
+          </div>
 
-          {/* Nutrient Sections Grid */}
-          <h2 className="text-xl font-bold text-foreground mb-4 ml-1 mt-8">
-            {t('onboarding.plan.nutrientGoals', 'Nutrient Goals')}
-          </h2>
-          <NutrientGoals
-            convertEnergy={convertEnergy}
-            editedPlan={editedPlan}
-            handlePercentagesChange={handlePercentagesChange}
-            localEnergyUnit={localEnergyUnit}
-            localWaterUnit={localWaterUnit}
-            memoizedInitialPercentages={memoizedInitialPercentages}
-            setEditedPlan={setEditedPlan}
-            setLocalWaterUnit={setLocalWaterUnit}
-          />
+          {startButton}
         </CollapsibleContent>
       </Collapsible>
 
-      <p className="mt-6 text-center text-[11px] leading-snug text-caption">
+      <p className="mt-6 text-center text-xs leading-snug text-muted-foreground">
         {t(
           'onboarding.plan.medicalDisclaimer',
           'This plan is for informational purposes only and should not replace professional medical advice. Please consult with your doctor or a certified nutritionist before making significant changes to your diet or exercise routine.'

@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState, memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeftRight, ChevronDown, Trophy } from 'lucide-react';
+import { ArrowLeftRight, Check, ChevronDown, Plus, Trophy } from 'lucide-react';
 import {
   DEFAULT_DROP_SET_COUNT,
   DEFAULT_DROP_SET_PERCENT,
@@ -9,9 +9,12 @@ import {
   usesBarbell,
 } from '@workspace/shared';
 import type { WeightUnit } from '@/contexts/PreferencesContext';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { fmtTr } from '@/utils/numberFormatting';
 import {
   WORKOUT_PLAYBACK_SET_GRID_CLASSES,
+  WORKOUT_PLAYBACK_TIMED_SET_GRID_CLASSES,
   type WorkoutPlaybackExerciseDraft,
   type WorkoutSetEditableField,
   type WorkoutSetPointer,
@@ -95,8 +98,15 @@ const WorkoutPlaybackExercisesList = ({
   const formatSet = (set: ExerciseStatsSet) => {
     const weight = weightFromKg(Number(set.weight) || 0, weightUnit);
     return weight > 0
-      ? `${weight} ${unitLabel} × ${set.reps ?? 0}`
+      ? `${fmtTr(weight, 2)} ${unitLabel} × ${set.reps ?? 0}`
       : `${set.reps ?? 0} tekrar`;
+  };
+  // Compact form for the set row's left column: "60×10" (kg is the header).
+  const formatSetShort = (set: ExerciseStatsSet) => {
+    const weight = weightFromKg(Number(set.weight) || 0, weightUnit);
+    return weight > 0
+      ? `${fmtTr(weight, 2)}×${set.reps ?? 0}`
+      : `×${set.reps ?? 0}`;
   };
   const previousWorkingSets = (exerciseId: string) =>
     (statsById[exerciseId]?.recentSessions?.[0]?.sets ?? []).filter(
@@ -123,7 +133,7 @@ const WorkoutPlaybackExercisesList = ({
       celebrated.current.add(exercise.exercise_id);
       toast({
         title: '🏆 Yeni kişisel rekor!',
-        description: `${exercise.exercise_name}: ${weight} ${unitLabel} × ${reps} (tahmini 1RM ${Math.round(oneRm)} ${unitLabel})`,
+        description: `${exercise.exercise_name}: ${fmtTr(weight, 2)} ${unitLabel} × ${reps} (tahmini 1RM ${fmtTr(Math.round(oneRm), 0)} ${unitLabel})`,
       });
     },
     [exercises, onCompleteSet, statsById, unitLabel, weightUnit]
@@ -152,18 +162,24 @@ const WorkoutPlaybackExercisesList = ({
         const toggleLabel = isExpanded
           ? t('common.collapse', 'Collapse')
           : t('common.expand', 'Expand');
+        const previousSets = previousWorkingSets(exercise.exercise_id);
+        const hasPrevious = previousSets.length > 0;
 
         return (
           <Card
             key={`${exercise.exercise_id}-${exerciseIndex}`}
-            className="border-border/70 shadow-none"
+            className={`shadow-none ${
+              isComplete
+                ? 'border-emerald-500/40 dark:border-emerald-400/40'
+                : 'border-border/70'
+            }`}
           >
             <CardHeader className="px-3 py-2">
-              <div className="flex items-center justify-between gap-3">
+              <div className="flex items-start gap-3">
                 {exerciseImages.length > 0 && (
                   <button
                     type="button"
-                    className="shrink-0 overflow-hidden rounded-md"
+                    className="shrink-0 overflow-hidden rounded-lg"
                     aria-label={t(
                       'exercise.workoutPlaybackPage.viewImages',
                       'View {{name}} images',
@@ -179,16 +195,16 @@ const WorkoutPlaybackExercisesList = ({
                     <img
                       src={exerciseImages[0]}
                       alt=""
-                      className="h-10 w-10 object-cover"
+                      className="h-12 w-12 object-cover"
                       loading="lazy"
                     />
                   </button>
                 )}
                 <div className="min-w-0 flex-1">
-                  <h3 className="truncate text-sm font-medium">
+                  <h3 className="line-clamp-2 text-base font-semibold leading-snug">
                     {exercise.exercise_name}
                   </h3>
-                  <p className="text-[11px] text-muted-foreground">
+                  <p className="text-xs text-muted-foreground">
                     {t(
                       'exercise.workoutPlaybackPage.sets',
                       '{{completedSets}}/{{totalSets}} sets',
@@ -196,67 +212,48 @@ const WorkoutPlaybackExercisesList = ({
                     )}
                   </p>
                   {statsById[exercise.exercise_id]?.bestSet && (
-                    <p className="flex items-center gap-1 truncate text-[11px] text-muted-foreground">
-                      <Trophy className="h-3 w-3 text-amber-500" />
-                      En iyi:{' '}
-                      {formatSet(statsById[exercise.exercise_id]!.bestSet!)}
-                      {(() => {
-                        const best = statsById[exercise.exercise_id]!.bestSet!;
-                        const oneRm = estimateOneRepMax(
-                          weightFromKg(Number(best.weight) || 0, weightUnit),
-                          Number(best.reps) || 0
-                        );
-                        return oneRm > 0
-                          ? ` · 1RM ≈ ${Math.round(oneRm)} ${unitLabel}`
-                          : '';
-                      })()}
+                    <p className="mt-0.5 flex items-start gap-1 text-xs text-muted-foreground">
+                      <Trophy className="mt-0.5 h-3 w-3 shrink-0 text-amber-500" />
+                      <span>
+                        En iyi:{' '}
+                        {formatSet(statsById[exercise.exercise_id]!.bestSet!)}
+                        {(() => {
+                          const best =
+                            statsById[exercise.exercise_id]!.bestSet!;
+                          const oneRm = estimateOneRepMax(
+                            weightFromKg(Number(best.weight) || 0, weightUnit),
+                            Number(best.reps) || 0
+                          );
+                          return oneRm > 0
+                            ? ` · 1RM ≈ ${fmtTr(Math.round(oneRm), 0)} ${unitLabel}`
+                            : '';
+                        })()}
+                      </span>
                     </p>
                   )}
                 </div>
-                {onReplaceExercise && (
+                {isComplete && (
                   <button
                     type="button"
-                    className="shrink-0 rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
-                    title={t(
-                      'exercise.workoutPlaybackPage.replaceExercise',
-                      'Replace exercise'
-                    )}
-                    aria-label={t(
-                      'exercise.workoutPlaybackPage.replaceExerciseNamed',
-                      'Replace {{name}}',
-                      { name: exercise.exercise_name }
-                    )}
-                    onClick={() => onReplaceExercise(exerciseIndex)}
+                    className="flex h-11 shrink-0 items-center gap-1 rounded-lg px-2 text-xs font-semibold text-emerald-600 hover:bg-muted dark:text-emerald-400"
+                    aria-label={`${toggleLabel} ${exercise.exercise_name}`}
+                    aria-expanded={isExpanded}
+                    onClick={() =>
+                      setExpandedCompletedExercises((current) => ({
+                        ...current,
+                        [exerciseKey]: !current[exerciseKey],
+                      }))
+                    }
                   >
-                    <ArrowLeftRight className="h-4 w-4" />
+                    <Check className="h-4 w-4" />
+                    {t('exercise.workoutPlaybackPage.completed', 'Completed')}
+                    <ChevronDown
+                      className={`h-4 w-4 transition-transform ${
+                        isExpanded ? 'rotate-180' : ''
+                      }`}
+                    />
                   </button>
                 )}
-                <button
-                  type="button"
-                  className="flex cursor-pointer items-center gap-1.5 text-left"
-                  aria-label={`${toggleLabel} ${exercise.exercise_name}`}
-                  onClick={() => {
-                    if (!isComplete) return;
-                    setExpandedCompletedExercises((current) => ({
-                      ...current,
-                      [exerciseKey]: !current[exerciseKey],
-                    }));
-                  }}
-                >
-                  <ChevronDown
-                    className={`h-4 w-4 transition-transform ${
-                      isExpanded ? 'rotate-180' : ''
-                    } ${isComplete ? 'text-emerald-500' : ''}`}
-                  />
-                  <span className="text-[11px] text-muted-foreground">
-                    {isComplete
-                      ? t('exercise.workoutPlaybackPage.completed', 'Completed')
-                      : t(
-                          'exercise.workoutPlaybackPage.inProgress',
-                          'In Progress'
-                        )}
-                  </span>
-                </button>
               </div>
             </CardHeader>
             {(exercise.adaptive || exercise.suggest_variation) && (
@@ -279,45 +276,38 @@ const WorkoutPlaybackExercisesList = ({
               </div>
             )}
             {isExpanded && (
-              <CardContent className="px-3 pb-2 pt-0">
-                <div className="space-y-1">
-                  <div className="hidden overflow-x-auto pb-1 sm:block">
-                    <div
-                      className={`text-[10px] font-medium text-muted-foreground ${WORKOUT_PLAYBACK_SET_GRID_CLASSES}`}
-                    >
-                      <div className="flex justify-center px-3">
-                        {t('exercise.workoutPlaybackPage.columnSet', 'Set')}
-                      </div>
-                      <div className="flex justify-center px-3">
-                        {t('exercise.workoutPlaybackPage.columnType', 'Type')}
-                      </div>
-                      {isTimedExercise ? (
-                        <div className="flex justify-center px-3 sm:col-span-2">
-                          {t('workout.durationSec', 'Duration (s)')}
-                        </div>
-                      ) : (
-                        <>
-                          <div className="flex justify-center px-3">
-                            {t(
-                              'exercise.workoutPlaybackPage.columnReps',
-                              'Reps'
-                            )}
-                          </div>
-                          <div className="flex justify-center px-3">
-                            {t(
-                              'exercise.workoutPlaybackPage.columnWeight',
-                              'Weight'
-                            )}
-                          </div>
-                        </>
+              <CardContent className="px-2 pb-3 pt-0 sm:px-3">
+                <div className="space-y-1.5">
+                  {/* Column labels stay visible on phones too. */}
+                  <div
+                    className={`px-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground ${
+                      isTimedExercise
+                        ? WORKOUT_PLAYBACK_TIMED_SET_GRID_CLASSES
+                        : WORKOUT_PLAYBACK_SET_GRID_CLASSES
+                    }`}
+                    aria-hidden="true"
+                  >
+                    <div className="px-1 leading-tight">
+                      {t('exercise.workoutPlaybackPage.columnSet', 'Set')}
+                      {hasPrevious && (
+                        <span className="block text-[10px] font-medium normal-case tracking-normal">
+                          önceki
+                        </span>
                       )}
-                      <div className="flex justify-center px-3">
-                        {t('exercise.workoutPlaybackPage.columnRest', 'Rest')}
-                      </div>
-                      <div className="flex justify-end px-3">
-                        {t('common.actions', 'Actions')}
-                      </div>
                     </div>
+                    {isTimedExercise ? (
+                      <div className="text-center">
+                        {t('workout.durationSec', 'Duration (s)')}
+                      </div>
+                    ) : (
+                      <>
+                        <div className="text-center">
+                          {t('exercise.workoutPlaybackPage.columnReps', 'Reps')}
+                        </div>
+                        <div className="text-center">{unitLabel}</div>
+                      </>
+                    )}
+                    <div />
                   </div>
 
                   {exercise.sets.map((set, setIndex) => {
@@ -354,46 +344,47 @@ const WorkoutPlaybackExercisesList = ({
                         canCalculatePlates={usesBarbell(exercise.equipment)}
                         onOpenPlateCalculator={setPlateTarget}
                         previousLabel={(() => {
-                          const previous = previousWorkingSets(
-                            exercise.exercise_id
-                          );
                           const workingIndex = exercise.sets
                             .slice(0, setIndex)
                             .filter((s) => !isWarmupSetType(s.set_type)).length;
                           const match = isWarmupSetType(set.set_type)
                             ? undefined
-                            : previous[workingIndex];
-                          return match ? formatSet(match) : null;
+                            : previousSets[workingIndex];
+                          return match ? formatSetShort(match) : null;
                         })()}
                       />
                     );
                   })}
                 </div>
 
-                <div className="mt-2 flex justify-center gap-3">
-                  <button
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <Button
                     type="button"
+                    variant="outline"
                     aria-label={t(
                       'diary.workoutPlaybackExercisesList.addSetFor',
                       'Add set for {{exercise_name}}',
                       { exercise_name: exercise.exercise_name }
                     )}
-                    className="inline-flex items-center justify-center px-2 py-1 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
+                    className="h-11 flex-1 gap-1.5"
                     onClick={() => onAddSet(exerciseIndex)}
                   >
+                    <Plus className="h-4 w-4" />
                     {t('exercise.workoutPlaybackPage.addSet', 'Add Set')}
-                  </button>
+                  </Button>
                   {findDropSetBaseIndex(exercise.sets) >= 0 && (
-                    <button
+                    <Button
                       type="button"
+                      variant="outline"
                       aria-label={t(
                         'exercise.workoutPlaybackPage.addDropSetsFor',
                         'Add drop sets for {{name}}',
                         { name: exercise.exercise_name }
                       )}
-                      className="inline-flex items-center justify-center px-2 py-1 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
+                      className="h-11 flex-1 gap-1.5"
                       onClick={() => onAddDropSets?.(exerciseIndex)}
                     >
+                      <Plus className="h-4 w-4" />
                       {t(
                         'exercise.workoutPlaybackPage.addDropSets',
                         'Add {{sets}} Drop Sets (-{{percent}}%)',
@@ -402,7 +393,27 @@ const WorkoutPlaybackExercisesList = ({
                           percent: DEFAULT_DROP_SET_PERCENT,
                         }
                       )}
-                    </button>
+                    </Button>
+                  )}
+                  {onReplaceExercise && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      className="h-11 gap-1.5 text-muted-foreground"
+                      title={t(
+                        'exercise.workoutPlaybackPage.replaceExercise',
+                        'Replace exercise'
+                      )}
+                      aria-label={t(
+                        'exercise.workoutPlaybackPage.replaceExerciseNamed',
+                        'Replace {{name}}',
+                        { name: exercise.exercise_name }
+                      )}
+                      onClick={() => onReplaceExercise(exerciseIndex)}
+                    >
+                      <ArrowLeftRight className="h-4 w-4" />
+                      Değiştir
+                    </Button>
                   )}
                 </div>
               </CardContent>

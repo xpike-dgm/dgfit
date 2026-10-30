@@ -96,7 +96,7 @@ const WorkoutFeedbackPanel = ({
           <Button
             key={difficulty}
             type="button"
-            size="sm"
+            className="h-auto min-h-11 whitespace-normal px-1.5 text-sm leading-tight"
             variant={draft.difficulty === difficulty ? 'default' : 'outline'}
             aria-pressed={draft.difficulty === difficulty}
             onClick={() =>
@@ -143,7 +143,7 @@ const WorkoutFeedbackPanel = ({
                     <Button
                       key={exercise.id}
                       type="button"
-                      size="sm"
+                      className="h-auto min-h-11 max-w-full whitespace-normal text-left text-sm leading-tight"
                       variant={selected ? 'default' : 'outline'}
                       aria-pressed={selected}
                       onClick={() =>
@@ -194,7 +194,7 @@ const WorkoutFeedbackPanel = ({
       {exercises.length > 0 && (
         <button
           type="button"
-          className="flex w-full items-center justify-between text-sm font-medium text-primary"
+          className="flex min-h-11 w-full items-center justify-between text-sm font-medium text-primary"
           aria-expanded={showPerExercise}
           onClick={() => setShowPerExercise((value) => !value)}
         >
@@ -213,13 +213,13 @@ const WorkoutFeedbackPanel = ({
             const current = draft.exerciseDifficulty[exercise.id] ?? null;
             return (
               <div key={exercise.id} className="space-y-1">
-                <div className="truncate text-sm">{exercise.name}</div>
-                <div className="flex flex-wrap gap-1" role="group">
+                <div className="line-clamp-2 text-sm">{exercise.name}</div>
+                <div className="grid grid-cols-3 gap-2" role="group">
                   {WORKOUT_FEEDBACK_DIFFICULTIES.map((difficulty) => (
                     <Button
                       key={difficulty}
                       type="button"
-                      size="sm"
+                      className="h-auto min-h-11 whitespace-normal px-1.5 text-sm leading-tight"
                       variant={current === difficulty ? 'default' : 'outline'}
                       aria-pressed={current === difficulty}
                       aria-label={`${exercise.name}: ${difficultyLabel(t, difficulty)}`}

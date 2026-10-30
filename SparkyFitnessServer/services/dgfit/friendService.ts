@@ -23,11 +23,14 @@ export interface PrivacySettings {
   share_programs: boolean;
 }
 
+// Used for anyone who has never saved privacy settings. Weight and body
+// measurements are the most sensitive data, so they start private; a saved
+// row always wins, so existing choices are untouched.
 const DEFAULT_PRIVACY: PrivacySettings = {
   share_workouts: true,
-  share_weight: true,
+  share_weight: false,
   share_nutrition: true,
-  share_measurements: true,
+  share_measurements: false,
   share_photos: true,
   share_programs: true,
 };

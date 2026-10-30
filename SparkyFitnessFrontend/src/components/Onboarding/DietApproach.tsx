@@ -45,6 +45,8 @@ export const DietApproach = ({
   return (
     <div className="bg-card rounded-2xl border border-border mb-6">
       <button
+        type="button"
+        aria-expanded={showDietApproach}
         onClick={() => setShowDietApproach(!showDietApproach)}
         className="w-full p-4 flex items-center justify-between hover:bg-muted transition-colors rounded-2xl"
       >
@@ -141,14 +143,13 @@ export const DietApproach = ({
                       Math.round(customPercentages.fat) ===
                     100
                       ? 'text-primary'
-                      : 'text-yellow-500'
+                      : 'text-amber-600'
                   }`}
                 >
-                  {t('onboarding.diet.total', 'Total:')}{' '}
+                  {t('onboarding.diet.total', 'Total:')} %
                   {Math.round(customPercentages.carbs) +
                     Math.round(customPercentages.protein) +
                     Math.round(customPercentages.fat)}
-                  %
                 </span>
               </div>
 
@@ -157,10 +158,12 @@ export const DietApproach = ({
                 <div className="flex justify-between items-center mb-2">
                   <div className="flex items-center gap-2">
                     <button
+                      type="button"
+                      aria-label="Kilitle"
                       onClick={() =>
                         setLockedMacros((p) => ({ ...p, carbs: !p.carbs }))
                       }
-                      className="text-muted-foreground hover:text-foreground"
+                      className="-ml-3 flex h-11 w-11 items-center justify-center text-muted-foreground hover:text-foreground"
                     >
                       {lockedMacros.carbs ? (
                         <Lock size={16} />
@@ -172,7 +175,8 @@ export const DietApproach = ({
                       {t('onboarding.diet.carbohydrates', 'Carbohydrates')}
                     </label>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <span className="text-base text-foreground">%</span>
                     <Input
                       type="number"
                       step={1}
@@ -183,10 +187,9 @@ export const DietApproach = ({
                           parseInt(e.target.value, 10) || 0
                         )
                       }
-                      className="w-20 text-right bg-transparent h-8 text-sm"
+                      className="h-10 w-16 bg-transparent text-right text-base"
                       disabled={lockedMacros.carbs}
                     />
-                    <span className="text-sm font-mono text-foreground">%</span>
                   </div>
                 </div>
                 <Slider
@@ -207,13 +210,15 @@ export const DietApproach = ({
                 <div className="flex justify-between items-center mb-2">
                   <div className="flex items-center gap-2">
                     <button
+                      type="button"
+                      aria-label="Kilitle"
                       onClick={() =>
                         setLockedMacros((p) => ({
                           ...p,
                           protein: !p.protein,
                         }))
                       }
-                      className="text-muted-foreground hover:text-foreground"
+                      className="-ml-3 flex h-11 w-11 items-center justify-center text-muted-foreground hover:text-foreground"
                     >
                       {lockedMacros.protein ? (
                         <Lock size={16} />
@@ -225,7 +230,8 @@ export const DietApproach = ({
                       {t('onboarding.diet.protein', 'Protein')}
                     </label>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <span className="text-base text-foreground">%</span>
                     <Input
                       type="number"
                       step={1}
@@ -236,10 +242,9 @@ export const DietApproach = ({
                           parseInt(e.target.value, 10) || 0
                         )
                       }
-                      className="w-20 text-right bg-transparent h-8 text-sm"
+                      className="h-10 w-16 bg-transparent text-right text-base"
                       disabled={lockedMacros.protein}
                     />
-                    <span className="text-sm font-mono text-foreground">%</span>
                   </div>
                 </div>
                 <Slider
@@ -260,10 +265,12 @@ export const DietApproach = ({
                 <div className="flex justify-between items-center mb-2">
                   <div className="flex items-center gap-2">
                     <button
+                      type="button"
+                      aria-label="Kilitle"
                       onClick={() =>
                         setLockedMacros((p) => ({ ...p, fat: !p.fat }))
                       }
-                      className="text-muted-foreground hover:text-foreground"
+                      className="-ml-3 flex h-11 w-11 items-center justify-center text-muted-foreground hover:text-foreground"
                     >
                       {lockedMacros.fat ? (
                         <Lock size={16} />
@@ -275,7 +282,8 @@ export const DietApproach = ({
                       {t('onboarding.diet.fat', 'Fat')}
                     </label>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <span className="text-base text-foreground">%</span>
                     <Input
                       type="number"
                       step={1}
@@ -286,10 +294,9 @@ export const DietApproach = ({
                           parseInt(e.target.value, 10) || 0
                         )
                       }
-                      className="w-20 text-right bg-transparent h-8 text-sm"
+                      className="h-10 w-16 bg-transparent text-right text-base"
                       disabled={lockedMacros.fat}
                     />
-                    <span className="text-sm font-mono text-foreground">%</span>
                   </div>
                 </div>
                 <Slider
@@ -305,7 +312,7 @@ export const DietApproach = ({
                 />
               </div>
 
-              <p className="text-xs text-muted-foreground mt-2">
+              <p className="text-sm text-muted-foreground mt-2">
                 {t(
                   'onboarding.diet.adjustHint',
                   'Adjust or type in a value. Unlocked macros will auto-adjust to maintain 100% total.'

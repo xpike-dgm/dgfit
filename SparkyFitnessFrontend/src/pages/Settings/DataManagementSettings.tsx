@@ -19,7 +19,16 @@ import {
 
 import { prettifySource } from '@/utils/sourceLabels';
 
-export const DataManagementSettings = () => {
+/**
+ * `export` shows only the diary download, `synced` only the per-source delete
+ * (DG FIT keeps the export in "Gelişmiş ayarlar" and the delete under
+ * "Uzman ayarları").
+ */
+export const DataManagementSettings = ({
+  parts = 'all',
+}: {
+  parts?: 'all' | 'export' | 'synced';
+}) => {
   const { t, i18n } = useTranslation();
   const [delimiter, setDelimiter] = useState<string>(';');
   const { toast } = useToast();
@@ -58,7 +67,7 @@ export const DataManagementSettings = () => {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', 'sparkyfitness_diary_export.csv');
+      link.setAttribute('download', 'dgfit_gunluk.csv');
       document.body.appendChild(link);
       link.click();
 
@@ -88,172 +97,181 @@ export const DataManagementSettings = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-2">
-        <h3 className="text-lg font-medium">
-          {t('settings.dataManagement.title', 'Data Export')}
-        </h3>
-        <p className="text-sm text-muted-foreground">
-          {t(
-            'settings.dataManagement.description',
-            'Download your entire food diary in CSV format. The file will contain all your meals with food details, portions and macros (calories, protein, carbs, fat...).'
-          )}
-        </p>
-        <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-end">
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium">
-              {t(
-                'settings.dataManagement.delimiterLabel',
-                'CSV delimiter format'
-              )}
-            </label>
-            <Select value={delimiter} onValueChange={setDelimiter}>
-              <SelectTrigger className="w-[200px]">
-                <SelectValue
-                  placeholder={t(
-                    'settings.dataManagement.delimiterPlaceholder',
-                    'Delimiter'
-                  )}
-                />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value=";">
-                  {t('settings.dataManagement.semicolon', 'Semicolon (;)')}
-                </SelectItem>
-                <SelectItem value=",">
-                  {t('settings.dataManagement.comma', 'Comma (,)')}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <Button
-            onClick={handleExportDiary}
-            disabled={isExporting}
-            className="flex items-center gap-2"
-          >
-            {isExporting ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Download className="h-4 w-4" />
-            )}
-            {isExporting
-              ? t('settings.dataManagement.exporting', 'Preparing...')
-              : t(
-                  'settings.dataManagement.exportButton',
-                  'Export my diary (CSV)'
-                )}
-          </Button>
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-2 border-t pt-6">
-        <h3 className="text-lg font-medium">
-          {t(
-            'settings.dataManagement.deleteSynced.title',
-            'Delete synced data'
-          )}
-        </h3>
-        <p className="text-sm text-muted-foreground">
-          {t(
-            'settings.dataManagement.deleteSynced.description',
-            'Remove all entries that were synced or imported from a specific source (e.g. Apple Health, Garmin). This affects only synced data — entries you added manually are never touched. This cannot be undone.'
-          )}
-        </p>
-        <div className="mt-1 rounded-md border border-muted bg-muted/40 p-3 text-sm text-muted-foreground">
-          <p className="mb-1 font-medium text-foreground">
+      {parts !== 'synced' && (
+        <div className="flex flex-col gap-2">
+          <h3 className="text-lg font-medium">
+            {t('settings.dataManagement.title', 'Data Export')}
+          </h3>
+          <p className="text-sm text-muted-foreground">
             {t(
-              'settings.dataManagement.deleteSynced.scopeNoteTitle',
-              'What this removes'
+              'settings.dataManagement.description',
+              'Download your entire food diary in CSV format. The file will contain all your meals with food details, portions and macros (calories, protein, carbs, fat...).'
             )}
           </p>
-          <ul className="list-disc space-y-0.5 pl-5">
-            <li>
-              {t(
-                'settings.dataManagement.deleteSynced.scopeIncludes',
-                'Deletes synced diary entries: food, exercise/workout sessions, sleep, water, and custom check-in measurements.'
-              )}
-            </li>
-            <li>
-              {t(
-                'settings.dataManagement.deleteSynced.scopeExcludesLibrary',
-                'Does NOT delete your food or exercise database (the reusable food/exercise definitions) — only the logged entries.'
-              )}
-            </li>
-            <li>
-              {t(
-                'settings.dataManagement.deleteSynced.scopeExcludesCheckin',
-                'Does NOT delete standard check-in measurements (weight, steps, body fat, height) — those merge all providers into one daily value and cannot be removed by source here.'
-              )}
-            </li>
-            <li>
-              {t(
-                'settings.dataManagement.deleteSynced.scopeExcludesManual',
-                'Does NOT delete anything you created yourself — entries you typed in, logged via the Sparky assistant, or workouts from a saved preset or plan are always kept.'
-              )}
-            </li>
-          </ul>
-        </div>
-
-        {isLoadingSources ? (
-          <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            {t(
-              'settings.dataManagement.deleteSynced.loading',
-              'Loading sources...'
-            )}
-          </div>
-        ) : syncedSources.length === 0 ? (
-          <p className="mt-2 text-sm text-muted-foreground">
-            {t(
-              'settings.dataManagement.deleteSynced.empty',
-              'No synced data found. Nothing to delete here.'
-            )}
-          </p>
-        ) : (
           <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-end">
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium">
                 {t(
-                  'settings.dataManagement.deleteSynced.sourceLabel',
-                  'Data source'
+                  'settings.dataManagement.delimiterLabel',
+                  'CSV delimiter format'
                 )}
               </label>
-              <Select value={selectedSource} onValueChange={setSelectedSource}>
-                <SelectTrigger className="w-[260px]">
+              <Select value={delimiter} onValueChange={setDelimiter}>
+                <SelectTrigger className="h-11 w-full sm:w-[200px]">
                   <SelectValue
                     placeholder={t(
-                      'settings.dataManagement.deleteSynced.sourcePlaceholder',
-                      'Select a source'
+                      'settings.dataManagement.delimiterPlaceholder',
+                      'Delimiter'
                     )}
                   />
                 </SelectTrigger>
                 <SelectContent>
-                  {syncedSources.map((s) => (
-                    <SelectItem key={s.source} value={s.source}>
-                      {prettifySource(s.source)} — {s.totalCount}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value=";">
+                    {t('settings.dataManagement.semicolon', 'Semicolon (;)')}
+                  </SelectItem>
+                  <SelectItem value=",">
+                    {t('settings.dataManagement.comma', 'Comma (,)')}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <Button
-              variant="destructive"
-              onClick={() => setConfirmOpen(true)}
-              disabled={!selectedSource || isDeletingSource}
-              className="flex items-center gap-2"
+              onClick={handleExportDiary}
+              disabled={isExporting}
+              className="flex h-11 items-center gap-2"
             >
-              {isDeletingSource ? (
+              {isExporting ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                <Trash2 className="h-4 w-4" />
+                <Download className="h-4 w-4" />
               )}
-              {t(
-                'settings.dataManagement.deleteSynced.deleteButton',
-                'Delete synced data'
-              )}
+              {isExporting
+                ? t('settings.dataManagement.exporting', 'Preparing...')
+                : t(
+                    'settings.dataManagement.exportButton',
+                    'Export my diary (CSV)'
+                  )}
             </Button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
+
+      {parts !== 'export' && (
+        <div
+          className={`flex flex-col gap-2 ${parts === 'all' ? 'border-t pt-6' : ''}`}
+        >
+          <h3 className="text-lg font-medium">
+            {t(
+              'settings.dataManagement.deleteSynced.title',
+              'Delete synced data'
+            )}
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            {t(
+              'settings.dataManagement.deleteSynced.description',
+              'Remove all entries that were synced or imported from a specific source (e.g. Apple Health, Garmin). This affects only synced data — entries you added manually are never touched. This cannot be undone.'
+            )}
+          </p>
+          <div className="mt-1 rounded-md border border-muted bg-muted/40 p-3 text-sm text-muted-foreground">
+            <p className="mb-1 font-medium text-foreground">
+              {t(
+                'settings.dataManagement.deleteSynced.scopeNoteTitle',
+                'What this removes'
+              )}
+            </p>
+            <ul className="list-disc space-y-0.5 pl-5">
+              <li>
+                {t(
+                  'settings.dataManagement.deleteSynced.scopeIncludes',
+                  'Deletes synced diary entries: food, exercise/workout sessions, sleep, water, and custom check-in measurements.'
+                )}
+              </li>
+              <li>
+                {t(
+                  'settings.dataManagement.deleteSynced.scopeExcludesLibrary',
+                  'Does NOT delete your food or exercise database (the reusable food/exercise definitions) — only the logged entries.'
+                )}
+              </li>
+              <li>
+                {t(
+                  'settings.dataManagement.deleteSynced.scopeExcludesCheckin',
+                  'Does NOT delete standard check-in measurements (weight, steps, body fat, height) — those merge all providers into one daily value and cannot be removed by source here.'
+                )}
+              </li>
+              <li>
+                {t(
+                  'settings.dataManagement.deleteSynced.scopeExcludesManual',
+                  'Does NOT delete anything you created yourself — entries you typed in, logged via the Sparky assistant, or workouts from a saved preset or plan are always kept.'
+                )}
+              </li>
+            </ul>
+          </div>
+
+          {isLoadingSources ? (
+            <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              {t(
+                'settings.dataManagement.deleteSynced.loading',
+                'Loading sources...'
+              )}
+            </div>
+          ) : syncedSources.length === 0 ? (
+            <p className="mt-2 text-sm text-muted-foreground">
+              {t(
+                'settings.dataManagement.deleteSynced.empty',
+                'No synced data found. Nothing to delete here.'
+              )}
+            </p>
+          ) : (
+            <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-end">
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-medium">
+                  {t(
+                    'settings.dataManagement.deleteSynced.sourceLabel',
+                    'Data source'
+                  )}
+                </label>
+                <Select
+                  value={selectedSource}
+                  onValueChange={setSelectedSource}
+                >
+                  <SelectTrigger className="h-11 w-full sm:w-[260px]">
+                    <SelectValue
+                      placeholder={t(
+                        'settings.dataManagement.deleteSynced.sourcePlaceholder',
+                        'Select a source'
+                      )}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {syncedSources.map((s) => (
+                      <SelectItem key={s.source} value={s.source}>
+                        {prettifySource(s.source)} — {s.totalCount}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button
+                variant="destructive"
+                onClick={() => setConfirmOpen(true)}
+                disabled={!selectedSource || isDeletingSource}
+                className="flex items-center gap-2"
+              >
+                {isDeletingSource ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Trash2 className="h-4 w-4" />
+                )}
+                {t(
+                  'settings.dataManagement.deleteSynced.deleteButton',
+                  'Delete synced data'
+                )}
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
 
       <ConfirmationDialog
         open={confirmOpen}

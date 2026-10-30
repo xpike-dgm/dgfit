@@ -71,6 +71,9 @@ const AddComp: React.FC<AddCompProps> = ({
       onClick={onClose}
     >
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={title || 'Hızlı işlemler'}
         className="relative max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-t-3xl bg-card px-4 pt-2 pb-[max(env(safe-area-inset-bottom),20px)] shadow-2xl animate-in slide-in-from-bottom-8 duration-200 sm:rounded-3xl sm:pb-5"
         onClick={(e) => e.stopPropagation()}
       >
@@ -82,9 +85,9 @@ const AddComp: React.FC<AddCompProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="text-base font-semibold text-primary"
+            className="-mr-2 flex min-h-11 items-center px-2 text-base font-semibold text-primary"
           >
-            Bitti
+            Kapat
           </button>
         </div>
 
@@ -99,11 +102,11 @@ const AddComp: React.FC<AddCompProps> = ({
               <button
                 key={item.value}
                 type="button"
-                className="flex flex-col items-center gap-2 rounded-xl py-2 text-center transition-colors active:bg-accent"
+                className="flex min-w-0 flex-col items-center gap-2 rounded-xl px-0.5 py-2 text-center transition-colors active:bg-accent"
                 onClick={() => handleItemClick(item.value)}
               >
                 <IconTile icon={item.icon} tint={item.tint} size="card" />
-                <span className="text-sm font-medium text-foreground">
+                <span className="text-sm leading-tight font-medium text-foreground">
                   {item.label}
                 </span>
               </button>

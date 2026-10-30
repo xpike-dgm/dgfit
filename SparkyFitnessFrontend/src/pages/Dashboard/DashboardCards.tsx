@@ -28,7 +28,10 @@ export const SparkyCard = ({
   );
 };
 
-/** Bold section title on the left, optional "Detaylar ›" link on the right. */
+/**
+ * Bold section title on the left, optional "Detaylar ›" link on the right.
+ * With a link the whole header row is one tall tap target.
+ */
 export const SparkyCardHeader = ({
   title,
   linkLabel = 'Detaylar',
@@ -37,21 +40,25 @@ export const SparkyCardHeader = ({
   title: string;
   linkLabel?: string;
   onLink?: () => void;
-}) => (
-  <div className="mb-2 flex items-center justify-between">
-    <h2 className="text-base font-bold text-muted-foreground">{title}</h2>
-    {onLink && (
-      <button
-        type="button"
-        onClick={onLink}
-        className="flex items-center text-xs font-semibold text-primary"
-      >
+}) =>
+  onLink ? (
+    <button
+      type="button"
+      onClick={onLink}
+      aria-label={`${title}: ${linkLabel}`}
+      className="-mx-4 -mt-4 mb-1 flex min-h-[52px] w-[calc(100%+2rem)] items-center justify-between rounded-t-2xl px-4 pt-2 text-left transition-colors active:bg-accent/60"
+    >
+      <h2 className="text-base font-bold text-muted-foreground">{title}</h2>
+      <span className="flex items-center text-sm font-semibold text-primary">
         {linkLabel}
-        <ChevronRight className="ml-0.5 h-3.5 w-3.5" />
-      </button>
-    )}
-  </div>
-);
+        <ChevronRight className="ml-0.5 h-4 w-4" />
+      </span>
+    </button>
+  ) : (
+    <div className="mb-2 flex items-center justify-between">
+      <h2 className="text-base font-bold text-muted-foreground">{title}</h2>
+    </div>
+  );
 
 const ProgressRing = ({
   progress,
@@ -91,9 +98,12 @@ const ProgressRing = ({
 };
 
 const SideStat = ({ label, value }: { label: string; value: number }) => (
-  <div className="flex flex-1 flex-col items-center justify-center">
+  <div className="flex min-w-0 flex-1 flex-col items-center justify-center text-center">
     <span className="text-xl font-bold text-foreground">{fmt(value)}</span>
-    <span className="mt-1 text-xs text-muted-foreground">{label}</span>
+    <span className="text-xs text-muted-foreground">kcal</span>
+    <span className="mt-1 text-xs font-medium text-muted-foreground">
+      {label}
+    </span>
   </div>
 );
 
@@ -102,11 +112,14 @@ export const CalorieRingCard = ({
   burned,
   remaining,
   progress,
+  onAddFood,
 }: {
   eaten: number;
   burned: number;
   remaining: number;
   progress: number;
+  /** Shown as an "İlk öğününü ekle" hint while nothing is logged. */
+  onAddFood?: () => void;
 }) => (
   <SparkyCard>
     <div className="flex items-center justify-center">
@@ -125,6 +138,16 @@ export const CalorieRingCard = ({
       </div>
       <SideStat label="Yakılan" value={burned} />
     </div>
+    {onAddFood && eaten <= 0 && (
+      <button
+        type="button"
+        onClick={onAddFood}
+        className="mx-auto mt-3 flex min-h-11 items-center gap-1 rounded-full px-4 text-sm font-semibold text-primary active:bg-accent/60"
+      >
+        İlk öğününü ekle
+        <ChevronRight className="h-4 w-4" />
+      </button>
+    )}
   </SparkyCard>
 );
 
@@ -151,8 +174,8 @@ export const MacroBar = ({
         <span className="text-sm font-medium text-foreground">{label}</span>
         <span className="text-xs text-muted-foreground">
           {hasGoal
-            ? `${fmt(consumed)}${unit} / ${fmt(goal)}${unit}`
-            : `${fmt(consumed)}${unit}`}
+            ? `${fmt(consumed)} / ${fmt(goal)} ${unit}`
+            : `${fmt(consumed)} ${unit}`}
         </span>
       </div>
       {hasGoal && (
@@ -166,12 +189,12 @@ export const MacroBar = ({
               style={{ width: `${Math.min(progress, 1) * 100}%` }}
             />
           </div>
-          <p className="mt-1 text-[10px] text-caption">
+          <p className="mt-1 text-xs text-muted-foreground">
             %{Math.round(progress * 100)} ·{' '}
             {diff > 0
-              ? `${fmt(diff)}${unit} kaldı`
+              ? `${fmt(diff)} ${unit} kaldı`
               : diff < 0
-                ? `${fmt(-diff)}${unit} fazla`
+                ? `${fmt(-diff)} ${unit} fazla`
                 : 'tamam'}
           </p>
         </>

@@ -18,6 +18,7 @@ import PasswordToggle from '@/components/PasswordToggle';
 import { useResetPasswordMutation } from '@/hooks/Auth/useAuth';
 import { getErrorMessage } from '@/utils/api';
 import { useTranslation } from 'react-i18next';
+import { PASSWORD_RULE_HINT, passwordRuleError } from './passwordRules';
 
 const ResetPassword = () => {
   const navigate = useNavigate();
@@ -39,7 +40,9 @@ const ResetPassword = () => {
 
   useEffect(() => {
     if (!token) {
-      setMessage('Invalid or missing password reset token.');
+      setMessage(
+        'Sıfırlama bağlantısı geçersiz ya da eksik. Yeni bir bağlantı iste.'
+      );
       toast({
         title: t('common.error', 'Error'),
         description: t(
@@ -51,24 +54,7 @@ const ResetPassword = () => {
     }
   }, [token, t]);
 
-  const validatePassword = (pwd: string) => {
-    if (pwd.length < 8) {
-      return t('settings.accountSecurity.passwordLengthError');
-    }
-    if (!/[A-Z]/.test(pwd)) {
-      return 'Password must contain at least one uppercase letter.';
-    }
-    if (!/[a-z]/.test(pwd)) {
-      return 'Password must contain at least one lowercase letter.';
-    }
-    if (!/[0-9]/.test(pwd)) {
-      return 'Password must contain at least one number.';
-    }
-    if (!/[!@#$%^&*(),.?":{}|<>]/.test(pwd)) {
-      return 'Password must contain at least one special character.';
-    }
-    return null; // No error
-  };
+  const validatePassword = passwordRuleError;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,7 +64,9 @@ const ResetPassword = () => {
     setPasswordError(null);
 
     if (!token) {
-      setMessage('Invalid or missing password reset token.');
+      setMessage(
+        'Sıfırlama bağlantısı geçersiz ya da eksik. Yeni bir bağlantı iste.'
+      );
       setLoading(false);
       return;
     }
@@ -91,28 +79,26 @@ const ResetPassword = () => {
     }
 
     if (newPassword !== confirmPassword) {
-      setPasswordError('Passwords do not match.');
+      setPasswordError('Şifreler aynı değil.');
       setLoading(false);
       return;
     }
 
     try {
       await resetPassword({ token, newPassword });
-      setMessage(
-        'Your password has been reset successfully. You can now sign in with your new password.'
-      );
+      setMessage('Şifren değişti. Yeni şifrenle giriş yapabilirsin.');
       navigate('/'); // Redirect to root
     } catch (err: unknown) {
       const message = getErrorMessage(err);
-      setMessage(message || 'An unexpected error occurred.');
+      setMessage(message || 'Bir şeyler ters gitti. Tekrar dene.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-      <Card className="w-full max-w-md dark:bg-gray-">
+    <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
+      <Card className="w-full max-w-md rounded-2xl border-border bg-card">
         <CardHeader className="text-center">
           <div className="flex items-center justify-center mb-4">
             <BrandMark />
@@ -145,13 +131,18 @@ const ResetPassword = () => {
                 required
                 minLength={8}
                 autoComplete="new-password"
+                className="h-11 pr-12 text-base"
               />
               <PasswordToggle
                 showPassword={showPassword}
                 passwordToggleHandler={passwordToggleHandler}
               />
-              {passwordError && (
-                <p className="text-red-500 text-sm">{passwordError}</p>
+              {passwordError ? (
+                <p className="text-sm text-danger-text">{passwordError}</p>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  {PASSWORD_RULE_HINT}
+                </p>
               )}
             </div>
             <div className="space-y-2 relative">
@@ -172,6 +163,7 @@ const ResetPassword = () => {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 autoComplete="new-password"
+                className="h-11 pr-12 text-base"
               />
               <PasswordToggle
                 showPassword={showPassword}
@@ -180,7 +172,7 @@ const ResetPassword = () => {
             </div>
             <Button
               type="submit"
-              className="w-full"
+              className="h-12 w-full text-base"
               disabled={
                 loading || !!passwordError || newPassword !== confirmPassword
               }

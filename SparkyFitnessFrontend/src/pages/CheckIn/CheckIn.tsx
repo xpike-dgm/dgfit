@@ -21,6 +21,7 @@ import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { Activity, Camera } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { MindfulnessSection } from './MindfulnessSection';
+import { WeightTrendCard } from './WeightTrendCard';
 
 const CheckIn = () => {
   const { user } = useAuth();
@@ -48,6 +49,7 @@ const CheckIn = () => {
     neck,
     placeholders,
     recentMeasurements,
+    weightHistory,
     selectedDate,
     setBodyFatPercentage,
     setBoneMassKg,
@@ -132,7 +134,7 @@ const CheckIn = () => {
                   variant={isActive ? 'secondary' : 'ghost'}
                   size="sm"
                   onClick={() => handleTabChange(tab.id)}
-                  className={`shrink-0 rounded-full px-4 h-9 gap-2 transition-all ${
+                  className={`shrink-0 rounded-full px-4 h-11 gap-2 transition-all ${
                     isActive
                       ? 'bg-primary text-primary-foreground shadow-sm hover:bg-primary'
                       : 'bg-card text-muted-foreground hover:text-foreground hover:bg-card'
@@ -161,7 +163,7 @@ const CheckIn = () => {
                 'checkIn.photos.calendarLegend',
                 'Progress photos'
               )}
-              className="grid-cols-none flex mb-0 items-center gap-2"
+              className="mb-0 w-full"
             />
           </div>
         </div>
@@ -237,6 +239,7 @@ const CheckIn = () => {
             waist={waist}
             weight={weight}
           />
+          <WeightTrendCard history={weightHistory} />
           <RecentActivity
             convertMeasurement={convertMeasurement}
             convertWeight={convertWeight}

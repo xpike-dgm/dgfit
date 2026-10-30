@@ -1,7 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { GripVertical, XCircle } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { GripVertical, ImagePlus, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useTranslation } from 'react-i18next';
 import { resolveFoodImageSrc } from '@/utils/foodImages';
@@ -43,6 +42,9 @@ export function FoodImagePicker({
   const { t } = useTranslation();
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [overIndex, setOverIndex] = useState<number | null>(null);
+  // The native file input shows the browser's own (English) "Choose Files /
+  // No file chosen", so it stays hidden behind a Turkish button.
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Derived rather than stored in state, so there's no render-then-set cascade.
   const previews = useMemo(
@@ -114,14 +116,27 @@ export function FoodImagePicker({
       <Label htmlFor={`${idPrefix}-images`}>
         {labelText ?? t('food.imagesLabel', 'Images')}
       </Label>
-      <Input
+      <input
+        ref={fileInputRef}
         id={`${idPrefix}-images`}
         type="file"
         multiple
         accept="image/*"
+        className="sr-only"
+        tabIndex={-1}
         disabled={remainingSlots === 0}
         onChange={handleFileChange}
       />
+      <Button
+        type="button"
+        variant="outline"
+        className="min-h-11 w-full sm:w-auto"
+        disabled={remainingSlots === 0}
+        onClick={() => fileInputRef.current?.click()}
+      >
+        <ImagePlus className="h-4 w-4" />
+        Fotoğraf ekle
+      </Button>
       {remainingSlots === 0 && (
         <p className="text-xs text-muted-foreground">
           {t('food.imagesLimitReached', {

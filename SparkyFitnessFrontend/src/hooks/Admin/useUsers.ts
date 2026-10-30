@@ -106,13 +106,16 @@ export const useUpdateUserStatus = () => {
           isActive: boolean;
           userName?: string;
         };
-        const actionText = isActive ? 'activate' : 'deactivate';
         const nameText = userName || 'User';
-        return t('admin.userManagement.userStatusUpdated', {
-          userName: nameText,
-          action: actionText,
-          defaultValue: `User ${nameText} ${actionText}d successfully.`,
-        });
+        return isActive
+          ? t('admin.userManagement.userActivated', {
+              userName: nameText,
+              defaultValue: `${nameText} can sign in again.`,
+            })
+          : t('admin.userManagement.userDeactivated', {
+              userName: nameText,
+              defaultValue: `${nameText} can no longer sign in.`,
+            });
       },
     },
   });

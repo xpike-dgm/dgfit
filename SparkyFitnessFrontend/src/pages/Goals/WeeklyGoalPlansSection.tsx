@@ -8,11 +8,16 @@ import { todayInZone, weeklyGoalPlanInForce } from '@workspace/shared';
 import { useWeeklyGoalPlans } from '@/hooks/Goals/useGoals';
 import { WeeklyGoalPlan } from '@/types/goals';
 interface WeeklyGoalPlansSectionProps {
+  /** A plan assigns ready-made goals to days, so it needs one first. */
+  hasPresets: boolean;
+  handleCreatePresetClick: () => void;
   handleCreateWeeklyPlanClick: () => void;
   handleEditWeeklyPlanClick: (plan: WeeklyGoalPlan) => void;
   handleDeleteWeeklyPlan: (planId: string) => void;
 }
 export const WeeklyGoalPlansSection = ({
+  hasPresets,
+  handleCreatePresetClick,
   handleCreateWeeklyPlanClick,
   handleDeleteWeeklyPlan,
   handleEditWeeklyPlanClick,
@@ -28,14 +33,31 @@ export const WeeklyGoalPlansSection = ({
         <CardTitle>
           {t('goals.goalsSettings.weeklyGoalPlans', 'Weekly Goal Plans (WIP)')}
         </CardTitle>
-        <Button size="sm" onClick={handleCreateWeeklyPlanClick}>
-          <PlusCircle className="w-4 h-4 mr-2" />{' '}
-          {t('goals.goalsSettings.createNewPlan', 'Create New Plan')}
-        </Button>
+        {hasPresets && (
+          <Button className="h-11" onClick={handleCreateWeeklyPlanClick}>
+            <PlusCircle className="w-4 h-4 mr-2" />{' '}
+            {t('goals.goalsSettings.createNewPlan', 'Create New Plan')}
+          </Button>
+        )}
       </CardHeader>
       <CardContent>
-        {weeklyPlans.length === 0 ? (
-          <p className="text-gray-500">
+        {weeklyPlans.length === 0 && !hasPresets ? (
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              Haftalık plan her güne bir hazır hedef atar (örneğin antrenman
+              günlerinde daha fazla kalori). Önce bir hazır hedef oluştur.
+            </p>
+            <Button
+              variant="outline"
+              className="h-11"
+              onClick={handleCreatePresetClick}
+            >
+              <PlusCircle className="w-4 h-4 mr-2" />
+              Önce bir hazır hedef oluştur
+            </Button>
+          </div>
+        ) : weeklyPlans.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
             {t(
               'goals.goalsSettings.noWeeklyPlans',
               'No weekly goal plans defined yet. Create one to automate your goals!'
@@ -46,9 +68,9 @@ export const WeeklyGoalPlansSection = ({
             {weeklyPlans.map((plan) => (
               <div
                 key={plan.id}
-                className="flex items-center justify-between p-3 border rounded-md"
+                className="flex items-center justify-between gap-2 rounded-xl border py-2 pl-3 pr-1"
               >
-                <div>
+                <div className="min-w-0">
                   <h4 className="font-semibold">
                     {plan.plan_name}{' '}
                     {plan.id === planInForce?.id && (
@@ -57,7 +79,7 @@ export const WeeklyGoalPlansSection = ({
                       </Badge>
                     )}
                   </h4>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-muted-foreground">
                     {t(
                       'goals.goalsSettings.startDateToEndDate',
                       '{{start_date}} to {{end_date}}',
@@ -70,22 +92,24 @@ export const WeeklyGoalPlansSection = ({
                     )}
                   </p>
                 </div>
-                <div className="flex space-x-2">
+                <div className="flex shrink-0">
                   <Button
-                    variant="outline"
-                    size="sm"
+                    variant="ghost"
+                    size="icon"
+                    className="h-11 w-11"
+                    aria-label={t('goals.goalsSettings.edit', 'Edit')}
                     onClick={() => handleEditWeeklyPlanClick(plan)}
                   >
-                    <Edit className="w-4 h-4" />{' '}
-                    {t('goals.goalsSettings.edit', 'Edit')}
+                    <Edit className="w-4 h-4" />
                   </Button>
                   <Button
-                    variant="destructive"
-                    size="sm"
+                    variant="ghost"
+                    size="icon"
+                    className="h-11 w-11 text-destructive hover:text-destructive"
+                    aria-label={t('goals.goalsSettings.delete', 'Delete')}
                     onClick={() => plan.id && handleDeleteWeeklyPlan(plan.id)}
                   >
-                    <Trash2 className="w-4 h-4" />{' '}
-                    {t('goals.goalsSettings.delete', 'Delete')}
+                    <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>
               </div>

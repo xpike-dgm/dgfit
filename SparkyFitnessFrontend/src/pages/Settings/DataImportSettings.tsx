@@ -53,18 +53,18 @@ const ImportLauncher = ({
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   return (
-    <div className="flex items-start justify-between gap-4 rounded-md border p-3">
-      <div className="flex items-start gap-3">
+    <div className="flex flex-col gap-3 rounded-xl border p-3 sm:flex-row sm:items-start sm:justify-between">
+      <div className="flex min-w-0 items-start gap-3">
         <Icon className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
-        <div className="space-y-1">
+        <div className="min-w-0 space-y-1">
           <p className="font-medium">{title}</p>
-          <p className="text-xs text-muted-foreground">{description}</p>
+          <p className="text-sm text-muted-foreground">{description}</p>
         </div>
       </div>
       <Dialog open={open} onOpenChange={setOpen}>
         <Button
           variant="outline"
-          className="flex shrink-0 items-center gap-2"
+          className="flex h-11 w-full shrink-0 items-center gap-2 sm:w-auto"
           onClick={() => setOpen(true)}
         >
           <Upload className="h-4 w-4" />
@@ -135,7 +135,7 @@ export const DataImportSettings = () => {
   };
 
   return (
-    <div className="flex flex-col gap-2 border-t pt-6">
+    <div className="flex flex-col gap-2">
       <h3 className="text-lg font-medium">
         {t('settings.dataImport.title', 'Data Import')}
       </h3>

@@ -22,8 +22,13 @@ import { defaultSetForModality } from '@/constants/exercises';
 import { generateClientId } from '@/utils/generateClientId';
 
 export const DEFAULT_REST_SECONDS = 90;
+// Complete zone | Tekrar | kg | ⋯ — one line that fits a 360 px phone.
 export const WORKOUT_PLAYBACK_SET_GRID_CLASSES =
-  'grid w-full grid-cols-6 gap-2 sm:min-w-[48rem] sm:grid-cols-[7rem_10rem_5rem_6rem_6rem_8rem] sm:gap-x-6 sm:gap-y-2';
+  'grid w-full grid-cols-[4.75rem_minmax(0,1fr)_minmax(0,1fr)_2.75rem] items-center gap-1.5 sm:grid-cols-[6rem_minmax(0,9rem)_minmax(0,9rem)_2.75rem] sm:gap-3';
+
+// Complete zone | Süre | ⋯ for timed and hold sets.
+export const WORKOUT_PLAYBACK_TIMED_SET_GRID_CLASSES =
+  'grid w-full grid-cols-[4.75rem_minmax(0,1fr)_2.75rem] items-center gap-1.5 sm:grid-cols-[6rem_minmax(0,18.75rem)_2.75rem] sm:gap-3';
 
 export type WorkoutPlaybackRestState = 'idle' | 'running' | 'paused';
 
@@ -1374,4 +1379,24 @@ export function weightFromKg(weightKg: number, unit: string): number {
 export function estimateOneRepMax(weight: number, reps: number): number {
   if (!weight || weight <= 0 || !reps || reps <= 0) return 0;
   return reps === 1 ? weight : weight * (1 + reps / 30);
+}
+
+/** "45 sn", "1 dk", "1 dk 30 sn" for rest times. */
+export function formatRestTr(seconds: number | null | undefined): string {
+  const value = Math.max(0, Math.round(seconds ?? DEFAULT_REST_SECONDS));
+  const minutes = Math.floor(value / 60);
+  const rest = value % 60;
+  if (minutes === 0) return `${rest} sn`;
+  return rest === 0 ? `${minutes} dk` : `${minutes} dk ${rest} sn`;
+}
+
+/** "45 sn", "7 dk", "1 sa 5 dk" for workout durations. */
+export function formatWorkoutDurationTr(seconds: number): string {
+  const value = Math.max(0, Math.floor(seconds));
+  if (value < 60) return `${value} sn`;
+  const totalMinutes = Math.floor(value / 60);
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  if (hours === 0) return `${totalMinutes} dk`;
+  return minutes === 0 ? `${hours} sa` : `${hours} sa ${minutes} dk`;
 }

@@ -24,7 +24,7 @@ export const DeveloperResources = () => {
         <BookOpen className="h-5 w-5" />
         {t('settings.developerResources.title', 'Developer Resources')}
       </AccordionTrigger>
-      <AccordionContent className="p-4 pt-0 space-y-4">
+      <AccordionContent className="min-w-0 space-y-4 break-words p-4 pt-0">
         <div className="grid gap-4">
           <div className="flex flex-col space-y-2">
             <h4 className="font-medium">
@@ -39,8 +39,8 @@ export const DeveloperResources = () => {
                 'Explore the SparkyFitness API documentation to build integrations or understand the platform better.'
               )}
             </p>
-            <div className="flex gap-4 mt-2">
-              <Button variant="outline" asChild>
+            <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:gap-4">
+              <Button variant="outline" className="h-11 whitespace-normal" asChild>
                 <a
                   href="/api/api-docs/swagger"
                   target="_blank"
@@ -52,7 +52,7 @@ export const DeveloperResources = () => {
                   )}
                 </a>
               </Button>
-              <Button variant="outline" asChild>
+              <Button variant="outline" className="h-11 whitespace-normal" asChild>
                 <a
                   href="/api/api-docs/redoc"
                   target="_blank"

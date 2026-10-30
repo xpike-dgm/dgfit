@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
+import { ChevronDown } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useFoodAssistantState } from '@/hooks/AI/useFoodAssistantState';
 
@@ -22,14 +23,18 @@ export function FoodAssistantState({
   const selected = tasks.data?.find((task) => task.id === selectedId);
 
   return (
-    <div className="border-b px-3 py-2 text-sm">
+    <div className="border-b px-4 text-sm">
       <Button
         variant="ghost"
-        size="sm"
         aria-expanded={open}
         onClick={() => setOpen(!open)}
+        className="h-11 w-full justify-between px-0 font-medium hover:bg-transparent"
       >
         {t('foodAssistant.state', 'Food preferences and tasks')}
+        <ChevronDown
+          aria-hidden="true"
+          className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform ${open ? 'rotate-180' : ''}`}
+        />
       </Button>
       {open && (
         <div className="max-h-72 overflow-auto space-y-3 py-2">

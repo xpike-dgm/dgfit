@@ -36,9 +36,18 @@ import {
 
 interface WaterIntakeProps {
   selectedDate: string;
+  /**
+   * Phone Diary: one line under the calorie bar (total, thin progress bar,
+   * − / +), with the drink list folded away so adding never moves the buttons.
+   */
+  compact?: boolean;
 }
 
-const WaterIntake = ({ selectedDate }: WaterIntakeProps) => {
+// Goals are computed (e.g. 1.920 ml); a round number reads better.
+const roundGoalMl = (ml: number) =>
+  ml >= 500 ? Math.round(ml / 100) * 100 : Math.round(ml / 50) * 50;
+
+const WaterIntake = ({ selectedDate, compact = false }: WaterIntakeProps) => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { activeUserId } = useActiveUser(); // Get activeUserId
@@ -73,8 +82,10 @@ const WaterIntake = ({ selectedDate }: WaterIntakeProps) => {
     () => activeContainer?.id ?? null
   );
 
-  // Local state for log panel visibility (defaults to open so synced/manual logs are immediately visible)
-  const [showLog, setShowLog] = useState(true);
+  // Local state for log panel visibility (open on the full card so synced and
+  // manual logs are visible; folded on the compact phone card so adding a
+  // drink never pushes the buttons down).
+  const [showLog, setShowLog] = useState(!compact);
 
   // State for editing time on a log entry
   const [editingTimeId, setEditingTimeId] = useState<string | null>(null);
@@ -227,7 +238,10 @@ const WaterIntake = ({ selectedDate }: WaterIntakeProps) => {
     return null;
   }
 
-  const fillPercentage = Math.min((waterMl / waterGoalMl) * 100, 100);
+  const fillPercentage = Math.min(
+    (waterMl / roundGoalMl(waterGoalMl)) * 100,
+    100
+  );
   // A container's unit qualifies its own volume. A linked container has none
   // -- volume is 0 and the credit comes from the food -- so whatever unit was
   // left in the form when it was created is vestigial, and letting it drive the
@@ -238,6 +252,167 @@ const WaterIntake = ({ selectedDate }: WaterIntakeProps) => {
   const displayUnit = containerUnitIsMeaningful
     ? currentContainer.unit
     : water_display_unit;
+
+  if (compact) {
+    const unit = displayUnit;
+    const decimals = unit === 'oz' ? 1 : unit === 'liter' ? 2 : 0;
+    const fmt = (ml: number) =>
+      convertMlToSelectedUnit(ml, unit).toLocaleString('tr-TR', {
+        maximumFractionDigits: decimals,
+      });
+    const goalMl = roundGoalMl(waterGoalMl);
+    const progress = goalMl > 0 ? Math.min(waterMl / goalMl, 1) : 0;
+    const containerName =
+      currentContainer?.name ||
+      t('foodDiary.waterIntake.defaultContainer', 'Container');
+    return (
+      <div className="rounded-2xl bg-card p-4 shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none">
+        <div className="flex items-center gap-3">
+          <Droplet className="h-5 w-5 shrink-0 text-sky-500" aria-hidden />
+          <div className="min-w-0 flex-1">
+            <div className="flex items-baseline gap-1">
+              <span className="text-base font-semibold tabular-nums text-foreground">
+                {fmt(waterMl)}
+              </span>
+              <span className="truncate text-sm text-muted-foreground tabular-nums">
+                / {fmt(goalMl)} {unit} su
+              </span>
+            </div>
+            <div className="mt-1.5 h-1.5 overflow-hidden rounded bg-progress-track">
+              <div
+                className="h-full rounded bg-sky-500 transition-[width] duration-500"
+                style={{ width: `${progress * 100}%` }}
+              />
+            </div>
+          </div>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => adjustWater(-1)}
+            disabled={manualWaterMl <= 0 || loading}
+            className="h-11 w-11 shrink-0 rounded-full"
+            aria-label={`1 ${containerName.toLocaleLowerCase('tr-TR')} çıkar`}
+            title={
+              manualWaterMl <= 0 && waterMl > 0
+                ? t(
+                    'foodDiary.waterIntake.noManualToRemove',
+                    'Only manually logged water can be removed here'
+                  )
+                : undefined
+            }
+          >
+            <Minus className="h-4 w-4" />
+          </Button>
+          <Button
+            size="icon"
+            onClick={() => adjustWater(1)}
+            disabled={loading}
+            className="h-11 w-11 shrink-0 rounded-full"
+            aria-label={`1 ${containerName.toLocaleLowerCase('tr-TR')} ekle`}
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
+        </div>
+        <div className="mt-2 flex items-center justify-between gap-2 text-xs text-muted-foreground">
+          <button
+            type="button"
+            onClick={() => cycleContainer('next')}
+            disabled={standardContainers.length <= 1}
+            className="flex min-h-9 items-center gap-1 rounded-md pr-2 text-left disabled:cursor-default"
+            title={
+              standardContainers.length > 1 ? 'Kabı değiştir' : undefined
+            }
+          >
+            <span>
+              + = {containerName} ({getVolumeDisplay()})
+            </span>
+            {standardContainers.length > 1 && (
+              <ChevronRight className="h-3.5 w-3.5" aria-hidden />
+            )}
+          </button>
+          {logEntries.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setShowLog(!showLog)}
+              aria-expanded={showLog}
+              className="flex min-h-9 items-center gap-1 rounded-md pl-2"
+            >
+              {logEntries.length} kayıt
+              {showLog ? (
+                <ChevronUp className="h-3.5 w-3.5" aria-hidden />
+              ) : (
+                <ChevronDown className="h-3.5 w-3.5" aria-hidden />
+              )}
+            </button>
+          )}
+        </div>
+        {quickAddPresets.length > 0 && (
+          <div className="mt-2 flex flex-wrap gap-2">
+            {quickAddPresets.map((preset) => (
+              <button
+                key={preset.id}
+                type="button"
+                onClick={() => saveWaterIntake(1, preset.id)}
+                disabled={loading}
+                className="flex min-h-9 items-center gap-1 rounded-full border border-border px-3 text-xs font-medium text-foreground hover:bg-accent"
+              >
+                <Plus className="h-3 w-3" aria-hidden />
+                {preset.name} ·{' '}
+                {describeContainerPress(preset, { nonMlDecimals: 1 })}
+              </button>
+            ))}
+          </div>
+        )}
+        {showLog && logEntries.length > 0 && (
+          <ul className="mt-2 max-h-48 divide-y divide-border overflow-y-auto">
+            {logEntries.map((entry) => (
+              <li
+                key={entry.id}
+                className="flex min-h-10 items-center justify-between gap-2 text-sm"
+              >
+                <span className="flex min-w-0 items-center gap-2">
+                  <span className="tabular-nums text-muted-foreground">
+                    {formatLogTime(entry.logged_at || entry.created_at)}
+                  </span>
+                  <span className="truncate">
+                    {entry.container_name ||
+                      t('foodDiary.waterIntake.defaultContainer', 'Container')}
+                  </span>
+                  {!isManualSource(entry.source) && (
+                    <span className="shrink-0 rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+                      {prettifySource(entry.source)}
+                    </span>
+                  )}
+                </span>
+                <span className="flex shrink-0 items-center gap-1">
+                  <span className="font-medium tabular-nums text-sky-600 dark:text-sky-400">
+                    {Number(entry.water_ml) === 0
+                      ? t('foodDiary.waterIntake.noWaterCredit', 'no water')
+                      : `${fmt(Number(entry.water_ml))} ${unit}`}
+                  </span>
+                  {isManualSource(entry.source) && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-9 w-9 text-muted-foreground hover:text-destructive"
+                      onClick={() => deleteLogEntry(entry.id)}
+                      disabled={deleting}
+                      aria-label={t(
+                        'foodDiary.waterIntake.deleteEntry',
+                        'Delete this drink'
+                      )}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    );
+  }
 
   return (
     <Card className="h-full flex flex-col">
@@ -254,7 +429,10 @@ const WaterIntake = ({ selectedDate }: WaterIntakeProps) => {
             {(() => {
               const activeUnit = currentContainer?.unit || water_display_unit;
               const val = convertMlToSelectedUnit(waterMl, activeUnit);
-              const goalVal = convertMlToSelectedUnit(waterGoalMl, activeUnit);
+              const goalVal = convertMlToSelectedUnit(
+                roundGoalMl(waterGoalMl),
+                activeUnit
+              );
               const decimals =
                 activeUnit === 'oz' ? 1 : activeUnit === 'liter' ? 2 : 0;
               const fmt = (n: number) =>
@@ -578,7 +756,7 @@ const WaterIntake = ({ selectedDate }: WaterIntakeProps) => {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                          className="h-8 w-8 sm:h-5 sm:w-5 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
                           onClick={() => deleteLogEntry(entry.id)}
                           disabled={deleting}
                           title={t(

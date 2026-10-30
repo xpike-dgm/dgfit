@@ -21,6 +21,7 @@ import { useEffect, useState } from 'react';
 import { toast } from '@/hooks/use-toast';
 import { useClearChatHistoryMutation } from '@/hooks/AI/useSparkyChat';
 import { useAuth } from '@/hooks/useAuth';
+import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
 
 import { useTranslation } from 'react-i18next';
 const SparkyChat = () => {
@@ -33,6 +34,7 @@ const SparkyChat = () => {
   const { mutate: updatePreferences } = useUpdateUserAIPreferences();
   const [resetKey, setResetKey] = useState(0);
   const [isMinimized, setIsMinimized] = useState(false);
+  const [confirmClear, setConfirmClear] = useState(false);
   const { mutate: clearHistory, isPending: isClearing } =
     useClearChatHistoryMutation();
 
@@ -60,7 +62,7 @@ const SparkyChat = () => {
       title: 'PT AI henüz hazır değil',
       description:
         user?.role === 'admin'
-          ? 'Menü → Yönetim → "PT AI – Claude API anahtarı" bölümünden anahtarı ekle ve "Aktif"i aç.'
+          ? 'Menü → Yönetim → "PT AI (Claude)" bölümüne Claude API anahtarını gir ve kaydet.'
           : 'Yöneticinden PT AI’yı açmasını iste.',
     });
     closeChat();
@@ -138,7 +140,7 @@ const SparkyChat = () => {
                     >
                       <SelectTrigger
                         id="ai-provider-select"
-                        className="h-8 text-xs max-w-[160px]"
+                        className="h-11 max-w-[140px] text-xs"
                       >
                         <SelectValue
                           placeholder={t(
@@ -161,13 +163,13 @@ const SparkyChat = () => {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={handleClearHistory}
+                      onClick={() => setConfirmClear(true)}
                       disabled={isClearing}
                       aria-label={t(
                         'chat.sparkyChat.clearChatHistory',
                         'Clear chat history'
                       )}
-                      className="shrink-0"
+                      className="h-11 w-11 shrink-0"
                     >
                       <Trash2 className="h-5 w-5" />
                     </Button>
@@ -182,7 +184,7 @@ const SparkyChat = () => {
                         ? t('chat.sparkyChat.expandChat', 'Expand chat')
                         : t('chat.sparkyChat.minimizeChat', 'Minimize chat')
                     }
-                    className="shrink-0"
+                    className="h-11 w-11 shrink-0"
                   >
                     {isMinimized ? (
                       <ChevronUp className="h-5 w-5" />
@@ -196,7 +198,7 @@ const SparkyChat = () => {
                     size="icon"
                     onClick={closeChat}
                     aria-label={t('chat.sparkyChat.closeChat', 'Close chat')}
-                    className="shrink-0"
+                    className="h-11 w-11 shrink-0"
                   >
                     <X className="h-5 w-5" />
                   </Button>
@@ -212,6 +214,18 @@ const SparkyChat = () => {
               <SparkyChatInterface key={resetKey} />
             </div>
           </div>
+          <ConfirmationDialog
+            open={confirmClear}
+            onOpenChange={setConfirmClear}
+            onConfirm={() => {
+              setConfirmClear(false);
+              handleClearHistory();
+            }}
+            title="Sohbet geçmişi silinsin mi?"
+            description="PT AI ile tüm konuşmaların silinir. Kaydettiğin yiyecek ve antrenmanlar kalır."
+            variant="destructive"
+            confirmLabel="Sil"
+          />
         </DialogPrimitive.Content>
       </DialogPrimitive.Portal>
     </DialogPrimitive.Root>

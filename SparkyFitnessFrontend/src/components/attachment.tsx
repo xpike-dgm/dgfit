@@ -7,7 +7,8 @@ import {
   useState,
   type FC,
 } from 'react';
-import { XIcon, PlusIcon, FileText } from 'lucide-react';
+import { XIcon, CameraIcon, FileText } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import {
   AttachmentPrimitive,
   ComposerPrimitive,
@@ -193,7 +194,7 @@ const AttachmentRemove: FC = () => {
     <AttachmentPrimitive.Remove asChild>
       <TooltipIconButton
         tooltip={t('attachment.removeFile', 'Remove file')}
-        className="aui-attachment-tile-remove text-muted-foreground hover:[&_svg]:text-destructive absolute end-1.5 top-1.5 size-3.5 rounded-full bg-white opacity-100 shadow-sm hover:bg-white! [&_svg]:text-black"
+        className="aui-attachment-tile-remove text-muted-foreground hover:[&_svg]:text-destructive absolute end-1 top-1 size-7 rounded-full p-1 bg-white opacity-100 shadow-sm hover:bg-white! [&_svg]:text-black"
         side="top"
       >
         <XIcon className="aui-attachment-remove-icon size-3 dark:stroke-[2.5px]" />
@@ -224,18 +225,19 @@ export const ComposerAttachments: FC = () => {
 
 export const ComposerAddAttachment: FC = () => {
   const { t } = useTranslation();
+  // DG FIT: the photo button is the main way to log a meal, so it is a
+  // labelled 44px pill instead of a bare "+".
   return (
     <ComposerPrimitive.AddAttachment asChild>
-      <TooltipIconButton
-        tooltip={t('attachment.addAttachment', 'Add Attachment')}
-        side="bottom"
+      <Button
+        type="button"
         variant="ghost"
-        size="icon"
-        className="aui-composer-add-attachment hover:bg-muted-foreground/15 dark:border-muted-foreground/15 dark:hover:bg-muted-foreground/30 size-8 rounded-full p-1 text-xs font-semibold"
+        className="aui-composer-add-attachment h-11 gap-1.5 rounded-full px-3 text-sm font-medium hover:bg-muted-foreground/15 dark:hover:bg-muted-foreground/30"
         aria-label={t('attachment.addAttachment', 'Add Attachment')}
       >
-        <PlusIcon className="aui-attachment-add-icon size-5 stroke-[1.5px]" />
-      </TooltipIconButton>
+        <CameraIcon className="aui-attachment-add-icon size-5" />
+        {t('attachment.photo', 'Photo')}
+      </Button>
     </ComposerPrimitive.AddAttachment>
   );
 };

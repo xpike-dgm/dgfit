@@ -18,6 +18,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useChatbotVisibility } from '@/contexts/ChatbotVisibilityContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { cn } from '@/lib/utils';
+import { InstallAppRow } from '@/components/InstallAppBanner';
 
 interface Row {
   label: string;
@@ -36,9 +37,9 @@ const THEMES = [
 /** Grouped settings rows, as on the SparkyFitness mobile Library and Settings tabs. */
 const RowGroup = ({ title, rows }: { title: string; rows: Row[] }) => (
   <div className="mb-4 overflow-hidden rounded-2xl bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none">
-    <div className="px-4 pt-3 pb-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+    <h2 className="px-4 pt-3 pb-1 text-sm font-bold text-foreground/80">
       {title}
-    </div>
+    </h2>
     {rows.map(({ label, hint, icon: Icon, tint, onClick }, index) => (
       <button
         key={label}
@@ -61,7 +62,7 @@ const RowGroup = ({ title, rows }: { title: string; rows: Row[] }) => (
           <span className="block text-base font-semibold text-foreground">
             {label}
           </span>
-          <span className="mt-0.5 block truncate text-sm text-muted-foreground">
+          <span className="mt-0.5 block text-sm text-muted-foreground">
             {hint}
           </span>
         </span>
@@ -81,21 +82,21 @@ const MenuPage = () => {
   const library: Row[] = [
     {
       label: 'Hareketler',
-      hint: 'Hareket kütüphanesi',
+      hint: 'Egzersiz listesi, nasıl yapılır',
       icon: Dumbbell,
       tint: 'text-primary',
       onClick: () => navigate('/exercises'),
     },
     {
       label: 'Yiyecekler',
-      hint: 'Besin veritabanı ve öğünler',
+      hint: 'Kayıtlı yiyeceklerin ve hazır öğünlerin',
       icon: Utensils,
       tint: 'text-cat-green',
       onClick: () => navigate('/foods'),
     },
     {
       label: 'Tarifler',
-      hint: 'Shake ve yemek tarifi oluştur',
+      hint: 'PT AI ile shake ve yemek tarifi',
       icon: ChefHat,
       tint: 'text-cat-amber',
       onClick: () => navigate('/tarifler'),
@@ -111,7 +112,7 @@ const MenuPage = () => {
     },
     {
       label: 'PT AI',
-      hint: 'Yaz, fotoğraf at, sor',
+      hint: 'Kişisel antrenörüne yaz, fotoğraf at, sor',
       icon: Sparkles,
       tint: 'text-primary',
       onClick: openChat,
@@ -119,22 +120,22 @@ const MenuPage = () => {
   ];
   const tracking: Row[] = [
     {
-      label: 'Gelişim',
-      hint: 'Grafikler ve rekorlar',
+      label: 'Grafikler',
+      hint: 'Kilo, antrenman ve beslenme grafiklerin, rekorlar',
       icon: BarChart3,
       tint: 'text-cat-green',
       onClick: () => navigate('/reports'),
     },
     {
-      label: 'Kilo & Ölçümler',
-      hint: 'Kilo, vücut ölçüleri, fotoğraflar',
+      label: 'Kilo & ölçüm',
+      hint: 'Kilonu, vücut ölçülerini ve fotoğraflarını kaydet',
       icon: Scale,
       tint: 'text-cat-pink',
       onClick: () => navigate('/checkin'),
     },
     {
       label: 'Hedefler',
-      hint: 'Kalori ve makro hedefi',
+      hint: 'Günlük kalori, makro ve su hedefin',
       icon: Target,
       tint: 'text-cat-amber',
       onClick: () => navigate('/goals'),
@@ -143,7 +144,7 @@ const MenuPage = () => {
   const account: Row[] = [
     {
       label: 'Ayarlar',
-      hint: 'Profil, bildirimler, gizlilik',
+      hint: 'Profil, bildirimler, şifre',
       icon: SettingsIcon,
       tint: 'text-muted-foreground',
       onClick: () => navigate('/settings'),
@@ -152,7 +153,7 @@ const MenuPage = () => {
   if (user?.role === 'admin') {
     account.push({
       label: 'Yönetim',
-      hint: 'Davet kodları, kullanıcılar, AI',
+      hint: 'Davet kodları, kullanıcılar, PT AI kullanımı',
       icon: Shield,
       tint: 'text-muted-foreground',
       onClick: () => navigate('/admin'),
@@ -163,25 +164,35 @@ const MenuPage = () => {
     <div className="pb-4">
       <h1 className="mb-6 text-2xl font-bold text-foreground">Menü</h1>
       <RowGroup title="Kütüphane" rows={library} />
-      <RowGroup title="Sosyal & Koç" rows={social} />
+      <RowGroup title="Arkadaşlar & PT AI" rows={social} />
       <RowGroup title="Takip" rows={tracking} />
       <RowGroup title="Hesap" rows={account} />
+      <InstallAppRow />
 
       <div className="mb-4 rounded-2xl bg-card p-4 shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none">
-        <div className="mb-2 text-sm font-medium text-muted-foreground">
+        <h2
+          id="menu-theme-label"
+          className="mb-2 text-sm font-bold text-foreground/80"
+        >
           Görünüm
-        </div>
-        <div className="flex rounded-xl bg-raised p-1">
+        </h2>
+        <div
+          role="radiogroup"
+          aria-labelledby="menu-theme-label"
+          className="flex rounded-xl bg-raised p-1"
+        >
           {THEMES.map(([value, label]) => (
             <button
               key={value}
               type="button"
+              role="radio"
+              aria-checked={theme === value}
               onClick={() => setTheme(value)}
               className={cn(
-                'flex-1 rounded-lg py-2 text-sm font-medium',
+                'h-11 flex-1 rounded-lg text-base font-medium',
                 theme === value
                   ? 'bg-card text-foreground shadow-sm'
-                  : 'text-caption'
+                  : 'text-muted-foreground'
               )}
             >
               {label}
@@ -196,7 +207,7 @@ const MenuPage = () => {
           await signOut();
           navigate('/login');
         }}
-        className="flex w-full items-center justify-center gap-2 rounded-2xl bg-card p-4 text-base font-medium text-danger-text shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
+        className="flex min-h-14 w-full items-center justify-center gap-2 rounded-2xl bg-card p-4 text-base font-medium text-danger-text shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
       >
         <LogOut className="h-5 w-5" /> Çıkış yap
       </button>

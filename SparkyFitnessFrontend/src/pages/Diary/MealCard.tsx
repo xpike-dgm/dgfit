@@ -27,7 +27,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import EnhancedFoodSearch from '../../components/FoodSearch/FoodSearch';
 import { usePreferences } from '@/contexts/PreferencesContext';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -40,6 +40,11 @@ import { useCopyFoodEntriesFromYesterdayMutation } from '@/hooks/Diary/useFoodEn
 import type { Food, FoodEntry, GlycemicIndex } from '@/types/food';
 import type { Meal, FoodEntryMeal } from '@/types/meal';
 import { formatTimeOfDayString } from '@/utils/timeFormatters';
+import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
+import { useActiveUser } from '@/contexts/ActiveUserContext';
+import { mealTypeLabel } from './mealTypeLabel';
+import { unitLabelTr } from '@/utils/foodServing';
+import { ChevronDown } from 'lucide-react';
 interface MealTotals {
   calories: number;
   protein: number;
@@ -76,6 +81,8 @@ import ImageLightbox from '@/components/ImageLightbox';
 
 const MOBILE_ENTRY_NUTRIENT_LIMIT = 4;
 
+const ZERO_HIDDEN_NUTRIENTS = new Set(['caffeine_mg', 'alcohol_g']);
+
 const MOBILE_NUTRIENT_LABEL_OVERRIDES: Record<
   string,
   { label: string; defaultLabel: string }
@@ -98,7 +105,8 @@ interface MealCardProps {
   onEditEntry: (entry: FoodEntry | FoodEntryMeal) => void;
   onRemoveEntry: (
     itemId: string,
-    itemType: 'foodEntry' | 'foodEntryMeal'
+    itemType: 'foodEntry' | 'foodEntryMeal',
+    itemName?: string
   ) => Promise<void>;
   getEntryNutrition: (entry: FoodEntry | FoodEntryMeal) => MealTotals;
   onCopyClick: (mealType: string) => void;
@@ -113,6 +121,8 @@ interface MealCardProps {
   customNutrients?: UserCustomNutrient[]; // Add customNutrients prop
   shouldOpenFoodSearch?: boolean;
   onFoodSearchClose?: () => void;
+  /** Bumped by the Diary after an entry is logged; closes the search sheet. */
+  closeSearchSignal?: number;
 }
 
 const MealCard = ({
@@ -129,6 +139,7 @@ const MealCard = ({
   convertEnergy,
   shouldOpenFoodSearch,
   onFoodSearchClose,
+  closeSearchSignal = 0,
   selectedDate,
   customNutrients = [], // Default to empty array
 }: MealCardProps) => {
@@ -157,6 +168,27 @@ const MealCard = ({
       onFoodSearchClose();
     }
   };
+
+  // Logging a food closes the whole add flow so the new row is visible at
+  // once (the Diary toasts "<name> eklendi · N kcal").
+  const lastCloseSignal = useRef(closeSearchSignal);
+  useEffect(() => {
+    if (closeSearchSignal === lastCloseSignal.current) return;
+    lastCloseSignal.current = closeSearchSignal;
+    if (isFoodSearchOpen) handleFoodSearchOpenChange(false);
+    // Only the signal matters; the handler is recreated every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [closeSearchSignal]);
+
+  const { accessibleUsers } = useActiveUser();
+  // Rows tapped open to show their macros and actions (phone).
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<{
+    id: string;
+    type: 'foodEntry' | 'foodEntryMeal';
+    name: string;
+  } | null>(null);
+  const mealDisplayName = mealTypeLabel(meal.name);
   const [searchParams] = useSearchParams();
   const highlightFoodId = searchParams.get('highlight') ?? null;
   const { mutate: copyFoodEntriesFromYesterday } =
@@ -249,7 +281,9 @@ const MealCard = ({
         <CardHeader>
           <div className="flex items-center justify-between gap-2">
             <div className="flex min-w-0 items-baseline gap-2">
-              <CardTitle className="truncate text-lg">{meal.name}</CardTitle>
+              <CardTitle className="truncate text-lg">
+                {mealDisplayName}
+              </CardTitle>
               <span className="whitespace-nowrap text-sm text-muted-foreground">
                 {Math.round(convertEnergy(totals.calories, 'kcal', energyUnit))}
                 {!!meal.targetCalories && (
@@ -268,7 +302,7 @@ const MealCard = ({
                 <DialogTrigger asChild>
                   <Button
                     size="sm"
-                    className="rounded-full px-4"
+                    className="h-10 rounded-full px-4"
                     onClick={() =>
                       debug(
                         loggingLevel,
@@ -281,42 +315,18 @@ const MealCard = ({
                     Ekle
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-6xl max-h-[80vh] overflow-y-auto">
+                <DialogContent className="sm:max-h-[85vh] sm:max-w-3xl sm:overflow-y-auto">
                   <DialogHeader>
-                    <DialogTitle>
-                      {t('mealCard.addFoodToMeal', {
-                        mealName: t(`common.${meal.type}`, meal.name),
-                        defaultValue: `Add Food to ${t(
-                          `common.${meal.type}`,
-                          meal.name
-                        )}`,
-                      })}
-                    </DialogTitle>
+                    <DialogTitle>Öğüne ekle: {mealDisplayName}</DialogTitle>
                     <DialogDescription>
-                      {t('mealCard.searchFoodsForMeal', {
-                        mealName: t(
-                          `common.${meal.type}`,
-                          meal.name
-                        ).toLowerCase(),
-                        defaultValue: `Search for foods to add to your ${t(
-                          `common.${meal.type}`,
-                          meal.name
-                        ).toLowerCase()}.`,
-                      })}
-                      <br />
-                      <span className="text-red-500">
-                        {(selectedDateRelation === 'past' &&
-                          t(
-                            'foodDiary.pastDateWarning',
-                            'Warning: You are adding food entries for a past date.'
-                          )) ||
-                          (selectedDateRelation === 'future' &&
-                            t(
-                              'foodDiary.futureDateWarning',
-                              'Warning: You are adding food entries for a future date.'
-                            )) ||
-                          ''}
-                      </span>
+                      Yiyecek ara ya da son yediklerinden seç.
+                      {selectedDateRelation !== 'today' && (
+                        <span className="mt-1 block text-amber-600 dark:text-amber-400">
+                          {selectedDateRelation === 'past'
+                            ? 'Geçmiş bir güne ekliyorsun.'
+                            : 'İleri bir güne ekliyorsun.'}
+                        </span>
+                      )}
                     </DialogDescription>
                   </DialogHeader>
                   <EnhancedFoodSearch
@@ -347,32 +357,44 @@ const MealCard = ({
                     variant="ghost"
                     size="icon"
                     aria-label="Diğer işlemler"
-                    className="text-muted-foreground"
+                    className="h-11 w-11 text-muted-foreground"
                   >
                     <MoreHorizontal className="h-5 w-5" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuItem onSelect={handleCopyFromYesterday}>
+                <DropdownMenuContent align="end" className="w-60">
+                  <DropdownMenuItem
+                    className="min-h-11 gap-3"
+                    onSelect={handleCopyFromYesterday}
+                  >
                     <History className="h-4 w-4 text-primary" />
-                    {t('diary.copyAllFromYesterday', 'Copy all from yesterday')}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => onCopyClick(meal.type)}>
-                    <ClipboardCopy className="h-4 w-4 text-primary" />
-                    {t('diary.copyAllToDate', 'Copy entire day to date')}
+                    Dünden kopyala
                   </DropdownMenuItem>
                   <DropdownMenuItem
+                    className="min-h-11 gap-3"
+                    onSelect={() => onCopyClick(meal.type)}
+                  >
+                    <ClipboardCopy className="h-4 w-4 text-primary" />
+                    Başka güne kopyala
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="min-h-11 gap-3"
                     onSelect={() => onConvertToMealClick(meal.type)}
                   >
                     <PlusCircle className="h-4 w-4 text-primary" />
-                    {t('mealCreation.convertToMeal', 'Create Meal from Diary')}
+                    Öğün olarak kaydet
                   </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onSelect={() => onCopyFamilyClick(meal.type)}
-                  >
-                    <Users className="h-4 w-4 text-primary" />
-                    {t('diary.copyFamilyTitle', 'Copy Food with Family')}
-                  </DropdownMenuItem>
+                  {/* Family access (one person logging for another) is rare
+                      in DG FIT; only offer it to people who have it. */}
+                  {accessibleUsers.length > 0 && (
+                    <DropdownMenuItem
+                      className="min-h-11 gap-3"
+                      onSelect={() => onCopyFamilyClick(meal.type)}
+                    >
+                      <Users className="h-4 w-4 text-primary" />
+                      Başka profille kopyala
+                    </DropdownMenuItem>
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -380,11 +402,21 @@ const MealCard = ({
         </CardHeader>
         <CardContent>
           {meal.entries.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              {t('foodDiary.noFoodsAddedYet', 'No foods added yet')}
+            <div className="flex flex-col items-center gap-3 py-4 text-center">
+              <p className="text-sm text-muted-foreground">
+                Bu güne henüz yiyecek eklenmedi.
+              </p>
+              <Button
+                variant="secondary"
+                className="h-11 rounded-full px-5"
+                onClick={() => handleFoodSearchOpenChange(true)}
+              >
+                <Plus className="h-4 w-4" />
+                Yiyecek ekle
+              </Button>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className={cn(isMobile ? '-mx-1 divide-y divide-border' : 'space-y-3')}>
               {meal.entries.map((item) => {
                 // Changed entry to item
                 const entryNutrition = getEntryNutrition(item);
@@ -470,169 +502,161 @@ const MealCard = ({
                   return { metadata, displayValue, unitDisplay };
                 };
 
-                const mobileCalories = visibleNutrientsForGrid.includes(
-                  'calories'
-                )
-                  ? getNutrientDisplay('calories')
-                  : null;
                 const mobileNutrients = visibleNutrientsForGrid
                   .filter((nutrient) => nutrient !== 'calories')
                   .slice(0, MOBILE_ENTRY_NUTRIENT_LIMIT);
 
                 if (isMobile) {
+                  // DESIGN.md's tight meal-card rows: one line with the name and
+                  // kcal, the amount under it; macros and actions on tap.
+                  const isExpanded = expandedId === item.id;
+                  const kcal = getNutrientDisplay('calories');
+                  const amountLabel = [
+                    quantity !== undefined && quantity !== null
+                      ? Number(quantity).toLocaleString('tr-TR', {
+                          maximumFractionDigits: 2,
+                        })
+                      : null,
+                    unit ? unitLabelTr(unit) : null,
+                  ]
+                    .filter(Boolean)
+                    .join(' ');
+                  const macroLine = mobileNutrients
+                    // Caffeine and alcohol only matter when there is some.
+                    .filter(
+                      (nutrient) =>
+                        !ZERO_HIDDEN_NUTRIENTS.has(nutrient) ||
+                        Number(entryNutrition[nutrient as keyof MealTotals]) >
+                          0
+                    )
+                    .map((nutrient) => {
+                      const { metadata, displayValue, unitDisplay } =
+                        getNutrientDisplay(nutrient);
+                      const labelOverride =
+                        MOBILE_NUTRIENT_LABEL_OVERRIDES[nutrient];
+                      const label = labelOverride
+                        ? t(labelOverride.label, labelOverride.defaultLabel)
+                        : t(metadata.label, metadata.defaultLabel);
+                      return `${label} ${displayValue} ${unitDisplay}`.trim();
+                    })
+                    .join(' · ');
                   return (
                     <div
                       key={item.id}
                       className={cn(
-                        'rounded-xl border bg-card p-4 shadow-sm transition-colors duration-300 dark:bg-secondary/50',
-                        entryIsHighlighted && 'border-2 border-blue-500'
+                        'transition-colors duration-300',
+                        entryIsHighlighted &&
+                          'rounded-lg ring-2 ring-primary ring-inset'
                       )}
                     >
-                      <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-3">
-                        <div className="min-w-0">
-                          <div className="text-base font-semibold leading-tight text-card-foreground">
+                      <button
+                        type="button"
+                        aria-expanded={isExpanded}
+                        onClick={() =>
+                          setExpandedId(isExpanded ? null : item.id)
+                        }
+                        className="flex min-h-[52px] w-full items-center gap-3 px-1 py-2 text-left"
+                      >
+                        <div className="min-w-0 flex-1">
+                          <div className="truncate text-[15px] font-medium leading-tight text-card-foreground">
                             {entryName}
                           </div>
-                          <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
-                            {entryDescription && (
-                              <span className="break-words">
-                                {entryDescription}
-                              </span>
-                            )}
-                            {entryDescription && servingLabel && (
-                              <span aria-hidden="true">&bull;</span>
-                            )}
-                            {servingLabel && <span>{servingLabel}</span>}
-                            {item.entry_time && (
-                              <>
-                                <span aria-hidden="true">&bull;</span>
-                                <span className="font-medium text-blue-600 dark:text-blue-400">
-                                  {formatTimeOfDayString(
+                          <div className="mt-0.5 truncate text-xs text-muted-foreground">
+                            {[
+                              amountLabel,
+                              item.entry_time
+                                ? formatTimeOfDayString(
                                     item.entry_time,
                                     timeFormat
-                                  )}
-                                </span>
-                              </>
-                            )}
-                            {isFromMealPlan && (
-                              <Badge variant="outline" className="text-[10px]">
-                                {t('mealCard.fromPlan', 'From Plan')}
+                                  )
+                                : null,
+                              isFromMealPlan
+                                ? t('mealCard.fromPlan', 'From Plan')
+                                : null,
+                              isFoodEntryMeal ? 'Yemek' : null,
+                            ]
+                              .filter(Boolean)
+                              .join(' · ')}
+                          </div>
+                        </div>
+                        <div className="shrink-0 text-right text-[15px] font-semibold tabular-nums text-foreground">
+                          {kcal.displayValue}
+                          <span className="ml-1 text-xs font-normal text-muted-foreground">
+                            {kcal.unitDisplay}
+                          </span>
+                        </div>
+                        <ChevronDown
+                          className={cn(
+                            'h-4 w-4 shrink-0 text-muted-foreground transition-transform',
+                            isExpanded && 'rotate-180'
+                          )}
+                        />
+                      </button>
+                      {isExpanded && (
+                        <div className="space-y-2 px-1 pb-3">
+                          {macroLine && (
+                            <p className="text-sm text-muted-foreground">
+                              {macroLine}
+                            </p>
+                          )}
+                          {entryDescription && (
+                            <p className="text-xs text-muted-foreground">
+                              {entryDescription}
+                            </p>
+                          )}
+                          {giValue &&
+                            validGiValues.includes(giValue as GlycemicIndex) &&
+                            quickInfoNutrients.includes('glycemic_index') && (
+                              <Badge
+                                variant="secondary"
+                                className="text-[10px] font-medium"
+                              >
+                                {t('diary.mealCard.gi', 'GI: {{giValue}}', {
+                                  giValue,
+                                })}
                               </Badge>
                             )}
-                            {giValue &&
-                              validGiValues.includes(
-                                giValue as GlycemicIndex
-                              ) &&
-                              quickInfoNutrients.includes('glycemic_index') && (
-                                <Badge
-                                  variant="secondary"
-                                  className="text-[10px] font-medium"
-                                >
-                                  {t('diary.mealCard.gi', 'GI: {{giValue}}', {
-                                    giValue,
-                                  })}
-                                </Badge>
-                              )}
-                          </div>
                           {isFoodEntry && (
                             <AllergenBadges
                               allergens={(item as FoodEntry).allergens}
                               traces={(item as FoodEntry).traces}
                             />
                           )}
-                        </div>
-                        {mobileCalories && (
-                          <div className="text-right">
-                            <div
-                              className={cn(
-                                'text-xl font-semibold leading-none',
-                                mobileCalories.metadata.color
-                              )}
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="outline"
+                              className="h-11 flex-1"
+                              onClick={() => {
+                                debug(
+                                  loggingLevel,
+                                  'MealCard: Edit entry button clicked:',
+                                  item.id
+                                );
+                                onEditEntry(item);
+                              }}
                             >
-                              {mobileCalories.displayValue}
-                            </div>
-                            <div className="mt-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-                              {mobileCalories.unitDisplay}
-                            </div>
+                              <Edit className="h-4 w-4" />
+                              Düzenle
+                            </Button>
+                            <Button
+                              variant="outline"
+                              className="h-11 flex-1 text-destructive hover:text-destructive"
+                              onClick={() =>
+                                setPendingDelete({
+                                  id: item.id,
+                                  type: isFoodEntryMeal
+                                    ? 'foodEntryMeal'
+                                    : 'foodEntry',
+                                  name: entryName ?? '',
+                                })
+                              }
+                            >
+                              <Trash2 className="h-4 w-4" />
+                              Sil
+                            </Button>
                           </div>
-                        )}
-                      </div>
-
-                      {mobileNutrients.length > 0 && (
-                        <div
-                          className="mt-3 grid gap-2 border-t pt-3"
-                          style={{
-                            gridTemplateColumns: `repeat(${mobileNutrients.length}, minmax(0, 1fr))`,
-                          }}
-                        >
-                          {mobileNutrients.map((nutrient) => {
-                            const { metadata, displayValue, unitDisplay } =
-                              getNutrientDisplay(nutrient);
-                            const labelOverride =
-                              MOBILE_NUTRIENT_LABEL_OVERRIDES[nutrient];
-
-                            return (
-                              <div key={nutrient} className="min-w-0">
-                                <div
-                                  className={cn(
-                                    'text-sm font-medium leading-tight',
-                                    metadata.color
-                                  )}
-                                >
-                                  {displayValue}
-                                  {unitDisplay}
-                                </div>
-                                <div className="mt-1 truncate text-xs text-muted-foreground">
-                                  {labelOverride
-                                    ? t(
-                                        labelOverride.label,
-                                        labelOverride.defaultLabel
-                                      )
-                                    : t(metadata.label, metadata.defaultLabel)}
-                                </div>
-                              </div>
-                            );
-                          })}
                         </div>
                       )}
-
-                      <div className="mt-3 flex items-center gap-2 border-t pt-2">
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-9 w-9 text-muted-foreground"
-                          onClick={() => {
-                            debug(
-                              loggingLevel,
-                              'MealCard: Edit entry button clicked:',
-                              item.id
-                            );
-                            onEditEntry(item);
-                          }}
-                          title={t('common.edit', 'Edit')}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-9 w-9 text-muted-foreground"
-                          onClick={() => {
-                            debug(
-                              loggingLevel,
-                              'MealCard: Remove entry button clicked:',
-                              item.id
-                            );
-                            onRemoveEntry(
-                              item.id,
-                              isFoodEntryMeal ? 'foodEntryMeal' : 'foodEntry'
-                            );
-                          }}
-                          title={t('common.delete', 'Delete')}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
                     </div>
                   );
                 }
@@ -757,11 +781,15 @@ const MealCard = ({
                             'MealCard: Remove entry button clicked:',
                             item.id
                           );
-                          onRemoveEntry(
-                            item.id,
-                            isFoodEntryMeal ? 'foodEntryMeal' : 'foodEntry'
-                          );
+                          setPendingDelete({
+                            id: item.id,
+                            type: isFoodEntryMeal
+                              ? 'foodEntryMeal'
+                              : 'foodEntry',
+                            name: entryName ?? '',
+                          });
                         }}
+                        title={t('common.delete', 'Delete')}
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
@@ -770,7 +798,7 @@ const MealCard = ({
                 );
               })}
 
-              {meal.entries.length > 1 && (
+              {meal.entries.length > 1 && !isMobile && (
                 <>
                   <Separator />
 
@@ -863,6 +891,29 @@ const MealCard = ({
           </DialogContent>
         </Dialog>
       )}
+      <ConfirmationDialog
+        open={pendingDelete !== null}
+        onOpenChange={(open) => !open && setPendingDelete(null)}
+        title="Kayıt silinsin mi?"
+        description={
+          pendingDelete?.name
+            ? `${pendingDelete.name} bu günden silinecek.`
+            : 'Bu kayıt bu günden silinecek.'
+        }
+        variant="destructive"
+        confirmLabel="Sil"
+        onConfirm={() => {
+          if (pendingDelete) {
+            void onRemoveEntry(
+              pendingDelete.id,
+              pendingDelete.type,
+              pendingDelete.name
+            );
+            if (expandedId === pendingDelete.id) setExpandedId(null);
+          }
+          setPendingDelete(null);
+        }}
+      />
       <ImageLightbox {...lightboxProps} />
     </>
   );

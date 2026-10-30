@@ -50,6 +50,7 @@ import { useTranslation } from 'react-i18next';
 import { useUserAIPreferences } from '@/hooks/AI/useAIServiceSettings';
 import { useVoiceInput } from '@/hooks/AI/useVoiceInput';
 import { VoiceInputControl } from '@/components/ai/VoiceInputControl';
+import { useAuth } from '@/hooks/useAuth';
 
 interface ThreadProps {
   runtime?: AssistantRuntime;
@@ -150,11 +151,12 @@ const ThreadWelcome: FC = () => {
   );
 };
 
+// DG FIT is Turkish-only; the prompts are sent as typed, so they stay Turkish.
 const WELCOME_SUGGESTIONS = [
-  'Log two eggs and a banana for breakfast',
-  'Log a 30 minute run today',
-  'How many calories do I have left today?',
-  'Suggest a high-protein snack',
+  'Kahvaltıda 2 yumurta ve 1 muz yedim',
+  'Bugün 30 dakika koştum',
+  'Bugün kaç kalorim kaldı?',
+  'Yüksek proteinli bir atıştırmalık öner',
 ];
 
 const ThreadSuggestions: FC = () => {
@@ -174,7 +176,7 @@ const ThreadSuggestionItem: FC<{ prompt: string }> = ({ prompt }) => {
       <ThreadPrimitive.Suggestion prompt={prompt} clearComposer asChild>
         <Button
           variant="ghost"
-          className="aui-thread-welcome-suggestion bg-background hover:bg-muted h-auto w-full flex-wrap items-start justify-start gap-1 rounded-3xl border px-4 py-3 text-start text-sm font-medium transition-colors @md:flex-col"
+          className="aui-thread-welcome-suggestion bg-background hover:bg-muted h-auto min-h-11 w-full flex-wrap items-start justify-start gap-1 rounded-3xl border px-4 py-3 text-start text-sm font-medium whitespace-normal transition-colors @md:flex-col"
         >
           {prompt}
         </Button>
@@ -185,6 +187,9 @@ const ThreadSuggestionItem: FC<{ prompt: string }> = ({ prompt }) => {
 
 const Composer: FC = () => {
   const { t, i18n } = useTranslation();
+  // The tool-category picker is a tuning knob for small local models; DG FIT
+  // keeps it out of the way of regular users.
+  const isAdmin = useAuth().user?.role === 'admin';
   const aui = useAui();
   const running = useAuiState((state) => state.thread.isRunning);
   const { data: preferences } = useUserAIPreferences();
@@ -219,7 +224,7 @@ const Composer: FC = () => {
           <ComposerPrimitive.Input
             disabled={voice.busy}
             placeholder={t('thread.sendAMessage', 'Send a message...')}
-            className="aui-composer-input placeholder:text-muted-foreground/80 max-h-32 min-h-10 w-full resize-none bg-transparent px-1.75 py-1 text-sm outline-none"
+            className="aui-composer-input placeholder:text-muted-foreground/80 max-h-32 min-h-10 w-full resize-none bg-transparent px-1.75 py-1 text-base outline-none"
             rows={1}
             autoFocus
             aria-label={t('thread.messageInput', 'Message input')}
@@ -233,7 +238,7 @@ const Composer: FC = () => {
               inert={voice.busy}
             >
               <ComposerAddAttachment />
-              <ChatToolCategoriesSelector />
+              {isAdmin && <ChatToolCategoriesSelector />}
             </div>
             <div className="flex flex-col items-end gap-2">
               {voiceEnabled && !running ? (
@@ -263,7 +268,7 @@ const ComposerAction: FC<{ disabled: boolean }> = ({ disabled }) => {
             type="button"
             variant="default"
             size="icon"
-            className="aui-composer-send size-8 rounded-full"
+            className="aui-composer-send size-11 rounded-full"
             aria-label={t('thread.sendMessage', 'Send message')}
           >
             <ArrowUpIcon className="aui-composer-send-icon size-4" />
@@ -276,7 +281,7 @@ const ComposerAction: FC<{ disabled: boolean }> = ({ disabled }) => {
             type="button"
             variant="default"
             size="icon"
-            className="aui-composer-cancel size-8 rounded-full"
+            className="aui-composer-cancel size-11 rounded-full"
             aria-label={t('thread.stopGenerating', 'Stop generating')}
           >
             <SquareIcon className="aui-composer-cancel-icon size-3 fill-current" />
@@ -287,11 +292,32 @@ const ComposerAction: FC<{ disabled: boolean }> = ({ disabled }) => {
   );
 };
 
+// DG FIT: a Turkish, actionable error with a visible retry. The raw provider
+// message (invalid key, quota...) is only useful to the admin who set PT AI up.
 const MessageError: FC = () => {
+  const isAdmin = useAuth().user?.role === 'admin';
   return (
     <MessagePrimitive.Error>
-      <ErrorPrimitive.Root className="aui-message-error-root border-destructive bg-destructive/10 text-destructive dark:bg-destructive/5 mt-2 rounded-md border p-3 text-sm dark:text-red-200">
-        <ErrorPrimitive.Message className="aui-message-error-message line-clamp-2" />
+      <ErrorPrimitive.Root className="aui-message-error-root border-destructive bg-destructive/10 text-destructive dark:bg-destructive/5 mt-2 flex flex-col gap-2 rounded-xl border p-3 text-sm dark:text-red-200">
+        <p className="font-medium">
+          PT AI şu an yanıt veremiyor. Biraz sonra tekrar dene.
+        </p>
+        {isAdmin && (
+          <p className="text-xs opacity-80">
+            Yönetici ayrıntısı:{' '}
+            <ErrorPrimitive.Message className="aui-message-error-message break-words" />
+          </p>
+        )}
+        <ActionBarPrimitive.Reload asChild>
+          <Button
+            type="button"
+            variant="outline"
+            className="h-11 self-start border-destructive/40 bg-background text-foreground"
+          >
+            <RefreshCwIcon className="mr-2 size-4" />
+            Tekrar dene
+          </Button>
+        </ActionBarPrimitive.Reload>
       </ErrorPrimitive.Root>
     </MessagePrimitive.Error>
   );

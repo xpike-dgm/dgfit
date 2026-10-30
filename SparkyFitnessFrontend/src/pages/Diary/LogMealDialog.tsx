@@ -18,6 +18,8 @@ interface LogMealDialogProps {
   date: string;
   mealType: string;
   initialEntryTime?: string | null;
+  /** Called once the meal was logged, before the dialog closes. */
+  onLogged?: () => void;
 }
 
 const LogMealDialog: React.FC<LogMealDialogProps> = ({
@@ -27,9 +29,11 @@ const LogMealDialog: React.FC<LogMealDialogProps> = ({
   date,
   mealType,
   initialEntryTime,
+  onLogged,
 }) => {
   const { t } = useTranslation();
   const handleSave = () => {
+    onLogged?.();
     onOpenChange(false);
   };
 
@@ -43,7 +47,7 @@ const LogMealDialog: React.FC<LogMealDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-h-[90vh] sm:max-w-4xl sm:overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <span>

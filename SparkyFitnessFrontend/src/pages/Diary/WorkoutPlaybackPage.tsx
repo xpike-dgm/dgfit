@@ -53,7 +53,6 @@ import {
   listWorkoutSetPointers,
   getSetByPointer,
 } from '@/utils/workoutPlayback';
-import { formatSecondsClock } from '@/utils/timeFormatters';
 import {
   decideAdaptiveAdjustment,
   localDateTimeToUtc,
@@ -68,6 +67,8 @@ import WorkoutPlaybackFinishDialog, {
   type WorkoutFinishSummary,
 } from './WorkoutPlaybackFinishDialog';
 import WorkoutPlaybackSummary from './WorkoutPlaybackSummary';
+import WorkoutPlaybackBottomBar from './WorkoutPlaybackBottomBar';
+import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
 // Loaded on first Replace: the exercise dialog pulls in the whole search UI,
 // which the player otherwise never needs.
 const AddExerciseDialog = lazy(
@@ -192,6 +193,10 @@ const WorkoutPlaybackPage = () => {
     useState<WorkoutSetPointer | null>(null);
   const [restEditorCustomValue, setRestEditorCustomValue] = useState('');
   const [isDiscardDialogOpen, setIsDiscardDialogOpen] = useState(false);
+  // Sets still open when Finish is tapped; non-null shows the confirmation.
+  const [finishPendingSets, setFinishPendingSets] = useState<number | null>(
+    null
+  );
   const { enabled: guidedWorkoutEnabled } = useGuidedWorkoutPreferences();
   const [finishSummary, setFinishSummary] =
     useState<WorkoutFinishSummary | null>(null);
@@ -929,6 +934,31 @@ const WorkoutPlaybackPage = () => {
     );
   }, [updateDraft]);
 
+  const handleAddRest = useCallback(
+    (seconds: number) => {
+      updateDraft((currentDraft) => {
+        const timer = currentDraft.rest_timer;
+        if (timer.state === 'running' && timer.target_end_timestamp_ms) {
+          return setWorkoutPlaybackRestTimer(currentDraft, {
+            ...timer,
+            duration_seconds: timer.duration_seconds + seconds,
+            target_end_timestamp_ms:
+              timer.target_end_timestamp_ms + seconds * 1000,
+          });
+        }
+        if (timer.state === 'paused') {
+          return setWorkoutPlaybackRestTimer(currentDraft, {
+            ...timer,
+            duration_seconds: timer.duration_seconds + seconds,
+            remaining_seconds: timer.remaining_seconds + seconds,
+          });
+        }
+        return currentDraft;
+      });
+    },
+    [updateDraft]
+  );
+
   const handleOpenRestEditor = useCallback((pointer: WorkoutSetPointer) => {
     const currentDraft = draftRef.current;
     if (!currentDraft) return;
@@ -947,25 +977,44 @@ const WorkoutPlaybackPage = () => {
   }, []);
 
   const updateRestForPointer = useCallback(
-    (seconds: number) => {
+    (seconds: number, applyToExercise = false) => {
       if (!restEditorPointer) return;
       const normalized = clampRestSeconds(seconds);
-      updateDraft((currentDraft) =>
-        updateWorkoutSetAtPointer(currentDraft, restEditorPointer, {
-          rest_time: normalized,
-        })
-      );
+      updateDraft((currentDraft) => {
+        if (!applyToExercise) {
+          return updateWorkoutSetAtPointer(currentDraft, restEditorPointer, {
+            rest_time: normalized,
+          });
+        }
+        // "Bu hareketin kalan setleri": this set and every open set after it.
+        const exercise =
+          currentDraft.exercises[restEditorPointer.exerciseIndex];
+        let next = currentDraft;
+        exercise?.sets.forEach((set, setIndex) => {
+          if (setIndex < restEditorPointer.setIndex || set.completed) return;
+          next = updateWorkoutSetAtPointer(
+            next,
+            { exerciseIndex: restEditorPointer.exerciseIndex, setIndex },
+            { rest_time: normalized }
+          );
+        });
+        return next;
+      });
       closeRestEditor();
     },
     [closeRestEditor, restEditorPointer, updateDraft]
   );
 
-  const handleSaveCustomRest = useCallback(() => {
-    const parsed = Number(restEditorCustomValue);
-    updateRestForPointer(
-      Number.isFinite(parsed) ? parsed : DEFAULT_REST_SECONDS
-    );
-  }, [restEditorCustomValue, updateRestForPointer]);
+  const handleSaveCustomRest = useCallback(
+    (applyToExercise = false) => {
+      const parsed = Number(restEditorCustomValue);
+      updateRestForPointer(
+        Number.isFinite(parsed) ? parsed : DEFAULT_REST_SECONDS,
+        applyToExercise
+      );
+    },
+    [restEditorCustomValue, updateRestForPointer]
+  );
 
   const handleSelectSet = useCallback(
     (pointer: WorkoutSetPointer) => {
@@ -994,8 +1043,9 @@ const WorkoutPlaybackPage = () => {
     navigate(returnPath);
   }, [draft, navigate, returnPath]);
 
-  const handleFinishWorkout = useCallback(async () => {
+  const saveWorkout = useCallback(async () => {
     if (!draft) return;
+    setFinishPendingSets(null);
 
     const payload = buildPresetSessionCreateRequestFromDraft(draft, timezone);
     if (!payload.exercises || payload.exercises.length === 0) {
@@ -1066,6 +1116,19 @@ const WorkoutPlaybackPage = () => {
     }
   }, [createPresetSession, draft, elapsedSeconds, t, timezone, totalVolume]);
 
+  // Finishing with open sets asks first ("3 set kaldı"); open sets are not
+  // saved, so a mistaken tap mid-workout must not end it.
+  const handleFinishWorkout = useCallback(() => {
+    if (!draft) return;
+    const current = getWorkoutPlaybackStats(draft);
+    const remaining = current.totalSets - current.completedSets;
+    if (current.completedSets > 0 && remaining > 0) {
+      setFinishPendingSets(remaining);
+      return;
+    }
+    void saveWorkout();
+  }, [draft, saveWorkout]);
+
   const handleCloseFinishSummary = useCallback(() => {
     setFinishSummary(null);
     navigate(returnPath, { replace: true });
@@ -1108,9 +1171,8 @@ const WorkoutPlaybackPage = () => {
     );
   }
 
-  const isRestActive = draft && draft.rest_timer.state !== 'idle';
-  const restRemaining = formatSecondsClock(
-    draft ? getWorkoutPlaybackRestRemainingSeconds(draft.rest_timer) : 0
+  const restRemainingSeconds = getWorkoutPlaybackRestRemainingSeconds(
+    draft.rest_timer
   );
 
   const replaceCandidates = draft.exercises.map((exercise) => ({
@@ -1119,22 +1181,20 @@ const WorkoutPlaybackPage = () => {
   }));
 
   return (
-    <div className="mx-auto w-full max-w-5xl space-y-4">
+    <div
+      className={`mx-auto w-full max-w-5xl space-y-4 ${
+        draft.rest_timer.state !== 'idle' ? 'pb-48' : 'pb-24'
+      } sm:pb-28`}
+    >
       <WorkoutPlaybackSummary
         draft={draft}
         elapsedSeconds={elapsedSeconds}
-        totalVolume={totalVolume}
+        totalVolume={weightFromKg(totalVolume, weightUnit)}
         stats={stats}
-        restRemaining={restRemaining}
-        isRestActive={!!isRestActive}
-        saveError={saveError}
-        isSaving={isSaving}
         timezone={timezone}
+        volumeUnit={weightUnit === 'kg' ? 'kg' : 'lb'}
         onCloseKeepDraft={handleCloseKeepDraft}
         onDiscard={handleDiscard}
-        onFinishWorkout={handleFinishWorkout}
-        onPauseResumeRest={handlePauseResumeRest}
-        onSkipRest={handleSkipRest}
         onSessionNotesChange={handleSessionNotesChange}
         onLocationChange={handleLocationChange}
         onStartTimeChange={handleStartTimeChange}
@@ -1212,6 +1272,31 @@ const WorkoutPlaybackPage = () => {
         isDiscardDialogOpen={isDiscardDialogOpen}
         onDiscardDialogChange={setIsDiscardDialogOpen}
         onConfirmDiscard={handleConfirmDiscard}
+      />
+
+      <ConfirmationDialog
+        open={finishPendingSets != null}
+        onOpenChange={(open) => {
+          if (!open) setFinishPendingSets(null);
+        }}
+        onConfirm={() => void saveWorkout()}
+        title={`${finishPendingSets ?? 0} set kaldı`}
+        description="Yapmadığın setler kaydedilmez. Antrenmanı şimdi bitirip kaydedeyim mi?"
+        confirmLabel="Bitir ve kaydet"
+      />
+
+      <WorkoutPlaybackBottomBar
+        restState={draft.rest_timer.state}
+        restRemainingSeconds={restRemainingSeconds}
+        restDurationSeconds={draft.rest_timer.duration_seconds}
+        completedSets={stats?.completedSets ?? 0}
+        totalSets={stats?.totalSets ?? 0}
+        isSaving={isSaving}
+        saveError={saveError}
+        onPauseResumeRest={handlePauseResumeRest}
+        onSkipRest={handleSkipRest}
+        onAddRest={handleAddRest}
+        onFinishWorkout={handleFinishWorkout}
       />
     </div>
   );

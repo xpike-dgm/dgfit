@@ -1,19 +1,23 @@
 import type React from 'react';
-import { useState, useMemo, ReactNode } from 'react';
+import { useState, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Search, Edit, Trash2, UserCog, KeyRound, Lock } from 'lucide-react';
+import {
+  Search,
+  UserCog,
+  KeyRound,
+  Lock,
+  MoreHorizontal,
+  Pencil,
+  ShieldCheck,
+  ShieldOff,
+  Trash2,
+  UserCheck,
+  UserX,
+} from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
-import { Card, CardContent } from '@/components/ui/card';
-import {
-  Table,
-  TableHeader,
-  TableRow,
-  TableHead,
-  TableBody,
-  TableCell,
-} from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
 import {
   Accordion,
   AccordionItem,
@@ -21,15 +25,33 @@ import {
   AccordionContent,
 } from '@/components/ui/accordion';
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
 import { type User } from '../../api/Admin/userManagementService';
 import { useUsers } from '@/hooks/Admin/useUsers';
 import { useDebounce } from '@/hooks/useDebounce';
+import { useAuth } from '@/hooks/useAuth';
 import { parseSearchTerms } from '@workspace/shared';
+import { SETTINGS_CARD } from '@/pages/Settings/SettingsGroupToggle';
 
 import {
   useUpdateUserFullName,
@@ -40,19 +62,39 @@ import {
   useResetUserMfa,
 } from '@/hooks/Admin/useUsers';
 
+type SortKey = 'created_at' | 'full_name' | 'last_login_at';
+
+type PendingAction =
+  | { kind: 'delete' | 'resetPassword' | 'resetMfa' | 'role'; user: User }
+  | { kind: 'status'; user: User; active: boolean };
+
+const formatDay = (iso: string | null | undefined) =>
+  iso
+    ? new Date(iso).toLocaleDateString('tr-TR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      })
+    : null;
+
+const displayName = (user: User) => user.full_name || user.email;
+
+/** DG FIT admin: phone-friendly user list (card per person + ⋯ menu). */
 const UserManagement: React.FC = () => {
   const { t } = useTranslation();
+  const { user: me } = useAuth();
+  const location = useLocation();
+  // The standalone /admin/user-management route shows the list open.
+  const standalone = location.pathname.includes('user-management');
 
-  // Local State
   const [searchTerm, setSearchTerm] = useState('');
-  const [editingUserId, setEditingUserId] = useState<string | null>(null);
-  const [editedUser, setEditedUser] = useState<User | null>(null);
-  const [sortBy, setSortBy] = useState<keyof User>('created_at');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-  const [accordionOpen, setAccordionOpen] = useState<string[]>([]);
+  const [sortBy, setSortBy] = useState<SortKey>('created_at');
+  const [pending, setPending] = useState<PendingAction | null>(null);
+  const [renaming, setRenaming] = useState<User | null>(null);
+  const [newName, setNewName] = useState('');
 
-  // Queries & Mutations
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
+  const sortOrder = sortBy === 'full_name' ? 'asc' : 'desc';
   const {
     data: users,
     isLoading,
@@ -66,465 +108,359 @@ const UserManagement: React.FC = () => {
   const { mutate: updateRole } = useUpdateUserRole();
   const { mutate: resetMfa } = useResetUserMfa();
 
-  // --- Handlers ---
-
-  const handleSaveFullName = (
-    userId: string,
-    newFullNameInput: string, // Raw input from the field
-    currentFullName: string
-  ) => {
-    const trimmedNewFullName = newFullNameInput.trim(); // Trim whitespace from the input
-
-    // Check if the trimmed name is empty or unchanged
-    if (!trimmedNewFullName || trimmedNewFullName === currentFullName) {
-      setEditingUserId(null);
-      return;
-    }
-
-    // Use the trimmed name for the confirmation prompt
-    if (
-      !window.confirm(
-        t('admin.userManagement.confirmChangeFullName', {
-          currentFullName: currentFullName, // Use camelCase key
-          newFullName: trimmedNewFullName, // Use camelCase key with trimmed name
-          defaultValue:
-            "Are you sure you want to change {{currentFullName}}'s full name to {{newFullName}}?", // Use camelCase placeholders
-        })
-      )
-    ) {
-      setEditingUserId(null);
-      return;
-    }
-
-    // Call the mutation with the trimmed name
-    updateFullName(
-      { userId, fullName: trimmedNewFullName },
-      {
-        onSuccess: () => {
-          setEditingUserId(null);
-          setEditedUser(null);
-        },
-      }
-    );
-  };
-
-  const handleDeleteUser = (userId: string) => {
-    if (
-      !window.confirm(
-        t(
-          'admin.userManagement.deleteUserConfirm',
-          'Are you sure you want to delete this user?'
-        )
-      )
-    )
-      return;
-
-    deleteUser(userId);
-  };
-
-  const handleResetPassword = (userId: string, userName: string) => {
-    if (
-      !window.confirm(
-        t('admin.userManagement.resetPasswordConfirm', {
-          userName,
-          defaultValue: `Are you sure you want to reset the password for ${userName}?`,
-        })
-      )
-    )
-      return;
-
-    resetPassword({ userId, userName });
-  };
-
-  const handleToggleUserStatus = (
-    userId: string,
-    userName: string | null,
-    newCheckedState: boolean
-  ) => {
-    const action = newCheckedState ? 'activate' : 'deactivate';
-    const displayName = userName || 'User';
-    if (
-      !window.confirm(
-        t('admin.userManagement.toggleUserStatusConfirm', {
-          action,
-          userName: displayName,
-          defaultValue: `Are you sure you want to ${action} user ${displayName}?`,
-        })
-      )
-    )
-      return;
-
-    updateStatus({ userId, isActive: newCheckedState, userName: displayName });
-  };
-
-  const handleToggleUserRole = (
-    userId: string,
-    userName: string,
-    currentRole: string
-  ) => {
-    const newRole = currentRole === 'admin' ? 'user' : 'admin';
-    if (
-      !window.confirm(
-        t('admin.userManagement.toggleUserRoleConfirm', {
-          userName,
-          newRole,
-          defaultValue: `Are you sure you want to change user ${userName}'s role to ${newRole}?`,
-        })
-      )
-    )
-      return;
-
-    updateRole({ userId, role: newRole });
-  };
-
-  const handleResetMfa = (userId: string, userName: string) => {
-    if (
-      !window.confirm(
-        t('admin.userManagement.resetMfaConfirm', `Reset MFA for ${userName}?`)
-      )
-    )
-      return;
-
-    resetMfa({ userId, userName });
-  };
-
-  const handleSortChange = (column: keyof User) => {
-    if (sortBy === column) {
-      setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'));
-    } else {
-      setSortBy(column);
-      setSortOrder('asc');
-    }
-  };
-
-  const handleEditedUserChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (editedUser) {
-      setEditedUser({ ...editedUser, [e.target.id]: e.target.value });
-    }
-  };
-
   const processedUsers = useMemo(() => {
     if (!users) return [];
-
     const sorted = [...users].sort((a, b) => {
-      const aValue = a[sortBy];
-      const bValue = b[sortBy];
-
-      const compare = (valA: string | boolean, valB: string | boolean) => {
-        if (sortBy.includes('_at'))
-          return (
-            new Date(valA as string).getTime() -
-            new Date(valB as string).getTime()
-          );
-        if (typeof valA === 'string' && typeof valB === 'string')
-          return valA.localeCompare(valB);
-        if (typeof valA === 'boolean' && typeof valB === 'boolean')
-          return valA === valB ? 0 : valA ? -1 : 1;
-        return String(valA).localeCompare(String(valB));
-      };
-
-      const result = compare(aValue, bValue);
-      return sortOrder === 'asc' ? result : -result;
+      if (sortBy === 'full_name')
+        return (a.full_name ?? '').localeCompare(b.full_name ?? '', 'tr');
+      const at = a[sortBy] ? new Date(a[sortBy]).getTime() : 0;
+      const bt = b[sortBy] ? new Date(b[sortBy]).getTime() : 0;
+      return bt - at;
     });
-
     const terms = parseSearchTerms(searchTerm);
     if (terms.length === 0) return sorted;
-
     return sorted.filter((user) => {
       const searchStr =
         `${user.full_name ?? ''} ${user.email ?? ''}`.toLowerCase();
       return terms.every((term) => searchStr.includes(term));
     });
-  }, [users, sortBy, sortOrder, searchTerm]);
+  }, [users, sortBy, searchTerm]);
 
-  if (isLoading)
-    return <div>{t('admin.userManagement.loadingUsers', 'Loading...')}</div>;
-  if (isError)
+  const confirmPending = () => {
+    if (!pending) return;
+    const { user } = pending;
+    const name = displayName(user);
+    switch (pending.kind) {
+      case 'delete':
+        deleteUser(user.id);
+        break;
+      case 'resetPassword':
+        resetPassword({ userId: user.id, userName: name });
+        break;
+      case 'resetMfa':
+        resetMfa({ userId: user.id, userName: name });
+        break;
+      case 'role':
+        updateRole({
+          userId: user.id,
+          role: user.role === 'admin' ? 'user' : 'admin',
+        });
+        break;
+      case 'status':
+        updateStatus({
+          userId: user.id,
+          isActive: pending.active,
+          userName: name,
+        });
+        break;
+    }
+    setPending(null);
+  };
+
+  const pendingCopy = (() => {
+    if (!pending) return null;
+    const name = displayName(pending.user);
+    switch (pending.kind) {
+      case 'delete':
+        return {
+          title: `${name} silinsin mi?`,
+          description:
+            'Hesap ve tüm kayıtları kalıcı olarak silinir. Bu işlem geri alınamaz.',
+          confirm: 'Kullanıcıyı sil',
+          destructive: true,
+        };
+      case 'resetPassword':
+        return {
+          title: `${name} için şifre sıfırlansın mı?`,
+          description: 'Kişi yeni bir şifre belirlemek zorunda kalır.',
+          confirm: 'Şifreyi sıfırla',
+          destructive: false,
+        };
+      case 'resetMfa':
+        return {
+          title: `${name} için iki adımlı doğrulama sıfırlansın mı?`,
+          description:
+            'Doğrulama uygulaması ve e-posta kodu kapatılır; kişi yalnızca şifresiyle girer.',
+          confirm: 'Sıfırla',
+          destructive: false,
+        };
+      case 'role':
+        return pending.user.role === 'admin'
+          ? {
+              title: `${name} yöneticilikten çıkarılsın mı?`,
+              description: 'Yönetim ekranına artık giremez.',
+              confirm: 'Yöneticilikten çıkar',
+              destructive: false,
+            }
+          : {
+              title: `${name} yönetici yapılsın mı?`,
+              description:
+                'Davet kodları, PT AI anahtarı, yedekler ve kullanıcılar dahil her şeyi yönetebilir.',
+              confirm: 'Yönetici yap',
+              destructive: false,
+            };
+      case 'status':
+        return pending.active
+          ? {
+              title: `${name} yeniden etkinleştirilsin mi?`,
+              description: 'Kişi tekrar giriş yapabilir.',
+              confirm: 'Etkinleştir',
+              destructive: false,
+            }
+          : {
+              title: `${name} devre dışı bırakılsın mı?`,
+              description:
+                'Kişi giriş yapamaz; verileri silinmez. İstediğin zaman geri açabilirsin.',
+              confirm: 'Devre dışı bırak',
+              destructive: true,
+            };
+    }
+  })();
+
+  const saveRename = () => {
+    if (!renaming) return;
+    const trimmed = newName.trim();
+    if (trimmed && trimmed !== renaming.full_name) {
+      updateFullName({ userId: renaming.id, fullName: trimmed });
+    }
+    setRenaming(null);
+  };
+
+  const body = (() => {
+    if (isLoading)
+      return (
+        <p className="text-sm text-muted-foreground">
+          {t('admin.userManagement.loadingUsers', 'Loading...')}
+        </p>
+      );
+    if (isError)
+      return (
+        <p className="text-sm text-destructive">
+          {t('admin.userManagement.error', 'Error loading users')}
+        </p>
+      );
     return (
-      <div className="text-red-500">
-        {t('admin.userManagement.error', 'Error loading users')}
+      <div className="space-y-3">
+        <div className="relative">
+          <Search className="absolute left-3 top-3.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder={t(
+              'admin.userManagement.searchUsers',
+              'Search users...'
+            )}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="h-11 pl-9"
+          />
+        </div>
+        <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortKey)}>
+          <SelectTrigger className="h-11" aria-label="Sıralama">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="created_at">En yeni kayıt</SelectItem>
+            <SelectItem value="last_login_at">Son giriş</SelectItem>
+            <SelectItem value="full_name">Ada göre</SelectItem>
+          </SelectContent>
+        </Select>
+
+        {processedUsers.length === 0 ? (
+          <p className="py-4 text-center text-sm text-muted-foreground">
+            {t('admin.userManagement.noUsersFound', 'No users found.')}
+          </p>
+        ) : (
+          <ul className="divide-y rounded-xl border">
+            {processedUsers.map((user) => {
+              const isMe = user.id === me?.id;
+              const lastLogin = formatDay(user.last_login_at);
+              return (
+                <li
+                  key={user.id}
+                  className="flex items-start gap-2 p-3"
+                  data-testid="admin-user-row"
+                >
+                  <div className="min-w-0 flex-1">
+                    <p className="break-words font-semibold">
+                      {user.full_name || '—'}
+                      {isMe && (
+                        <span className="font-normal text-muted-foreground">
+                          {' '}
+                          (sen)
+                        </span>
+                      )}
+                    </p>
+                    <p className="break-all text-sm text-muted-foreground">
+                      {user.email}
+                    </p>
+                    <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
+                      {user.role === 'admin' && <Badge>Yönetici</Badge>}
+                      {!user.is_active && (
+                        <Badge variant="destructive">Devre dışı</Badge>
+                      )}
+                      {(user.mfa_totp_enabled || user.mfa_email_enabled) && (
+                        <Badge variant="outline">İki adımlı doğrulama</Badge>
+                      )}
+                      <span>
+                        {lastLogin ? `Son giriş ${lastLogin}` : 'Hiç giriş yok'}
+                      </span>
+                    </div>
+                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-11 w-11 shrink-0"
+                        aria-label={`${displayName(user)} için işlemler`}
+                      >
+                        <MoreHorizontal className="h-5 w-5" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-60">
+                      <DropdownMenuItem
+                        className="min-h-11"
+                        onSelect={() => {
+                          setNewName(user.full_name ?? '');
+                          setRenaming(user);
+                        }}
+                      >
+                        <Pencil className="mr-2 h-4 w-4" />
+                        Adı değiştir
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        className="min-h-11"
+                        onSelect={() =>
+                          setPending({ kind: 'resetPassword', user })
+                        }
+                      >
+                        <KeyRound className="mr-2 h-4 w-4" />
+                        Şifreyi sıfırla
+                      </DropdownMenuItem>
+                      {(user.mfa_totp_enabled || user.mfa_email_enabled) && (
+                        <DropdownMenuItem
+                          className="min-h-11"
+                          onSelect={() =>
+                            setPending({ kind: 'resetMfa', user })
+                          }
+                        >
+                          <Lock className="mr-2 h-4 w-4" />
+                          İki adımlı doğrulamayı sıfırla
+                        </DropdownMenuItem>
+                      )}
+                      {!isMe && (
+                        <>
+                          <DropdownMenuItem
+                            className="min-h-11"
+                            onSelect={() => setPending({ kind: 'role', user })}
+                          >
+                            {user.role === 'admin' ? (
+                              <ShieldOff className="mr-2 h-4 w-4" />
+                            ) : (
+                              <ShieldCheck className="mr-2 h-4 w-4" />
+                            )}
+                            {user.role === 'admin'
+                              ? 'Yöneticilikten çıkar'
+                              : 'Yönetici yap'}
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="min-h-11"
+                            onSelect={() =>
+                              setPending({
+                                kind: 'status',
+                                user,
+                                active: !user.is_active,
+                              })
+                            }
+                          >
+                            {user.is_active ? (
+                              <UserX className="mr-2 h-4 w-4" />
+                            ) : (
+                              <UserCheck className="mr-2 h-4 w-4" />
+                            )}
+                            {user.is_active
+                              ? 'Devre dışı bırak'
+                              : 'Yeniden etkinleştir'}
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            className="min-h-11 text-destructive focus:text-destructive"
+                            onSelect={() =>
+                              setPending({ kind: 'delete', user })
+                            }
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Kullanıcıyı sil
+                          </DropdownMenuItem>
+                        </>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </div>
     );
+  })();
 
   return (
-    <Accordion
-      type="multiple"
-      className="w-full"
-      value={accordionOpen}
-      onValueChange={setAccordionOpen}
-    >
-      <AccordionItem
-        value="user-management"
-        className="mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
+    <>
+      <Accordion
+        type="multiple"
+        className="w-full"
+        defaultValue={standalone ? ['user-management'] : []}
       >
-        <AccordionTrigger className="flex items-center gap-2 p-4 hover:no-underline">
-          <UserCog className="h-5 w-5" />
-          {t('admin.userManagement.title', 'User Management')}
-        </AccordionTrigger>
-        <AccordionContent className="p-4 pt-0 space-y-6">
-          <Card className="w-full mx-auto">
-            <CardContent>
-              <div className="mt-3 relative mb-4">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder={t(
-                    'admin.userManagement.searchUsers',
-                    'Search users...'
-                  )}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-8 "
-                />
-              </div>
+        <AccordionItem value="user-management" className={SETTINGS_CARD}>
+          <AccordionTrigger
+            className="flex items-center gap-2 p-4 hover:no-underline"
+            description={
+              users ? `${users.length} kişi` : 'Hesaplar, roller ve şifreler'
+            }
+          >
+            <UserCog className="h-5 w-5" />
+            {t('admin.userManagement.title', 'User Management')}
+          </AccordionTrigger>
+          <AccordionContent className="p-4 pt-0">{body}</AccordionContent>
+        </AccordionItem>
+      </Accordion>
 
-              {!processedUsers || processedUsers.length === 0 ? (
-                <div>
-                  {t('admin.userManagement.noUsersFound', 'No users found.')}
-                </div>
-              ) : (
-                <div onClick={(e) => e.stopPropagation()}>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <SortableHead
-                          label={t('admin.userManagement.fullName', 'Name')}
-                          col="full_name"
-                          currentSort={sortBy}
-                          sortOrder={sortOrder}
-                          onSort={handleSortChange}
-                        />
-                        <SortableHead
-                          label={t('admin.userManagement.email', 'Email')}
-                          col="email"
-                          currentSort={sortBy}
-                          sortOrder={sortOrder}
-                          onSort={handleSortChange}
-                        />
-                        <SortableHead
-                          label={t('admin.userManagement.admin', 'Admin')}
-                          col="role"
-                          currentSort={sortBy}
-                          sortOrder={sortOrder}
-                          onSort={handleSortChange}
-                        />
-                        <SortableHead
-                          label={t('admin.userManagement.active', 'Active')}
-                          col="is_active"
-                          currentSort={sortBy}
-                          sortOrder={sortOrder}
-                          onSort={handleSortChange}
-                        />
-                        <SortableHead
-                          label={t('admin.userManagement.createdAt', 'Created')}
-                          col="created_at"
-                          currentSort={sortBy}
-                          sortOrder={sortOrder}
-                          onSort={handleSortChange}
-                        />
-                        <SortableHead
-                          label={t(
-                            'admin.userManagement.lastLogin',
-                            'Last Login'
-                          )}
-                          col="last_login_at"
-                          currentSort={sortBy}
-                          sortOrder={sortOrder}
-                          onSort={handleSortChange}
-                        />
-                        <SortableHead
-                          label="TOTP"
-                          col="mfa_totp_enabled"
-                          currentSort={sortBy}
-                          sortOrder={sortOrder}
-                          onSort={handleSortChange}
-                        />
-                        <SortableHead
-                          label={t(
-                            'admin.userManagement.emailMFA',
-                            'Email MFA'
-                          )}
-                          col="mfa_email_enabled"
-                          currentSort={sortBy}
-                          sortOrder={sortOrder}
-                          onSort={handleSortChange}
-                        />
-                        <TableHead className="text-right">
-                          {t('admin.userManagement.actions', 'Actions')}
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {processedUsers.map((user) => (
-                        <TableRow key={user.id}>
-                          <TableCell
-                            className="font-medium"
-                            onClick={() => {
-                              setEditingUserId(user.id);
-                              setEditedUser({ ...user });
-                            }}
-                          >
-                            {editingUserId === user.id ? (
-                              <Input
-                                id="full_name"
-                                value={editedUser?.full_name || ''}
-                                onChange={handleEditedUserChange}
-                                onBlur={(e) =>
-                                  handleSaveFullName(
-                                    user.id,
-                                    e.target.value,
-                                    user.full_name
-                                  )
-                                }
-                                autoFocus
-                              />
-                            ) : (
-                              <>
-                                {user.full_name}{' '}
-                                <Edit className="h-3 w-3 inline opacity-50 ml-1" />
-                              </>
-                            )}
-                          </TableCell>
-                          <TableCell>{user.email}</TableCell>
-                          <TableCell>
-                            <Switch
-                              checked={user.role === 'admin'}
-                              onCheckedChange={() =>
-                                handleToggleUserRole(
-                                  user.id,
-                                  user.full_name,
-                                  user.role
-                                )
-                              }
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <Switch
-                              checked={user.is_active}
-                              onCheckedChange={(c) =>
-                                handleToggleUserStatus(
-                                  user.id,
-                                  user.full_name,
-                                  c
-                                )
-                              }
-                            />
-                          </TableCell>
-                          <TableCell>
-                            {user.created_at
-                              ? new Date(user.created_at).toLocaleString()
-                              : 'N/A'}
-                          </TableCell>
-                          <TableCell>
-                            {user.last_login_at
-                              ? new Date(user.last_login_at).toLocaleString()
-                              : 'N/A'}
-                          </TableCell>
-                          <TableCell>
-                            <Switch checked={user.mfa_totp_enabled} disabled />
-                          </TableCell>
-                          <TableCell>
-                            <Switch checked={user.mfa_email_enabled} disabled />
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <div className="flex justify-end space-x-2">
-                              <ActionButton
-                                icon={<KeyRound className="h-4 w-4" />}
-                                onClick={() =>
-                                  handleResetPassword(user.id, user.full_name)
-                                }
-                                tooltip={t(
-                                  'admin.userManagement.resetPassword',
-                                  'Reset Password'
-                                )}
-                              />
-                              <ActionButton
-                                icon={<Lock className="h-4 w-4" />}
-                                onClick={() =>
-                                  handleResetMfa(user.id, user.full_name)
-                                }
-                                tooltip={t(
-                                  'admin.userManagement.resetMfa',
-                                  'Reset MFA'
-                                )}
-                              />
-                              <ActionButton
-                                icon={<Trash2 className="h-4 w-4" />}
-                                onClick={() => handleDeleteUser(user.id)}
-                                tooltip={t(
-                                  'admin.userManagement.deleteUser',
-                                  'Delete'
-                                )}
-                                variant="destructive"
-                              />
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
+      {pendingCopy && (
+        <ConfirmationDialog
+          open={!!pending}
+          onOpenChange={(open) => !open && setPending(null)}
+          onConfirm={confirmPending}
+          title={pendingCopy.title}
+          description={pendingCopy.description}
+          variant={pendingCopy.destructive ? 'destructive' : 'default'}
+          confirmLabel={pendingCopy.confirm}
+        />
+      )}
+
+      <Dialog open={!!renaming} onOpenChange={(o) => !o && setRenaming(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Adı değiştir</DialogTitle>
+          </DialogHeader>
+          <Input
+            aria-label="Ad soyad"
+            className="h-11"
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && saveRename()}
+          />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setRenaming(null)}>
+              Vazgeç
+            </Button>
+            <Button onClick={saveRename} disabled={!newName.trim()}>
+              Kaydet
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
-
-interface SortableHeadProps {
-  label: string;
-  col: keyof User;
-  currentSort: string;
-  sortOrder: 'asc' | 'desc';
-  onSort: (col: keyof User) => void;
-}
-
-const SortableHead = ({
-  label,
-  col,
-  currentSort,
-  sortOrder,
-  onSort,
-}: SortableHeadProps) => (
-  <TableHead
-    className="cursor-pointer select-none"
-    onClick={(e) => {
-      e.stopPropagation();
-      onSort(col);
-    }}
-  >
-    {label}{' '}
-    {currentSort === col && <span>{sortOrder === 'asc' ? '▲' : '▼'}</span>}
-  </TableHead>
-);
-
-interface ActionButtonProps {
-  icon: ReactNode;
-  onClick: () => void;
-  tooltip: string;
-  variant?:
-    'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
-}
-
-const ActionButton = ({
-  icon,
-  onClick,
-  tooltip,
-  variant = 'outline',
-}: ActionButtonProps) => (
-  <TooltipProvider>
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <Button variant={variant} size="sm" onClick={onClick}>
-          {icon}
-        </Button>
-      </TooltipTrigger>
-      <TooltipContent>
-        <p>{tooltip}</p>
-      </TooltipContent>
-    </Tooltip>
-  </TooltipProvider>
-);
 
 export default UserManagement;

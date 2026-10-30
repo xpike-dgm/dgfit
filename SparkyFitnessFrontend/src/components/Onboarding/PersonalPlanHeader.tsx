@@ -3,6 +3,7 @@ import { ExpandedGoals } from '@/types/goals';
 import { OnboardingData } from '@/types/onboarding';
 import { BasePlan } from '@/utils/nutritionCalculations';
 import { useTranslation } from 'react-i18next';
+import { Pencil } from 'lucide-react';
 
 export interface PersonalPlanHeaderProps {
   formData: OnboardingData;
@@ -61,7 +62,7 @@ export const PersonalPlanHeader = ({
             'onboarding.plan.dailyCalorieBudget',
             'Daily Calorie Budget'
           )}
-          value={editedPlan?.calories ? editedPlan.calories.toFixed(0) : ''}
+          value={editedPlan?.calories ? fmt(editedPlan.calories) : ''}
           onChange={(e) =>
             setEditedPlan((prev) =>
               prev
@@ -73,13 +74,14 @@ export const PersonalPlanHeader = ({
             )
           }
           style={{
-            width: `${Math.max(3, editedPlan?.calories?.toFixed(0).length ?? 3) + 0.5}ch`,
+            width: `${Math.max(3, editedPlan?.calories ? fmt(editedPlan.calories).length : 3) + 0.5}ch`,
           }}
           className="h-auto border-none bg-transparent p-0 text-center text-5xl font-extrabold text-primary focus-visible:ring-0"
         />
         <span className="text-lg font-medium text-foreground">kcal</span>
       </div>
-      <p className="mt-1 text-xs text-caption">
+      <p className="mt-1 flex items-center justify-center gap-1 text-sm text-muted-foreground">
+        <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
         Rakama dokunup değiştirebilirsin
       </p>
 
@@ -89,7 +91,7 @@ export const PersonalPlanHeader = ({
             key={tile.label}
             className="rounded-xl bg-raised px-3 py-2 text-left"
           >
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
               <span className={`h-2 w-2 rounded-full ${tile.color}`} />
               {tile.label}
             </div>
@@ -100,17 +102,22 @@ export const PersonalPlanHeader = ({
         ))}
       </div>
 
-      <div className="mt-4 flex justify-between border-t border-border pt-3 text-xs text-muted-foreground">
-        <span>
-          {t('onboarding.plan.baseBmr', 'Base BMR:')} {fmt(plan?.bmr)} kcal
-        </span>
-        <span>
-          {t('onboarding.plan.calorieBuyback', 'Calorie Buyback:')}{' '}
-          {formData.addBurnedCalories
-            ? t('onboarding.plan.on', 'ON')
-            : t('onboarding.plan.off', 'OFF')}
-        </span>
-      </div>
+      <dl className="mt-4 space-y-1 border-t border-border pt-3 text-left text-sm">
+        <div className="flex justify-between gap-3">
+          <dt className="text-muted-foreground">Bazal metabolizma</dt>
+          <dd className="font-semibold text-foreground">
+            {fmt(plan?.bmr)} kcal
+          </dd>
+        </div>
+        <div className="flex justify-between gap-3">
+          <dt className="text-muted-foreground">
+            Yakılan kalori bütçene eklenir
+          </dt>
+          <dd className="font-semibold text-foreground">
+            {formData.addBurnedCalories ? 'Evet' : 'Hayır'}
+          </dd>
+        </div>
+      </dl>
     </div>
   );
 };

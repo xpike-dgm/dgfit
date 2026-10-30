@@ -2,22 +2,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useState } from 'react';
+import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
 import { useResetOnboarding } from '@/hooks/Onboarding/useOnboarding';
 export const ResetOnboarding = () => {
   const { t } = useTranslation();
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const { mutateAsync: resetOnboardingStatus, isPending: saving } =
     useResetOnboarding();
   const handleResetOnboarding = async () => {
-    if (
-      !confirm(
-        t(
-          'goals.goalsSettings.resetOnboardingConfirm',
-          'Are you sure you want to reset your onboarding status? This will restart the onboarding process.'
-        )
-      )
-    ) {
-      return;
-    }
+    setConfirmOpen(false);
     try {
       await resetOnboardingStatus();
       window.location.reload();
@@ -40,15 +34,24 @@ export const ResetOnboarding = () => {
           )}
         </p>
         <Button
-          onClick={handleResetOnboarding}
+          onClick={() => setConfirmOpen(true)}
           disabled={saving}
           variant="ghost"
-          className="px-0 text-danger-text hover:bg-transparent hover:text-danger-text"
+          className="h-11 px-0 text-danger-text hover:bg-transparent hover:text-danger-text"
         >
           <RotateCcw className="h-4 w-4 mr-2" />
           {t('goals.goalsSettings.resetOnboarding', 'Reset Onboarding')}
         </Button>
       </CardContent>
+      <ConfirmationDialog
+        open={confirmOpen}
+        onOpenChange={setConfirmOpen}
+        title="Başlangıç anketi sıfırlansın mı?"
+        description="Anketi baştan doldurursun ve oturumun kapanır. Kayıtlı yemeklerin, antrenmanların ve ölçümlerin silinmez."
+        variant="destructive"
+        confirmLabel="Sıfırla"
+        onConfirm={() => void handleResetOnboarding()}
+      />
     </Card>
   );
 };

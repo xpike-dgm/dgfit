@@ -19,11 +19,11 @@ const ThemeToggle = () => {
   const getLabel = () => {
     switch (theme) {
       case 'light':
-        return 'Light mode';
+        return 'Tema: Açık';
       case 'dark':
-        return 'Dark mode';
+        return 'Tema: Koyu';
       case 'system':
-        return 'System theme';
+        return 'Tema: Sistem';
     }
   };
 

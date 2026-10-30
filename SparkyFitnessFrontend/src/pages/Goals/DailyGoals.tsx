@@ -24,7 +24,8 @@ import { ChevronDown } from 'lucide-react';
 import { useCustomNutrients } from '@/hooks/Foods/useCustomNutrients';
 import { useMealTypes } from '@/hooks/Diary/useMealTypes';
 import { buildGoalsPayload, getMealPercentage } from '@/utils/goals';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { SegmentedControl } from './SegmentedControl';
+import { fmtTr } from '@/utils/numberFormatting';
 import { useNutrientAutoCalculate } from '@/hooks/Goals/useNutrientAutoCalculate';
 import { NutrientAutoCalculate } from './NutrientAutoCalculate';
 import { AutoCalculateToolbar } from './AutoCalculateToolbar';
@@ -92,6 +93,7 @@ export const DailyGoals = ({
 
   const [initialCalories] = useState(goals.calories);
 
+  const [autoCalcOpen, setAutoCalcOpen] = useState(false);
   const [macroInputType, setMacroInputType] = useState<'grams' | 'percentages'>(
     goals.protein_percentage !== null ? 'percentages' : 'grams'
   );
@@ -200,36 +202,39 @@ export const DailyGoals = ({
     return Math.round(total) === 100;
   }, [goals, visibleMeals]);
 
+  const macroLabels = {
+    protein: 'Protein',
+    carbs: 'Karbonhidrat',
+    fat: 'Yağ',
+  } as const;
+
   return (
     <>
       <Card>
-        <CardHeader>
+        <CardHeader className="pb-3">
           <CardTitle className="flex flex-col items-start gap-1">
             {t(
               'goals.goalsSettings.dailyNutritionGoals',
               'Daily Nutrition Goals'
             )}
-            <div className="text-sm font-normal text-muted-foreground">
+            <span className="text-sm font-normal text-muted-foreground">
               {t(
                 'goals.goalsSettings.changesCascadeInfo',
                 '(Updates your daily goals for the next 6 months or until your next scheduled goal change)'
               )}
-            </div>
+            </span>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {/* Top section: Calories, Macros By toggle */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+          <div className="space-y-5">
             <div className="space-y-1.5">
               <Label htmlFor="calories">
-                {t(
-                  'nutrition.calories',
-                  `Calories (${getEnergyUnitString(energyUnit)})`
-                )}
+                {`${t('goals.goalsSettings.calories', 'Calories')} (${getEnergyUnitString(energyUnit)})`}
               </Label>
               <NumericInput
                 id="calories"
                 step={1}
+                className="h-12 text-lg"
                 value={Math.round(
                   convertEnergy(goals.calories, 'kcal', energyUnit)
                 )}
@@ -241,121 +246,132 @@ export const DailyGoals = ({
                 }
               />
             </div>
-            <div className="space-y-1.5">
-              <Label>{t('goals.goalsSettings.macrosBy', 'Macros By')}</Label>
-              <RadioGroup
-                value={macroInputType}
-                onValueChange={(v: 'grams' | 'percentages') =>
-                  setMacroInputType(v)
-                }
-                className="flex h-10 items-center gap-4 border rounded-md px-3"
-              >
-                <div className="flex items-center gap-1.5">
-                  <RadioGroupItem value="grams" id="m-g" />
-                  <Label htmlFor="m-g" className="text-xs cursor-pointer">
-                    {t('goals.goalsSettings.grams', 'Grams')}
-                  </Label>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <RadioGroupItem value="percentages" id="m-p" />
-                  <Label htmlFor="m-p" className="text-xs cursor-pointer">
-                    {t('goals.goalsSettings.percentages', 'Percentages')}
-                  </Label>
-                </div>
-              </RadioGroup>
-            </div>
-          </div>
 
-          {/* Macro Inputs */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-            {(['protein', 'carbs', 'fat'] as const).map((m) => (
-              <div key={m} className="space-y-1.5">
-                <Label className="text-xs">
-                  {t(`nutrition.${m}`, m)}{' '}
-                  {macroInputType === 'grams' ? '(g)' : '(%)'}
-                </Label>
-                <NumericInput
-                  step={0.1}
-                  decimals={1}
-                  min={0}
-                  max={macroInputType === 'percentages' ? 100 : undefined}
-                  value={
-                    macroInputType === 'grams'
-                      ? (goals[m] ?? 0)
-                      : Number(
-                          goals[`${m}_percentage` as keyof ExpandedGoals] ?? 0
-                        )
-                  }
-                  onValueChange={(val) => {
-                    setGoals((prev) => ({
-                      ...prev,
-                      [macroInputType === 'grams' ? m : `${m}_percentage`]:
-                        val ?? 0,
-                    }));
-                  }}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between gap-3">
+                <Label>{t('goals.goalsSettings.macrosBy', 'Macros By')}</Label>
+                <SegmentedControl
+                  label={t('goals.goalsSettings.macrosBy', 'Macros By')}
+                  className="w-44"
+                  value={macroInputType}
+                  onChange={setMacroInputType}
+                  options={[
+                    {
+                      value: 'grams',
+                      label: t('goals.goalsSettings.grams', 'Grams'),
+                    },
+                    {
+                      value: 'percentages',
+                      label: t(
+                        'goals.goalsSettings.percentages',
+                        'Percentages'
+                      ),
+                    },
+                  ]}
                 />
               </div>
-            ))}
-          </div>
 
-          {macroInputType === 'percentages' && (
-            <div className="space-y-2 mb-6">
-              <div
-                className={`text-sm font-medium text-right ${isMacroValid ? 'text-green-600' : 'text-destructive'}`}
-              >
-                {t(
-                  'goals.goalsSettings.total',
-                  'Total: {{currentMacroTotal}}%',
-                  { currentMacroTotal }
-                )}{' '}
-                {!isMacroValid && (
-                  <span>{`(${t('goals.mealDistribution.mustBe100', 'Must be 100% to save')})`}</span>
-                )}
-              </div>
-              <div className="p-3 bg-muted/50 rounded-md text-xs text-muted-foreground grid grid-cols-3 gap-2">
-                <span>
-                  {t('goals.goalsSettings.proteinG', 'Protein: {{grams}}g', {
-                    grams: calculateGrams(
-                      goals.calories,
-                      goals.protein_percentage || 0,
-                      'protein',
-                      goals.dietary_fiber
-                    ),
-                  })}
-                </span>
-                <span>
-                  {t('goals.goalsSettings.carbsG', 'Carbs: {{grams}}g', {
-                    grams: calculateGrams(
-                      goals.calories,
-                      goals.carbs_percentage || 0,
-                      'carbs',
-                      goals.dietary_fiber
-                    ),
-                  })}
-                </span>
-                <span>
-                  {t('goals.goalsSettings.fatG', 'Fat: {{grams}}g', {
-                    grams: calculateGrams(
-                      goals.calories,
-                      goals.fat_percentage || 0,
-                      'fat',
-                      goals.dietary_fiber
-                    ),
-                  })}
-                </span>
+              <div className="grid grid-cols-3 gap-2 sm:gap-4">
+                {(['protein', 'carbs', 'fat'] as const).map((m) => (
+                  <div key={m} className="min-w-0 space-y-1.5">
+                    <Label htmlFor={`goal-${m}`} className="text-xs">
+                      {macroLabels[m]}
+                    </Label>
+                    <div className="relative">
+                      <NumericInput
+                        id={`goal-${m}`}
+                        className="h-11 pr-8"
+                        step={0.1}
+                        decimals={1}
+                        min={0}
+                        max={macroInputType === 'percentages' ? 100 : undefined}
+                        value={
+                          macroInputType === 'grams'
+                            ? (goals[m] ?? 0)
+                            : Number(
+                                goals[
+                                  `${m}_percentage` as keyof ExpandedGoals
+                                ] ?? 0
+                              )
+                        }
+                        onValueChange={(val) => {
+                          setGoals((prev) => ({
+                            ...prev,
+                            [macroInputType === 'grams'
+                              ? m
+                              : `${m}_percentage`]: val ?? 0,
+                          }));
+                        }}
+                      />
+                      <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+                        {macroInputType === 'grams' ? 'g' : '%'}
+                      </span>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-          )}
 
-          <Separator className="my-5" />
-          <WaterAndExerciseFields
-            state={goals}
-            setState={(val) => setGoals(val)}
-          />
+            {macroInputType === 'percentages' && (
+              <div className="space-y-2">
+                <div
+                  className={`text-sm font-medium text-right ${isMacroValid ? 'text-green-600 dark:text-green-400' : 'text-destructive'}`}
+                >
+                  {`Toplam: %${fmtTr(currentMacroTotal)}`}
+                  {!isMacroValid && ' · kaydetmek için %100 olmalı'}
+                </div>
+                <div className="grid grid-cols-3 gap-2 rounded-xl bg-raised p-3 text-xs text-muted-foreground">
+                  {(['protein', 'carbs', 'fat'] as const).map((m) => (
+                    <span key={m}>
+                      {`${macroLabels[m]}: ${fmtTr(
+                        calculateGrams(
+                          goals.calories,
+                          Number(
+                            goals[`${m}_percentage` as keyof ExpandedGoals] ?? 0
+                          ),
+                          m,
+                          goals.dietary_fiber
+                        ),
+                        0
+                      )} g`}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <WaterAndExerciseFields
+              state={goals}
+              setState={(val) => setGoals(val)}
+              show="water"
+            />
+          </div>
 
           <Separator className="my-5" />
           <Collapsible>
-            <CollapsibleTrigger className="group flex w-full items-center justify-between py-1 text-left">
+            <CollapsibleTrigger className="group flex min-h-12 w-full items-center justify-between py-1 text-left">
+              <span>
+                <span className="block text-base font-semibold text-foreground">
+                  Hareket ve adım hedefleri
+                </span>
+                <span className="block text-sm text-muted-foreground">
+                  Yakılan kalori, süre ve günlük adım
+                </span>
+              </span>
+              <ChevronDown className="h-5 w-5 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="pt-4">
+              <WaterAndExerciseFields
+                state={goals}
+                setState={(val) => setGoals(val)}
+                show="activity"
+              />
+            </CollapsibleContent>
+          </Collapsible>
+
+          <Separator className="my-5" />
+          <Collapsible>
+            <CollapsibleTrigger className="group flex min-h-12 w-full items-center justify-between py-1 text-left">
               <span>
                 <span className="block text-base font-semibold text-foreground">
                   Diğer besinler
@@ -366,17 +382,31 @@ export const DailyGoals = ({
               </span>
               <ChevronDown className="h-5 w-5 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
             </CollapsibleTrigger>
-            <CollapsibleContent className="pt-4">
-              <AutoCalculateToolbar
-                eligibleCount={eligibleAutoCalcIds.length}
-                selectedCount={selectedForAutoCalc.size}
-                onSelectAll={selectAllForAutoCalc}
-                onSelectNone={selectNoneForAutoCalc}
-                onApplySelected={handleApplySelected}
-                disabled={!autoCalculateUserData}
-              />
+            <CollapsibleContent className="space-y-4 pt-4">
+              {eligibleAutoCalcIds.length > 0 && (
+                <Button
+                  type="button"
+                  variant="link"
+                  className="h-11 px-0"
+                  onClick={() => setAutoCalcOpen((open) => !open)}
+                >
+                  {autoCalcOpen
+                    ? 'Önerilen değerleri gizle'
+                    : 'Önerilen değerleri göster'}
+                </Button>
+              )}
+              {autoCalcOpen && (
+                <AutoCalculateToolbar
+                  eligibleCount={eligibleAutoCalcIds.length}
+                  selectedCount={selectedForAutoCalc.size}
+                  onSelectAll={selectAllForAutoCalc}
+                  onSelectNone={selectNoneForAutoCalc}
+                  onApplySelected={handleApplySelected}
+                  disabled={!autoCalculateUserData}
+                />
+              )}
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
                 {/* Loop directly over the ordered array from settings, excluding calories and macros */}
                 {visibleNutrients
                   .filter(
@@ -404,7 +434,7 @@ export const DailyGoals = ({
                       ? customNutrients?.find((cn) => cn.name === key)?.aliases
                       : undefined;
                     return (
-                      <div key={key}>
+                      <div key={key} className="min-w-0">
                         <NutrientInput
                           nutrientId={key}
                           state={goals}
@@ -412,20 +442,22 @@ export const DailyGoals = ({
                           visibleNutrients={visibleNutrients}
                           customNutrients={customNutrients}
                         />
-                        <NutrientAutoCalculate
-                          nutrientId={key}
-                          customNutrientAliases={customAliases}
-                          userData={autoCalculateUserData}
-                          goalType={goalType}
-                          algorithms={algorithms}
-                          selected={selectedForAutoCalc.has(key)}
-                          onToggleSelected={(checked) =>
-                            toggleSelected(key, checked)
-                          }
-                          onApply={(value) =>
-                            setGoals((prev) => ({ ...prev, [key]: value }))
-                          }
-                        />
+                        {autoCalcOpen && (
+                          <NutrientAutoCalculate
+                            nutrientId={key}
+                            customNutrientAliases={customAliases}
+                            userData={autoCalculateUserData}
+                            goalType={goalType}
+                            algorithms={algorithms}
+                            selected={selectedForAutoCalc.has(key)}
+                            onToggleSelected={(checked) =>
+                              toggleSelected(key, checked)
+                            }
+                            onApply={(value) =>
+                              setGoals((prev) => ({ ...prev, [key]: value }))
+                            }
+                          />
+                        )}
                       </div>
                     );
                   })}
@@ -454,7 +486,7 @@ export const DailyGoals = ({
           <div className="mt-6">
             <Button
               onClick={handleSaveGoals}
-              className="w-full"
+              className="h-12 w-full"
               disabled={saving || !isTotalPercentageValid || !isMacroValid}
             >
               {saving

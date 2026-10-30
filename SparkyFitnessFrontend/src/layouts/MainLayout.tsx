@@ -29,7 +29,9 @@ import {
   ChevronLeft,
   Sparkles,
   ChefHat,
+  GlassWater,
 } from 'lucide-react';
+import { todayInZone } from '@workspace/shared';
 import type { LucideIcon } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
@@ -38,6 +40,9 @@ import InstallAppBanner from '@/components/InstallAppBanner';
 import OfflineWorkoutSync from '@/components/OfflineWorkoutSync';
 import { useChatbotVisibility } from '@/contexts/ChatbotVisibilityContext';
 import AddComp from '@/layouts/AddComp';
+import OfflineBanner from '@/layouts/OfflineBanner';
+import { useQuickWater } from '@/hooks/Dashboard/useQuickWater';
+import { fmtTr } from '@/utils/numberFormatting';
 import ThemeToggle from '@/components/ThemeToggle';
 import GlobalSyncButton from '@/components/GlobalSyncButton';
 import ProfileSwitcher from '@/components/ProfileSwitcher';
@@ -71,14 +76,23 @@ const MENU_PAGES: [string, string][] = [
   ['/arkadaslar/', 'Profil'],
   ['/arkadaslar', 'Arkadaşlar'],
   ['/tarifler', 'Tarifler'],
-  ['/reports', 'Gelişim'],
-  ['/checkin', 'Kilo & Ölçümler'],
+  ['/reports', 'Grafikler'],
+  ['/checkin', 'Kilo & ölçüm'],
   ['/exercises', 'Hareketler'],
   ['/foods', 'Yiyecekler'],
   ['/goals', 'Hedefler'],
   ['/settings', 'Ayarlar'],
   ['/admin', 'Yönetim'],
 ];
+
+/**
+ * Workout pages outside /antrenman (the exercise library with its sections,
+ * training programs, the workout player): the Antrenman tab stays selected.
+ */
+const WORKOUT_PAGES = ['/exercises', '/workout-playback'];
+
+const isWorkoutPage = (pathname: string): boolean =>
+  WORKOUT_PAGES.some((path) => isTabActive(pathname, path));
 
 const menuPageTitle = (pathname: string): string | undefined =>
   MENU_PAGES.find(([path]) =>
@@ -105,7 +119,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     hasWritePermission,
     activeUserName,
   } = useActiveUser();
-  const { getDateRelationToToday, loggingLevel } = usePreferences();
+  const { getDateRelationToToday, loggingLevel, timezone } = usePreferences();
+  const { addDrinks, pressMl } = useQuickWater();
   debug(loggingLevel, 'MainLayout: Component rendered.');
 
   const { data: appVersion } = useCurrentVersionQuery();
@@ -140,9 +155,20 @@ const MainLayout: React.FC<MainLayoutProps> = ({
       // DG FIT quick actions.
       items.push(
         { value: 'foodlog', label: 'Yemek', icon: Salad },
+        {
+          value: 'water',
+          label: `Su +${fmtTr(pressMl)} ml`,
+          icon: GlassWater,
+          tint: 'text-hydration',
+        },
         { value: '/antrenman', label: 'Antrenman', icon: Dumbbell },
-        { value: '/checkin', label: 'Ölçüm', icon: Scale },
-        { value: 'ptai', label: 'PT AI', icon: Sparkles },
+        { value: '/checkin', label: 'Kilo & ölçü', icon: Scale },
+        {
+          value: 'ptai',
+          label: 'PT AI',
+          icon: Sparkles,
+          fullWidth: true,
+        },
         {
           value: '/tarifler',
           label: 'Tarif oluştur',
@@ -159,7 +185,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         },
         {
           value: '/reports',
-          label: 'Gelişim',
+          label: 'Grafikler',
           icon: BarChart3,
           fullWidth: true,
           tint: 'text-cat-green',
@@ -183,7 +209,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
       }
     }
     return items;
-  }, [isActingOnBehalf, hasWritePermission, t]);
+  }, [isActingOnBehalf, hasWritePermission, t, pressMl]);
 
   // Map meal type names to icons
   const getMealTypeIcon = useCallback((name: string): LucideIcon => {
@@ -249,10 +275,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         { value: '/gunluk', label: 'Günlük', icon: BookOpen },
         { value: '/antrenman', label: 'Antrenman', icon: Dumbbell },
         { value: '/arkadaslar', label: 'Arkadaşlar', icon: Users },
-        { value: '/reports', label: 'Gelişim', icon: BarChart3 },
+        { value: '/reports', label: 'Grafikler', icon: BarChart3 },
         { value: '/foods', label: 'Yiyecekler', icon: Utensils },
         { value: '/tarifler', label: 'Tarifler', icon: ChefHat },
-        { value: '/checkin', label: 'Ölçümler', icon: Scale },
+        { value: '/checkin', label: 'Kilo & ölçüm', icon: Scale },
         { value: '/settings', label: 'Ayarlar', icon: SettingsIcon }
       );
     } else {
@@ -385,6 +411,15 @@ const MainLayout: React.FC<MainLayoutProps> = ({
       if (value === 'ptai') {
         setIsAddCompOpen(false);
         openChat();
+      } else if (value === 'water') {
+        setIsAddCompOpen(false);
+        const ownerId = user?.activeUserId || user?.id;
+        if (!ownerId) return;
+        addDrinks(ownerId, todayInZone(timezone), 1);
+        toast({
+          title: 'Su eklendi',
+          description: `Bugün +${fmtTr(pressMl)} ml`,
+        });
       } else if (value === 'foodlog') {
         setIsAddCompOpen(false);
         // DG FIT keeps a single food list, so skip the meal picker then.
@@ -400,7 +435,17 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         setIsAddCompOpen(false);
       }
     },
-    [loggingLevel, navigate, mealTypeItems, openChat]
+    [
+      loggingLevel,
+      navigate,
+      mealTypeItems,
+      openChat,
+      addDrinks,
+      pressMl,
+      timezone,
+      user?.activeUserId,
+      user?.id,
+    ]
   );
 
   const handleMealTypeSelect = useCallback(
@@ -469,10 +514,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   const subPageTitle = isActingOnBehalf
     ? undefined
     : menuPageTitle(location.pathname);
+  const inWorkoutArea = !isActingOnBehalf && isWorkoutPage(location.pathname);
   const goBack = () => {
     const historyState = window.history.state as { idx?: number } | null;
     if ((historyState?.idx ?? 0) > 0) navigate(-1);
-    else navigate('/menu');
+    else navigate(inWorkoutArea ? '/antrenman' : '/menu');
   };
 
   const selectedDate = new URLSearchParams(location.search).get('date');
@@ -587,7 +633,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({
               }
               const active =
                 isTabActive(location.pathname, value) ||
-                (value === '/menu' && subPageTitle !== undefined);
+                (value === '/antrenman' && inWorkoutArea) ||
+                (value === '/menu' &&
+                  subPageTitle !== undefined &&
+                  !inWorkoutArea);
               return (
                 <button
                   key={value}
@@ -624,16 +673,17 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                 type="button"
                 aria-label="Geri"
                 onClick={goBack}
-                className="flex h-10 w-10 items-center justify-center text-foreground"
+                className="flex h-11 w-11 items-center justify-center text-foreground"
               >
                 <ChevronLeft className="h-[22px] w-[22px]" />
               </button>
               <h1 className="min-w-0 flex-1 truncate text-center text-lg font-semibold text-foreground">
                 {subPageTitle}
               </h1>
-              <span className="w-10" />
+              <span className="w-11" />
             </div>
           )}
+          <OfflineBanner />
           <InstallAppBanner />
           <OfflineWorkoutSync />
           {/* Don't mount a disallowed page while the redirect effect runs, or it

@@ -19,6 +19,35 @@ import {
 import { checkInKeys } from '@/api/keys/checkin';
 import { dailyProgressKeys } from '@/api/keys/diary';
 import { reportKeys } from '@/api/keys/reports';
+import { fmtTr } from '@/utils/numberFormatting';
+
+const FIELD_NAMES: Record<string, string> = {
+  weight: 'Kilo',
+  neck: 'Boyun ölçüsü',
+  waist: 'Bel ölçüsü',
+  hips: 'Kalça ölçüsü',
+  steps: 'Adım',
+  height: 'Boy',
+  body_fat_percentage: 'Vücut yağı',
+};
+
+/** "Kilo silindi" when a history row is cleared, else "Ölçüm güncellendi". */
+const fieldChangeMessage = (
+  variables: { field?: string; value?: unknown } | undefined
+): string => {
+  if (variables?.value === null) {
+    return `${FIELD_NAMES[variables.field ?? ''] ?? 'Ölçüm'} silindi`;
+  }
+  return 'Ölçüm güncellendi';
+};
+
+/** "Kilo kaydedildi: 78,5 kg" when a weight was saved, else "Ölçümler kaydedildi". */
+const checkInSavedMessage = (
+  variables: { weight?: number | null } | undefined
+): string =>
+  typeof variables?.weight === 'number'
+    ? `Kilo kaydedildi: ${fmtTr(variables.weight, 2)} kg`
+    : 'Ölçümler kaydedildi';
 
 export const useCustomCategories = (userId?: string | null) => {
   return useQuery({
@@ -150,10 +179,7 @@ export const useDeleteCustomMeasurementMutation = () => {
         'checkIn.failedToDeleteMeasurement',
         'Failed to delete measurement.'
       ),
-      successMessage: t(
-        'checkIn.measurementDeletedSuccessfully',
-        'Measurement deleted successfully.'
-      ),
+      successMessage: 'Ölçüm silindi',
     },
   });
 };
@@ -173,10 +199,11 @@ export const useUpdateCheckInMeasurementFieldMutation = () => {
         'checkIn.failedToUpdateMeasurement',
         'Failed to update measurement.'
       ),
-      successMessage: t(
-        'checkIn.measurementUpdatedSuccessfully',
-        'Measurement updated successfully.'
-      ),
+      // The history list clears a field to delete it, so say "silindi".
+      successMessage: (_data, variables) =>
+        fieldChangeMessage(
+          variables as { field?: string; value?: unknown } | undefined
+        ),
     },
   });
 };
@@ -196,10 +223,8 @@ export const useSaveCheckInMeasurementsMutation = () => {
         'checkIn.failedToSaveCheckIn',
         'Failed to save check-in data.'
       ),
-      successMessage: t(
-        'checkIn.checkInSavedSuccessfully',
-        'Check-in data saved successfully!'
-      ),
+      successMessage: (_data, variables) =>
+        checkInSavedMessage(variables as { weight?: number | null }),
     },
   });
 };

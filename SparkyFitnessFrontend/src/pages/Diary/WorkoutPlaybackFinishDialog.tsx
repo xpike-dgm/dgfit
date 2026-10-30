@@ -10,7 +10,8 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { usePreferences } from '@/contexts/PreferencesContext';
-import { formatSecondsClock } from '@/utils/timeFormatters';
+import { formatWorkoutDurationTr, weightFromKg } from '@/utils/workoutPlayback';
+import { fmtTr } from '@/utils/numberFormatting';
 import WorkoutFeedbackPanel from './WorkoutFeedbackPanel';
 
 export interface WorkoutFinishSummary {
@@ -40,7 +41,8 @@ export default function WorkoutPlaybackFinishDialog({
   onClose,
 }: WorkoutPlaybackFinishDialogProps) {
   const { t } = useTranslation();
-  const { energyUnit, convertEnergy, getEnergyUnitString } = usePreferences();
+  const { energyUnit, convertEnergy, getEnergyUnitString, weightUnit } =
+    usePreferences();
 
   const calories = summary
     ? Math.round(convertEnergy(summary.caloriesKcal, 'kcal', energyUnit))
@@ -50,11 +52,11 @@ export default function WorkoutPlaybackFinishDialog({
     ? [
         {
           label: t('exercise.workoutFinishSummary.duration', 'Duration'),
-          value: formatSecondsClock(summary.durationSeconds),
+          value: formatWorkoutDurationTr(summary.durationSeconds),
         },
         {
           label: t('exercise.workoutFinishSummary.calories', 'Calories'),
-          value: `${calories} ${getEnergyUnitString(energyUnit)}`,
+          value: `${fmtTr(calories, 0)} ${getEnergyUnitString(energyUnit)}`,
         },
         {
           label: t('exercise.workoutFinishSummary.sets', 'Sets'),
@@ -62,7 +64,7 @@ export default function WorkoutPlaybackFinishDialog({
         },
         {
           label: t('exercise.workoutFinishSummary.volume', 'Volume'),
-          value: `${Number(summary.volume.toFixed(1))}`,
+          value: `${fmtTr(weightFromKg(summary.volume, weightUnit), 1)} ${weightUnit === 'kg' ? 'kg' : 'lb'}`,
         },
       ]
     : [];
@@ -88,7 +90,7 @@ export default function WorkoutPlaybackFinishDialog({
               key={tile.label}
               className="rounded-lg border bg-muted/40 p-3 text-center"
             >
-              <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+              <div className="text-xs font-medium text-muted-foreground">
                 {tile.label}
               </div>
               <div className="mt-1 text-xl font-semibold tabular-nums">

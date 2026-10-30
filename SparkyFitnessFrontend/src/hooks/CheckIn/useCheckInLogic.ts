@@ -394,6 +394,16 @@ export const useCheckInLogic = (currentUserId: string | undefined) => {
     [latestCheckIn]
   );
 
+  // One weight per day, oldest first, for the 30-day weight card.
+  const weightHistory = useMemo(
+    () =>
+      recentStandard
+        .filter((s) => s.weight != null)
+        .map((s) => ({ date: s.entry_date, weight: Number(s.weight) }))
+        .sort((a, b) => a.date.localeCompare(b.date)),
+    [recentStandard]
+  );
+
   const recentMeasurements = useMemo(() => {
     const allMeasurements: CombinedMeasurement[] = [];
 
@@ -519,7 +529,12 @@ export const useCheckInLogic = (currentUserId: string | undefined) => {
       });
     });
 
+    // Newest day first; within a day, the latest saved first.
     allMeasurements.sort((a, b) => {
+      const byDay = String(b.entry_date)
+        .slice(0, 10)
+        .localeCompare(String(a.entry_date).slice(0, 10));
+      if (byDay !== 0) return byDay;
       return (
         new Date(b.entry_timestamp).getTime() -
         new Date(a.entry_timestamp).getTime()
@@ -616,8 +631,8 @@ export const useCheckInLogic = (currentUserId: string | undefined) => {
   const handleDeleteMoodCheckin = (entry: MoodEntry) =>
     runCheckinRequest(() => deleteMoodCheckin(entry.id));
 
-  const handleSubmit = async (e: React.SubmitEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: React.SyntheticEvent) => {
+    e?.preventDefault();
 
     if (!currentUserId) return;
 
@@ -835,6 +850,7 @@ export const useCheckInLogic = (currentUserId: string | undefined) => {
     neck,
     placeholders,
     recentMeasurements,
+    weightHistory,
     selectedDate,
     setBodyFatPercentage,
     setBoneMassKg,
