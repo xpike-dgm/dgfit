@@ -258,7 +258,7 @@ const RecipesPage = () => {
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
                 onKeyDown={onKeyDown}
-                placeholder="ör. muz, yulaf… (Enter ile ekle)"
+                placeholder="ör. muz, yulaf…"
               />
               <Button
                 type="button"
@@ -366,7 +366,7 @@ const RecipesPage = () => {
                     setCalories(calories === String(c) ? '' : String(c))
                   }
                 >
-                  ~{c}
+                  ~{c} kcal
                 </Chip>
               ))}
               <Input
@@ -375,7 +375,7 @@ const RecipesPage = () => {
                 inputMode="numeric"
                 value={calories}
                 onChange={(e) => setCalories(e.target.value)}
-                placeholder="kcal"
+                placeholder="Başka"
                 className="w-24"
               />
             </div>
@@ -457,6 +457,11 @@ const RecipesPage = () => {
               </>
             )}
           </Button>
+          {ingredients.length === 0 && !draft.trim() && (
+            <p className="text-center text-xs text-muted-foreground">
+              Tarif için en az bir malzeme ekle.
+            </p>
+          )}
         </CardContent>
       </Card>
 

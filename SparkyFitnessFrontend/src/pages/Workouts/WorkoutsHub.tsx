@@ -145,7 +145,7 @@ const WorkoutsHub = () => {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => navigate('/exercises')}
+          onClick={() => navigate('/exercises?bolum=antrenmanlar')}
         >
           <Settings2 className="mr-1 h-4 w-4" />
           Düzenle
@@ -185,7 +185,7 @@ const WorkoutsHub = () => {
                 Henüz haftalık programınız yok. Günlere antrenman atayarak bir
                 program oluşturun.
               </p>
-              <Button onClick={() => navigate('/exercises')}>
+              <Button onClick={() => navigate('/exercises?bolum=programlar')}>
                 Program oluştur
               </Button>
             </div>

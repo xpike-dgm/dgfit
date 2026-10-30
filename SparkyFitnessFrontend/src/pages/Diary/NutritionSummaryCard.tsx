@@ -184,6 +184,11 @@ const NutritionSummaryCard = ({
                 ? rawGoal
                 : (goals.custom_nutrients?.[nutrient] ?? 0);
 
+            // Nothing eaten and no target: a "0 / 0" tile only adds noise.
+            if (!goal && !comparisonTotal && nutrient !== 'calories') {
+              return null;
+            }
+
             const displayTotal =
               nutrient === 'calories'
                 ? Math.round(

@@ -1,4 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { categoryLabel, tagLabel } from '@/utils/dgfitLabels';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -112,8 +114,16 @@ const ExerciseRowThumbnail = ({
   );
 };
 
+const SECTIONS = ['hareketler', 'antrenmanlar', 'programlar'] as const;
+type Section = (typeof SECTIONS)[number];
+
 const ExerciseDatabaseManager = () => {
   const { t } = useTranslation();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const requested = searchParams.get('bolum');
+  const section: Section = SECTIONS.includes(requested as Section)
+    ? (requested as Section)
+    : 'hareketler';
   const { user } = useAuth();
   const { energyUnit, convertEnergy } = usePreferences();
   const isMobile = useIsMobile();
@@ -446,206 +456,220 @@ const ExerciseDatabaseManager = () => {
 
   return (
     <div className="space-y-6">
-      {/* DG FIT: saved workouts and weekly programs come before the library */}
-      <WorkoutPresetsManager />
-      <WorkoutPlansManager />
+      {/* DG FIT: the library, saved workouts and weekly programs share this
+          page; Menü opens the library, the workout tab's Düzenle the rest. */}
+      <Tabs
+        value={section}
+        onValueChange={(value) =>
+          setSearchParams({ bolum: value }, { replace: true })
+        }
+      >
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="hareketler">Hareketler</TabsTrigger>
+          <TabsTrigger value="antrenmanlar">Antrenmanlarım</TabsTrigger>
+          <TabsTrigger value="programlar">Programlar</TabsTrigger>
+        </TabsList>
+      </Tabs>
+      {section === 'antrenmanlar' && <WorkoutPresetsManager />}
+      {section === 'programlar' && <WorkoutPlansManager />}
 
-      {/* Exercises Section */}
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle>
-            {t('exercise.databaseManager.cardTitle', 'Exercises')}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pt-0">
-          <div className="flex flex-col gap-4 mb-4">
-            <div className="flex flex-row flex-wrap items-center gap-4">
-              <div className="relative flex-1 min-w-[180px]">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                <Input
-                  type="text"
-                  placeholder={t(
-                    'exercise.databaseManager.searchPlaceholder',
-                    'Search exercises...'
-                  )}
-                  value={searchTerm}
-                  onChange={(e) => {
-                    setSearchTerm(e.target.value);
-                    clearSelection();
-                    setRowSelection({});
-                  }}
-                  className="pl-10"
-                />
-              </div>
-
-              <div className="flex items-center gap-2 whitespace-nowrap">
-                <Filter className="h-4 w-4 text-gray-500" />
-                <Select
-                  onValueChange={(val) => {
-                    setCategoryFilter(val);
-                    clearSelection();
-                    setRowSelection({});
-                  }}
-                  defaultValue={categoryFilter}
-                >
-                  <SelectTrigger className="w-40">
-                    <SelectValue
-                      placeholder={t(
-                        'exercise.databaseManager.allCategoriesPlaceholder',
-                        'All Categories'
-                      )}
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">
-                      {t(
-                        'exercise.databaseManager.allCategoriesItem',
-                        'All Categories'
-                      )}
-                    </SelectItem>
-                    {EXERCISE_CATEGORIES.map(
-                      ({ value, labelKey, defaultLabel }) => (
-                        <SelectItem key={value} value={value}>
-                          {t(labelKey, defaultLabel)}
-                        </SelectItem>
-                      )
+      {section === 'hareketler' && (
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle>
+              {t('exercise.databaseManager.cardTitle', 'Exercises')}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="flex flex-col gap-4 mb-4">
+              <div className="flex flex-row flex-wrap items-center gap-4">
+                <div className="relative flex-1 min-w-[180px]">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input
+                    type="text"
+                    placeholder={t(
+                      'exercise.databaseManager.searchPlaceholder',
+                      'Search exercises...'
                     )}
-                  </SelectContent>
-                </Select>
+                    value={searchTerm}
+                    onChange={(e) => {
+                      setSearchTerm(e.target.value);
+                      clearSelection();
+                      setRowSelection({});
+                    }}
+                    className="pl-10"
+                  />
+                </div>
 
-                <Select
-                  onValueChange={(value) => {
-                    setOwnershipFilter(value as ExerciseOwnershipFilter);
-                    clearSelection();
-                    setRowSelection({});
-                  }}
-                  defaultValue={ownershipFilter}
-                >
-                  <SelectTrigger className="w-32">
-                    <SelectValue
-                      placeholder={t(
-                        'exercise.databaseManager.allOwnershipPlaceholder',
-                        'All'
+                <div className="flex items-center gap-2 whitespace-nowrap">
+                  <Filter className="h-4 w-4 text-gray-500" />
+                  <Select
+                    onValueChange={(val) => {
+                      setCategoryFilter(val);
+                      clearSelection();
+                      setRowSelection({});
+                    }}
+                    defaultValue={categoryFilter}
+                  >
+                    <SelectTrigger className="w-40">
+                      <SelectValue
+                        placeholder={t(
+                          'exercise.databaseManager.allCategoriesPlaceholder',
+                          'All Categories'
+                        )}
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">
+                        {t(
+                          'exercise.databaseManager.allCategoriesItem',
+                          'All Categories'
+                        )}
+                      </SelectItem>
+                      {EXERCISE_CATEGORIES.map(
+                        ({ value, labelKey, defaultLabel }) => (
+                          <SelectItem key={value} value={value}>
+                            {t(labelKey, defaultLabel)}
+                          </SelectItem>
+                        )
                       )}
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">
-                      {t('exercise.databaseManager.allOwnershipItem', 'All')}
-                    </SelectItem>
-                    <SelectItem value="own">
-                      {t(
-                        'exercise.databaseManager.myOwnOwnershipItem',
-                        'My Own'
-                      )}
-                    </SelectItem>
-                    <SelectItem value="family">
-                      {t(
-                        'exercise.databaseManager.familyOwnershipItem',
-                        'Family'
-                      )}
-                    </SelectItem>
-                    <SelectItem value="public">
-                      {t(
-                        'exercise.databaseManager.publicOwnershipItem',
-                        'Public'
-                      )}
-                    </SelectItem>
-                    <SelectItem value="needs-review">
-                      {t(
-                        'exercise.databaseManager.needsReviewOwnershipItem',
-                        'Needs Review'
-                      )}
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+                    </SelectContent>
+                  </Select>
 
-              <div className="flex gap-2 shrink-0 ml-auto">
-                <Button
-                  variant="outline"
-                  size={isMobile ? 'icon' : 'default'}
-                  onClick={toggleEditMode}
-                  className={`shrink-0 ${
-                    isEditMode
-                      ? 'bg-blue-50 border-blue-200 text-blue-600 dark:bg-blue-900/30 dark:border-blue-800 dark:text-blue-400'
-                      : ''
-                  }`}
-                  title={
-                    isEditMode
-                      ? t('common.cancel', 'Cancel')
-                      : t('common.select', 'Select')
-                  }
-                >
-                  {isEditMode ? (
-                    isMobile ? (
-                      <X className="w-5 h-5" />
+                  <Select
+                    onValueChange={(value) => {
+                      setOwnershipFilter(value as ExerciseOwnershipFilter);
+                      clearSelection();
+                      setRowSelection({});
+                    }}
+                    defaultValue={ownershipFilter}
+                  >
+                    <SelectTrigger className="w-32">
+                      <SelectValue
+                        placeholder={t(
+                          'exercise.databaseManager.allOwnershipPlaceholder',
+                          'All'
+                        )}
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">
+                        {t('exercise.databaseManager.allOwnershipItem', 'All')}
+                      </SelectItem>
+                      <SelectItem value="own">
+                        {t(
+                          'exercise.databaseManager.myOwnOwnershipItem',
+                          'My Own'
+                        )}
+                      </SelectItem>
+                      <SelectItem value="family">
+                        {t(
+                          'exercise.databaseManager.familyOwnershipItem',
+                          'Family'
+                        )}
+                      </SelectItem>
+                      <SelectItem value="public">
+                        {t(
+                          'exercise.databaseManager.publicOwnershipItem',
+                          'Public'
+                        )}
+                      </SelectItem>
+                      <SelectItem value="needs-review">
+                        {t(
+                          'exercise.databaseManager.needsReviewOwnershipItem',
+                          'Needs Review'
+                        )}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex gap-2 shrink-0 ml-auto">
+                  <Button
+                    variant="outline"
+                    size={isMobile ? 'icon' : 'default'}
+                    onClick={toggleEditMode}
+                    className={`shrink-0 ${
+                      isEditMode
+                        ? 'bg-blue-50 border-blue-200 text-blue-600 dark:bg-blue-900/30 dark:border-blue-800 dark:text-blue-400'
+                        : ''
+                    }`}
+                    title={
+                      isEditMode
+                        ? t('common.cancel', 'Cancel')
+                        : t('common.select', 'Select')
+                    }
+                  >
+                    {isEditMode ? (
+                      isMobile ? (
+                        <X className="w-5 h-5" />
+                      ) : (
+                        t('common.cancel', 'Cancel')
+                      )
+                    ) : isMobile ? (
+                      <CheckSquare className="w-5 h-5" />
                     ) : (
-                      t('common.cancel', 'Cancel')
-                    )
-                  ) : isMobile ? (
-                    <CheckSquare className="w-5 h-5" />
-                  ) : (
-                    t('common.select', 'Select')
-                  )}
-                </Button>
-                <Button onClick={() => setIsAddExerciseDialogOpen(true)}>
-                  <Plus className="w-4 h-4 mr-2" />
-                  {t(
-                    'exercise.databaseManager.addExerciseButton',
-                    'Add Exercise'
-                  )}
-                </Button>
+                      t('common.select', 'Select')
+                    )}
+                  </Button>
+                  <Button onClick={() => setIsAddExerciseDialogOpen(true)}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    {t(
+                      'exercise.databaseManager.addExerciseButton',
+                      'Add Exercise'
+                    )}
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="space-y-4">
-            <DataTable
-              titleColumnId="name"
-              getRowId={(row) => row.id}
-              onRowDoubleClick={(ex) => {
-                if (ex.user_id === user?.id) editForm.openEditDialog(ex);
-              }}
-              rowSelection={rowSelection}
-              onRowSelectionChange={setRowSelection}
-              onSortingChange={(sorting) => {
-                if (sorting.length > 0) {
-                  const sort = sorting[0];
-                  if (sort) {
-                    setSortOrder(`${sort.id}:${sort.desc ? 'desc' : 'asc'}`);
+            <div className="space-y-4">
+              <DataTable
+                titleColumnId="name"
+                getRowId={(row) => row.id}
+                onRowDoubleClick={(ex) => {
+                  if (ex.user_id === user?.id) editForm.openEditDialog(ex);
+                }}
+                rowSelection={rowSelection}
+                onRowSelectionChange={setRowSelection}
+                onSortingChange={(sorting) => {
+                  if (sorting.length > 0) {
+                    const sort = sorting[0];
+                    if (sort) {
+                      setSortOrder(`${sort.id}:${sort.desc ? 'desc' : 'asc'}`);
+                    }
+                  } else {
+                    setSortOrder('name:asc');
                   }
-                } else {
-                  setSortOrder('name:asc');
-                }
-              }}
-              manualSorting
-              pagination={{
-                pageIndex: currentPage - 1,
-                pageSize: itemsPerPage,
-              }}
-              sorting={[
-                {
-                  id: sortOrder.split(':')[0] || 'name',
-                  desc: sortOrder.split(':')[1] === 'desc',
-                },
-              ]}
-              columns={displayColumns}
-              data={currentExercises}
-              isLoading={!data}
-              manualPagination
-              pageCount={totalPages}
-              onPaginationChange={(pageIndex, pageSize) => {
-                if (pageSize !== itemsPerPage) {
-                  setItemsPerPage(pageSize);
-                } else {
-                  setCurrentPage(pageIndex + 1);
-                }
-              }}
-            />
-          </div>
-        </CardContent>
-      </Card>
+                }}
+                manualSorting
+                pagination={{
+                  pageIndex: currentPage - 1,
+                  pageSize: itemsPerPage,
+                }}
+                sorting={[
+                  {
+                    id: sortOrder.split(':')[0] || 'name',
+                    desc: sortOrder.split(':')[1] === 'desc',
+                  },
+                ]}
+                columns={displayColumns}
+                data={currentExercises}
+                isLoading={!data}
+                manualPagination
+                pageCount={totalPages}
+                onPaginationChange={(pageIndex, pageSize) => {
+                  if (pageSize !== itemsPerPage) {
+                    setItemsPerPage(pageSize);
+                  } else {
+                    setCurrentPage(pageIndex + 1);
+                  }
+                }}
+              />
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <BulkActionToolbar
         selectedCount={selectedCount}
