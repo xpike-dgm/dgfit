@@ -37,6 +37,9 @@ RUN apk add --no-cache bash gettext curl
 
 # Copy the build output from the builder stage
 COPY --from=builder /app/SparkyFitnessFrontend/dist /usr/share/nginx/html
+# public/ files keep the checkout's mode; a umask 077 clone would leave them
+# unreadable to the nginx worker (403 on locales, manifest, icons).
+RUN chmod -R a+rX /usr/share/nginx/html
 
 # Copy the nginx configuration template
 COPY docker/nginx.conf /etc/nginx/templates/default.conf.template
