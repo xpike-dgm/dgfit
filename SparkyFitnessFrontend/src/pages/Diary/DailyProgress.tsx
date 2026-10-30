@@ -389,7 +389,7 @@ const DailyProgress = ({ selectedDate }: { selectedDate: string }) => {
           <div className="grid grid-cols-3 gap-2 text-center text-sm">
             {/* Eaten */}
             <div className="space-y-1 min-w-0">
-              <div className="flex items-center justify-center text-lg font-bold text-green-600 whitespace-nowrap">
+              <div className="flex items-center justify-center text-lg font-bold text-foreground whitespace-nowrap">
                 <Utensils className="w-4 h-4 mr-1 shrink-0" />
                 <span>{display.eaten.toLocaleString('tr-TR')}</span>
               </div>
@@ -407,7 +407,7 @@ const DailyProgress = ({ selectedDate }: { selectedDate: string }) => {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <div className="space-y-1 cursor-help min-w-0">
-                    <div className="flex items-center justify-center text-lg font-bold text-orange-600 whitespace-nowrap">
+                    <div className="flex items-center justify-center text-lg font-bold text-foreground whitespace-nowrap">
                       <Flame className="w-4 h-4 mr-1 shrink-0" />
                       <span>{display.burnedTotal.toLocaleString('tr-TR')}</span>
                     </div>
@@ -526,8 +526,8 @@ const DailyProgress = ({ selectedDate }: { selectedDate: string }) => {
 
           {/* Detailed Burned Breakdown (Visible if data present) */}
           {!!(exerciseSource !== 'none' || bmr) && (
-            <div className="text-center p-2 bg-blue-50 dark:bg-blue-950/40 rounded-lg space-y-1">
-              <div className="text-sm font-medium text-blue-700 dark:text-blue-300">
+            <div className="text-center p-2 bg-raised rounded-lg space-y-1">
+              <div className="text-sm font-medium text-foreground">
                 {t(
                   'exercise.dailyProgress.energyBurnedBreakdownTitle',
                   'Energy Burned Breakdown'
@@ -535,7 +535,7 @@ const DailyProgress = ({ selectedDate }: { selectedDate: string }) => {
               </div>
 
               {exerciseSource === 'logged' && (
-                <div className="text-xs text-blue-600 dark:text-blue-400">
+                <div className="text-xs text-muted-foreground">
                   {t(
                     'exercise.dailyProgress.otherExerciseCalories',
                     'Other Exercise: {{exerciseCalories}} {{energyUnit}}',
@@ -549,7 +549,7 @@ const DailyProgress = ({ selectedDate }: { selectedDate: string }) => {
               )}
 
               {exerciseSource === 'active' && (
-                <div className="text-xs text-blue-600 dark:text-blue-400">
+                <div className="text-xs text-muted-foreground">
                   {t(
                     'exercise.dailyProgress.activeCalories',
                     'Active Calories: {{activeCaloriesFromExercise}} {{energyUnit}}',
@@ -562,7 +562,7 @@ const DailyProgress = ({ selectedDate }: { selectedDate: string }) => {
               )}
 
               {exerciseSource === 'steps' && (
-                <div className="text-xs text-blue-600 dark:text-blue-400 flex items-center justify-center gap-1">
+                <div className="text-xs text-muted-foreground flex items-center justify-center gap-1">
                   <Zap className="w-3 h-3" />
                   {t(
                     'exercise.dailyProgress.stepsCalories',
@@ -577,7 +577,7 @@ const DailyProgress = ({ selectedDate }: { selectedDate: string }) => {
               )}
 
               {!!bmr && (
-                <div className="text-xs text-blue-600 dark:text-blue-400">
+                <div className="text-xs text-muted-foreground">
                   {t(
                     bmrSource === 'measured'
                       ? 'exercise.dailyProgress.bmrMeasured'
@@ -779,7 +779,7 @@ const DailyProgress = ({ selectedDate }: { selectedDate: string }) => {
             </div>
           ) : (
             /* Dynamic / Fixed / Percentage modes: original Net Energy box */
-            <div className="text-center p-2 dark:bg-muted bg-gray-50 rounded-lg">
+            <div className="text-center p-2 bg-raised rounded-lg">
               <div className="text-sm font-medium dark:text-foreground text-gray-700">
                 {t(
                   'exercise.dailyProgress.netEnergy',

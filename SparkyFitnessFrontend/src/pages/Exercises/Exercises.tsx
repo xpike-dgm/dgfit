@@ -251,11 +251,13 @@ const ExerciseDatabaseManager = () => {
         cell: ({ row }) => {
           const exercise = row.original;
           return (
-            <div className="flex items-center gap-3">
+            <div className="flex min-w-0 items-center gap-3">
               <ExerciseRowThumbnail exercise={exercise} />
-              <div className="flex flex-col">
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="font-semibold text-sm">{exercise.name}</span>
+              <div className="flex min-w-0 flex-col">
+                <div className="flex min-w-0 items-center gap-1.5 flex-wrap">
+                  <span className="line-clamp-2 min-w-0 whitespace-normal break-words font-semibold text-sm">
+                    {exercise.name}
+                  </span>
                   {exercise.tags
                     ?.filter(
                       (tag) =>

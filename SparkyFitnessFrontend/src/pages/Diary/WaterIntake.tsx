@@ -331,7 +331,7 @@ const WaterIntake = ({ selectedDate }: WaterIntakeProps) => {
             onClick={() => adjustWater(-1)}
             disabled={manualWaterMl <= 0 || loading}
             size="icon"
-            className="h-8 w-8 rounded-full"
+            className="h-11 w-11 rounded-full"
             title={
               manualWaterMl <= 0 && waterMl > 0
                 ? t(
@@ -345,7 +345,7 @@ const WaterIntake = ({ selectedDate }: WaterIntakeProps) => {
           </Button>
 
           <div className="text-center min-w-[70px]">
-            <div className="text-sm font-bold text-blue-600 dark:text-blue-400">
+            <div className="text-sm font-bold text-primary">
               {getVolumeDisplay()}
             </div>
           </div>
@@ -354,7 +354,7 @@ const WaterIntake = ({ selectedDate }: WaterIntakeProps) => {
             onClick={() => adjustWater(1)}
             disabled={loading}
             size="icon"
-            className="h-8 w-8 rounded-full bg-blue-600 hover:bg-blue-700 text-white"
+            className="h-11 w-11 rounded-full"
           >
             <Plus className="h-4 w-4" />
           </Button>

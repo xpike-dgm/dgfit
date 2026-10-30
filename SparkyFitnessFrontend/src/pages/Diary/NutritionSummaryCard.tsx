@@ -262,7 +262,10 @@ const NutritionSummaryCard = ({
                 : `${t('diary.of', 'of')} ${displayGoal}${unit}`;
 
             const showCheck =
-              (goalType === 'maximum' && goal > 0 && !isOverLimit) ||
+              (goalType === 'maximum' &&
+                goal > 0 &&
+                comparisonTotal > 0 &&
+                !isOverLimit) ||
               (isTargetType && inTargetRange);
 
             return (
