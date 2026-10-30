@@ -26,6 +26,7 @@ import {
   Scale,
   LayoutGrid,
   BookOpen,
+  ChevronLeft,
   Sparkles,
   ChefHat,
 } from 'lucide-react';
@@ -61,6 +62,28 @@ interface AddCompItem {
 /** A tab stays highlighted on its own sub-pages (e.g. /exercises/training-programs). */
 const isTabActive = (pathname: string, tab: string): boolean =>
   pathname === tab || (tab !== '/' && pathname.startsWith(`${tab}/`));
+
+/**
+ * Pages reached from the phone Menü. On a phone they get a back header like
+ * a pushed screen in the SparkyFitness app, and keep the Menü tab selected.
+ */
+const MENU_PAGES: [string, string][] = [
+  ['/arkadaslar/', 'Profil'],
+  ['/arkadaslar', 'Arkadaşlar'],
+  ['/tarifler', 'Tarifler'],
+  ['/reports', 'Gelişim'],
+  ['/checkin', 'Kilo & Ölçümler'],
+  ['/exercises', 'Hareketler'],
+  ['/foods', 'Yiyecekler'],
+  ['/goals', 'Hedefler'],
+  ['/settings', 'Ayarlar'],
+  ['/admin', 'Yönetim'],
+];
+
+const menuPageTitle = (pathname: string): string | undefined =>
+  MENU_PAGES.find(([path]) =>
+    path.endsWith('/') ? pathname.startsWith(path) : isTabActive(pathname, path)
+  )?.[1];
 
 interface MainLayoutProps {
   onShowAboutDialog: () => void;
@@ -443,6 +466,15 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     loggingLevel,
   ]);
 
+  const subPageTitle = isActingOnBehalf
+    ? undefined
+    : menuPageTitle(location.pathname);
+  const goBack = () => {
+    const historyState = window.history.state as { idx?: number } | null;
+    if ((historyState?.idx ?? 0) > 0) navigate(-1);
+    else navigate('/menu');
+  };
+
   const selectedDate = new URLSearchParams(location.search).get('date');
   const selectedDateRelation = selectedDate
     ? getDateRelationToToday(selectedDate)
@@ -553,7 +585,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                   </div>
                 );
               }
-              const active = isTabActive(location.pathname, value);
+              const active =
+                isTabActive(location.pathname, value) ||
+                (value === '/menu' && subPageTitle !== undefined);
               return (
                 <button
                   key={value}
@@ -584,6 +618,22 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         </nav>
 
         <div className="pb-24 sm:pb-0">
+          {subPageTitle && (
+            <div className="-mx-4 -mt-1 mb-3 flex items-center border-b border-border px-2 pb-2 sm:hidden">
+              <button
+                type="button"
+                aria-label="Geri"
+                onClick={goBack}
+                className="flex h-10 w-10 items-center justify-center text-foreground"
+              >
+                <ChevronLeft className="h-[22px] w-[22px]" />
+              </button>
+              <h1 className="min-w-0 flex-1 truncate text-center text-lg font-semibold text-foreground">
+                {subPageTitle}
+              </h1>
+              <span className="w-10" />
+            </div>
+          )}
           <InstallAppBanner />
           <OfflineWorkoutSync />
           {/* Don't mount a disallowed page while the redirect effect runs, or it

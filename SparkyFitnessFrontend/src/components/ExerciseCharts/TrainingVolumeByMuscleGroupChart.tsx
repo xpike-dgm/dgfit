@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { localizeMuscle } from '@/utils/exerciseTaxonomy';
 import {
   BarChart,
   Bar,
@@ -20,7 +21,9 @@ export const TrainingVolumeByMuscleGroupChart = ({
   weightUnit,
 }: TrainingVolumeByMuscleGroupChartProps) => {
   const { t } = useTranslation();
-  const chartData = [...data].sort((a, b) => b.volume - a.volume);
+  const chartData = [...data]
+    .sort((a, b) => b.volume - a.volume)
+    .map((row) => ({ ...row, muscle: localizeMuscle(t, row.muscle) }));
   const height = Math.min(420, Math.max(180, chartData.length * 32));
 
   return (
@@ -47,29 +50,39 @@ export const TrainingVolumeByMuscleGroupChart = ({
               layout="vertical"
               margin={{ top: 4, right: 12, left: 4, bottom: 4 }}
             >
-              <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+              <CartesianGrid
+                strokeDasharray="3 3"
+                horizontal={false}
+                stroke="hsl(var(--border))"
+              />
               <XAxis
                 type="number"
-                tick={{ fontSize: 11 }}
-                tickFormatter={(value: number) => String(Math.round(value))}
+                tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+                tickFormatter={(value: number) =>
+                  Math.round(value).toLocaleString('tr-TR')
+                }
               />
               <YAxis
                 type="category"
                 dataKey="muscle"
                 width={88}
                 interval={0}
-                tick={{ fontSize: 11 }}
+                tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
               />
               <Tooltip
                 formatter={(value: unknown) => [
-                  `${Math.round(Number(value) || 0)} ${weightUnit}`,
+                  `${Math.round(Number(value) || 0).toLocaleString('tr-TR')} ${weightUnit}`,
                   t('exerciseReportsDashboard.volumeCurrent', 'Volume'),
                 ]}
-                contentStyle={{ backgroundColor: 'hsl(var(--background))' }}
+                contentStyle={{
+                  backgroundColor: 'hsl(var(--popover))',
+                  borderRadius: 12,
+                  border: '1px solid hsl(var(--border))',
+                }}
               />
               <Bar
                 dataKey="volume"
-                fill="#ff7300"
+                fill="hsl(var(--primary))"
                 isAnimationActive={false}
                 radius={[0, 4, 4, 0]}
               />

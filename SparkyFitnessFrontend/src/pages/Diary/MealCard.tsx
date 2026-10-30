@@ -776,7 +776,7 @@ const MealCard = ({
                 <div
                   className="grid gap-x-2 gap-y-2 text-xs sm:text-sm w-full sm:w-[35%] sm:ml-auto"
                   style={{
-                    gridTemplateColumns: `repeat(auto-fit, minmax(${isMobile ? '40px' : '60px'}, 1fr))`,
+                    gridTemplateColumns: `repeat(auto-fit, minmax(${isMobile ? '64px' : '60px'}, 1fr))`,
                   }}
                 >
                   {visibleNutrientsForGrid.map((nutrient) => {
@@ -803,11 +803,13 @@ const MealCard = ({
                         : metadata.unit;
 
                     return (
-                      <div key={nutrient} className="text-center min-w-[40px]">
-                        <div className={`font-bold ${metadata.color}`}>
+                      <div key={nutrient} className="min-w-0 text-center">
+                        <div
+                          className={`whitespace-nowrap font-bold ${metadata.color}`}
+                        >
                           {displayValue} {unitDisplay}
                         </div>
-                        <div className="text-xs text-gray-500">
+                        <div className="truncate text-xs text-muted-foreground">
                           {t(metadata.label, metadata.defaultLabel)}
                         </div>
                       </div>

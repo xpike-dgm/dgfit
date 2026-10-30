@@ -140,13 +140,12 @@ export const GoalsContent = ({
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-foreground">Hedefler</h1>
+      <h1 className="hidden text-2xl font-bold text-foreground sm:block">
+        Hedefler
+      </h1>
 
       {/* Goal Weight */}
       <GoalWeight />
-
-      {/* Reset Onboarding */}
-      <ResetOnboarding />
 
       {/* Daily Goals */}
       <DailyGoals
@@ -186,6 +185,9 @@ export const GoalsContent = ({
         goalPresets={goalPresets}
         plan={currentWeeklyPlan}
       />
+
+      {/* Reset Onboarding: destructive, so it sits last. */}
+      <ResetOnboarding />
     </div>
   );
 };

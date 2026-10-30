@@ -42,7 +42,8 @@ export const ResetOnboarding = () => {
         <Button
           onClick={handleResetOnboarding}
           disabled={saving}
-          variant="destructive"
+          variant="ghost"
+          className="px-0 text-danger-text hover:bg-transparent hover:text-danger-text"
         >
           <RotateCcw className="h-4 w-4 mr-2" />
           {t('goals.goalsSettings.resetOnboarding', 'Reset Onboarding')}

@@ -103,6 +103,9 @@ const WorkoutsHub = () => {
     today
   );
 
+  const todayIndex = WEEK.findIndex((d) => d.dow === todayDow);
+  const todayDone = (weekEntries[todayIndex]?.data?.length ?? 0) > 0;
+
   const assignmentsFor = (dow: number) =>
     (activePlan?.assignments ?? []).filter((a) => a.day_of_week === dow);
 
@@ -232,7 +235,7 @@ const WorkoutsHub = () => {
                 })}
               </div>
 
-              <div className="rounded-xl border bg-muted/30 p-4">
+              <div className="rounded-xl bg-raised p-4">
                 <div className="text-xs uppercase tracking-wide text-muted-foreground">
                   {selectedDay.long}
                   {selectedDow === todayDow ? ' · bugün' : ''}
@@ -264,17 +267,39 @@ const WorkoutsHub = () => {
                             : [];
                       })}
                     </ul>
-                    <Button
-                      className="mt-4 h-12 w-full text-base font-semibold"
-                      onClick={() =>
-                        startPlanSession(activePlan, selectedAssignments[0]!)
-                      }
-                    >
-                      <Play className="mr-2 h-5 w-5 fill-current" />
-                      {selectedDow === todayDow
-                        ? 'Antrenmanı başlat'
-                        : `${selectedDay.long} antrenmanını bugün yap`}
-                    </Button>
+                    {selectedDow === todayDow && todayDone ? (
+                      <>
+                        <div className="mt-4 flex items-center justify-center gap-2 rounded-xl bg-emerald-500/12 py-3 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+                          <Check className="h-5 w-5" /> Bugünkü antrenman
+                          tamamlandı
+                        </div>
+                        <Button
+                          variant="ghost"
+                          className="mt-2 w-full"
+                          onClick={() =>
+                            startPlanSession(
+                              activePlan,
+                              selectedAssignments[0]!
+                            )
+                          }
+                        >
+                          <Play className="h-4 w-4" />
+                          Tekrar yap
+                        </Button>
+                      </>
+                    ) : (
+                      <Button
+                        className="mt-4 h-12 w-full text-base font-semibold"
+                        onClick={() =>
+                          startPlanSession(activePlan, selectedAssignments[0]!)
+                        }
+                      >
+                        <Play className="mr-2 h-5 w-5 fill-current" />
+                        {selectedDow === todayDow
+                          ? 'Antrenmanı başlat'
+                          : `${selectedDay.long} antrenmanını bugün yap`}
+                      </Button>
+                    )}
                   </>
                 )}
               </div>

@@ -410,7 +410,7 @@ const FriendsPage = () => {
   const incoming = list?.incoming.length ?? 0;
   return (
     <div className="space-y-4 pb-4">
-      <h2 className="text-2xl font-extrabold tracking-tight">Arkadaşlar</h2>
+      <h2 className="hidden text-2xl font-bold sm:block">Arkadaşlar</h2>
       <Tabs defaultValue={incoming > 0 ? 'friends' : 'feed'}>
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="feed">Akış</TabsTrigger>

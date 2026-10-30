@@ -196,7 +196,7 @@ const MenuPage = () => {
           await signOut();
           navigate('/login');
         }}
-        className="flex w-full items-center justify-center gap-2 rounded-2xl bg-card p-4 text-base font-medium text-destructive shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
+        className="flex w-full items-center justify-center gap-2 rounded-2xl bg-card p-4 text-base font-medium text-danger-text shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
       >
         <LogOut className="h-5 w-5" /> Çıkış yap
       </button>

@@ -50,6 +50,7 @@
   --color-exercise: hsl(var(--exercise));
   --color-pr: hsl(var(--pr));
   --color-cat-amber: hsl(var(--cat-amber));
+  --color-danger-text: hsl(var(--danger-text));
   --color-cat-violet: hsl(var(--cat-violet));
   --color-cat-green: hsl(var(--cat-green));
   --color-cat-pink: hsl(var(--cat-pink));
@@ -159,6 +160,7 @@
     --exercise: 146 68% 66%;
     --pr: 36 92% 44%;
     --cat-amber: 40 88% 43%;
+    --danger-text: 358 72% 42%;
     --cat-violet: 265 70% 60%;
     --cat-green: 124 54% 38%;
     --cat-pink: 340 75% 55%;
@@ -223,6 +225,7 @@
     --exercise: 158 49% 48%;
     --pr: 42 88% 64%;
     --cat-amber: 40 60% 58%;
+    --danger-text: 358 80% 65%;
     --cat-violet: 265 50% 60%;
     --cat-green: 125 24% 53%;
     --cat-pink: 340 50% 60%;

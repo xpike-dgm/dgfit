@@ -225,7 +225,7 @@ const RecipesPage = () => {
   return (
     <div className="space-y-5 pb-4">
       <div>
-        <h2 className="flex items-center gap-2 text-2xl font-extrabold tracking-tight">
+        <h2 className="hidden items-center gap-2 text-2xl font-bold sm:flex">
           <ChefHat className="h-6 w-6 text-primary" /> Tarifler
         </h2>
         <p className="text-sm text-muted-foreground">
