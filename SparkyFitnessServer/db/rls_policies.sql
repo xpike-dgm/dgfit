@@ -64,6 +64,8 @@ BEGIN
     'profiles',
     'dgfit_invite_codes',
     'dgfit_invite_redemptions',
+    'dgfit_friendships',
+    'dgfit_privacy_settings',
     'rate_limit',
     'sparky_chat_history',
     'food_assistant_preferences',

@@ -59,6 +59,12 @@ const ResetPassword = lazyWithChunkRecovery(
 const Index = lazyWithChunkRecovery(() => import('@/pages/Index'));
 const Diary = lazyWithChunkRecovery(() => import('@/pages/Diary/Diary'));
 const MenuPage = lazyWithChunkRecovery(() => import('@/pages/Menu/MenuPage'));
+const FriendsPage = lazyWithChunkRecovery(
+  () => import('@/pages/Friends/FriendsPage')
+);
+const FriendProfilePage = lazyWithChunkRecovery(
+  () => import('@/pages/Friends/FriendProfilePage')
+);
 const WorkoutsHub = lazyWithChunkRecovery(
   () => import('@/pages/Workouts/WorkoutsHub')
 );
@@ -452,6 +458,16 @@ const router = createBrowserRouter([
           {
             path: 'menu',
             Component: MenuPage,
+            ErrorBoundary: RouteErrorBoundary,
+          },
+          {
+            path: 'arkadaslar',
+            Component: FriendsPage,
+            ErrorBoundary: RouteErrorBoundary,
+          },
+          {
+            path: 'arkadaslar/:userId',
+            Component: FriendProfilePage,
             ErrorBoundary: RouteErrorBoundary,
           },
           {
