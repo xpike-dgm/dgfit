@@ -38,7 +38,7 @@ export const SparkyCardHeader = ({
   linkLabel?: string;
   onLink?: () => void;
 }) => (
-  <div className="mb-2 flex items-center justify-between px-1">
+  <div className="mb-2 flex items-center justify-between">
     <h2 className="text-base font-bold text-muted-foreground">{title}</h2>
     {onLink && (
       <button
@@ -196,7 +196,7 @@ export const ProgressRow = ({
 }) => {
   const progress = goal > 0 ? current / goal : 0;
   return (
-    <div className="px-1 py-1.5">
+    <div className="py-1.5">
       <div className="mb-2 flex items-center justify-between">
         <span className="text-sm font-medium text-foreground">{label}</span>
         <span className="text-xs text-muted-foreground">

@@ -31,6 +31,7 @@ import { useStartPlanSession } from '@/hooks/Exercises/useStartPlanSession';
 import { useAuth } from '@/hooks/useAuth';
 import { UserAvatar } from '@/pages/Friends/UserAvatar';
 import type { WaterContainer } from '@/types/settings';
+import { timeAgo } from '@/utils/timeAgo';
 import type { WorkoutPlanTemplate } from '@/types/workout';
 import {
   CalorieRingCard,
@@ -76,17 +77,6 @@ const containerMl = (container: WaterContainer | null | undefined) => {
     (container.volume * factor) /
       Math.max(1, container.servings_per_container || 1)
   );
-};
-
-const timeAgo = (iso: string) => {
-  const minutes = Math.max(
-    0,
-    Math.round((Date.now() - new Date(iso).getTime()) / 60000)
-  );
-  if (minutes < 60) return `${minutes} dk önce`;
-  const hours = Math.round(minutes / 60);
-  if (hours < 24) return `${hours} sa önce`;
-  return `${Math.round(hours / 24)} gün önce`;
 };
 
 const Dashboard = () => {
@@ -216,12 +206,12 @@ const Dashboard = () => {
       </button>
 
       {summary.foodEntries.length > 0 ? (
-        <SparkyCard className="p-3">
+        <SparkyCard>
           <SparkyCardHeader
             title="Besinler"
             onLink={() => navigate(diaryLink)}
           />
-          <div className="flex flex-wrap justify-between">
+          <div className="-mx-1 flex flex-wrap justify-between">
             {MACROS.map((m) => (
               <MacroBar
                 key={m.key}
@@ -250,7 +240,7 @@ const Dashboard = () => {
           onLink={() => navigate('/antrenman')}
         />
         {dayAssignments.length > 0 && activePlan ? (
-          <div className="flex items-center gap-3 px-1">
+          <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/12 text-primary">
               {workoutDone ? (
                 <Check className="h-5 w-5" />
@@ -278,7 +268,7 @@ const Dashboard = () => {
             )}
           </div>
         ) : (
-          <div className="flex items-center gap-3 px-1">
+          <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/12 text-primary">
               {workoutDone ? (
                 <Check className="h-5 w-5" />
@@ -323,13 +313,13 @@ const Dashboard = () => {
 
       <SparkyCard>
         <SparkyCardHeader title="Su" />
-        <div className="flex items-center gap-3 px-1">
+        <div className="flex items-center gap-3">
           <button
             type="button"
             aria-label="Su azalt"
             disabled={waterPending || waterMl <= 0}
             onClick={() => changeWater(-1)}
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-raised text-primary shadow-sm disabled:opacity-40"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/12 text-primary disabled:opacity-40"
           >
             <Minus className="h-5 w-5" />
           </button>
@@ -373,7 +363,7 @@ const Dashboard = () => {
           onLink={() => navigate('/arkadaslar')}
         />
         {feedItems.length === 0 ? (
-          <p className="px-1 py-2 text-sm text-caption">
+          <p className="py-2 text-sm text-caption">
             Henüz arkadaş etkinliği yok.
           </p>
         ) : (
@@ -385,7 +375,7 @@ const Dashboard = () => {
                   key={`${item.type}-${item.user_id}-${item.at}`}
                   type="button"
                   onClick={() => navigate(`/arkadaslar/${item.user_id}`)}
-                  className="flex w-full items-center gap-3 px-1 py-2.5 text-left"
+                  className="flex w-full items-center gap-3 py-2.5 text-left"
                 >
                   <UserAvatar user={friend} className="h-9 w-9" />
                   <div className="min-w-0 flex-1">

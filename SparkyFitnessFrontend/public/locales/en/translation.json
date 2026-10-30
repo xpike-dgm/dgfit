@@ -937,7 +937,8 @@
     "autoCalculateSelect": "Include in bulk auto-calculate",
     "autoCalculateSelectAll": "Select All",
     "autoCalculateSelectNone": "Select None",
-    "autoCalculateApplySelected": "Auto-calculate Selected ({{count}})"
+    "autoCalculateApplySelected": "Auto-calculate Selected ({{count}})",
+    "carbsShort": "Carbs"
   },
   "calculationSettings": {
     "showNetCarbs": "Show net carbs (carbs minus fiber)",

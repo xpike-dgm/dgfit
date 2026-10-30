@@ -80,7 +80,7 @@ const MOBILE_NUTRIENT_LABEL_OVERRIDES: Record<
   string,
   { label: string; defaultLabel: string }
 > = {
-  carbs: { label: 'nutrition.carbs', defaultLabel: 'Carbs' },
+  carbs: { label: 'nutrition.carbsShort', defaultLabel: 'Carbs' },
   dietary_fiber: { label: 'nutrition.fiber', defaultLabel: 'Fiber' },
 };
 
@@ -582,7 +582,7 @@ const MealCard = ({
                                   {displayValue}
                                   {unitDisplay}
                                 </div>
-                                <div className="mt-1 truncate text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                                <div className="mt-1 truncate text-xs text-muted-foreground">
                                   {labelOverride
                                     ? t(
                                         labelOverride.label,

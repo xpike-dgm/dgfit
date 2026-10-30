@@ -396,7 +396,7 @@ export function DataTable<TData extends RowData>({
                     </div>
                   </div>
 
-                  <div className="px-4 pb-2 grid grid-cols-4 gap-2">
+                  <div className="flex flex-wrap gap-x-3 gap-y-1 px-4 pb-3">
                     {row.getVisibleCells().map((cell) => {
                       const isHiddenOnMobile = (
                         cell.column.columnDef as ColumnDef<
@@ -425,7 +425,7 @@ export function DataTable<TData extends RowData>({
                         <div
                           key={cell.id}
                           className={cn(
-                            'flex flex-col gap-0.5',
+                            'flex min-w-0 items-baseline gap-1',
                             (
                               cell.column.columnDef as ColumnDef<
                                 DataTableFeatures,
@@ -452,14 +452,14 @@ export function DataTable<TData extends RowData>({
                             ).meta?.colSpan === 4 && 'col-span-4'
                           )}
                         >
-                          <span className="truncate text-[11px] text-caption">
+                          <span className="text-xs text-caption">
                             {tableHeader
                               ? flexRender(header, tableHeader.getContext())
                               : typeof header === 'string'
                                 ? header
                                 : cell.column.id}
                           </span>
-                          <div className="truncate text-sm font-medium text-foreground">
+                          <div className="text-sm font-medium text-foreground">
                             {flexRender(
                               cell.column.columnDef.cell,
                               cell.getContext()

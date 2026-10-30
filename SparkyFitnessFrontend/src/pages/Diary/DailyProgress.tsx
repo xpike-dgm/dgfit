@@ -391,7 +391,7 @@ const DailyProgress = ({ selectedDate }: { selectedDate: string }) => {
             <div className="space-y-1 min-w-0">
               <div className="flex items-center justify-center text-lg font-bold text-green-600 whitespace-nowrap">
                 <Utensils className="w-4 h-4 mr-1 shrink-0" />
-                <span>{display.eaten}</span>
+                <span>{display.eaten.toLocaleString('tr-TR')}</span>
               </div>
               <div className="text-xs text-gray-500 whitespace-nowrap">
                 {t(
@@ -409,7 +409,7 @@ const DailyProgress = ({ selectedDate }: { selectedDate: string }) => {
                   <div className="space-y-1 cursor-help min-w-0">
                     <div className="flex items-center justify-center text-lg font-bold text-orange-600 whitespace-nowrap">
                       <Flame className="w-4 h-4 mr-1 shrink-0" />
-                      <span>{display.burnedTotal}</span>
+                      <span>{display.burnedTotal.toLocaleString('tr-TR')}</span>
                     </div>
                     <div className="text-xs text-gray-500 whitespace-nowrap">
                       {t(
@@ -434,7 +434,8 @@ const DailyProgress = ({ selectedDate }: { selectedDate: string }) => {
                         'exercise.dailyProgress.otherExerciseCalories',
                         'Other Exercise: {{exerciseCalories}} {{energyUnit}}',
                         {
-                          exerciseCalories: display.exerciseOther,
+                          exerciseCalories:
+                            display.exerciseOther.toLocaleString('tr-TR'),
                           energyUnit: getEnergyUnitString(energyUnit),
                         }
                       )}
@@ -478,7 +479,7 @@ const DailyProgress = ({ selectedDate }: { selectedDate: string }) => {
                           ? 'BMR: {{bmr}} {{energyUnit}} (Measured)'
                           : 'BMR: {{bmr}} {{energyUnit}} (Algorithm)',
                         {
-                          bmr: display.bmr,
+                          bmr: display.bmr.toLocaleString('tr-TR'),
                           energyUnit: getEnergyUnitString(energyUnit),
                         }
                       )}
@@ -510,7 +511,7 @@ const DailyProgress = ({ selectedDate }: { selectedDate: string }) => {
                 <span>
                   {isTargetBand
                     ? `${targetMinConverted}–${targetMaxConverted}`
-                    : display.goal}
+                    : display.goal.toLocaleString('tr-TR')}
                 </span>
               </div>
               <div className="text-xs dark:text-slate-400 text-gray-500 whitespace-nowrap">
@@ -539,7 +540,8 @@ const DailyProgress = ({ selectedDate }: { selectedDate: string }) => {
                     'exercise.dailyProgress.otherExerciseCalories',
                     'Other Exercise: {{exerciseCalories}} {{energyUnit}}',
                     {
-                      exerciseCalories: display.exerciseOther,
+                      exerciseCalories:
+                        display.exerciseOther.toLocaleString('tr-TR'),
                       energyUnit: getEnergyUnitString(energyUnit),
                     }
                   )}
@@ -584,7 +586,7 @@ const DailyProgress = ({ selectedDate }: { selectedDate: string }) => {
                       ? 'BMR: {{bmr}} {{energyUnit}} (Measured)'
                       : 'BMR: {{bmr}} {{energyUnit}} (Algorithm)',
                     {
-                      bmr: display.bmr,
+                      bmr: display.bmr.toLocaleString('tr-TR'),
                       energyUnit: getEnergyUnitString(energyUnit),
                     }
                   )}
@@ -808,7 +810,7 @@ const DailyProgress = ({ selectedDate }: { selectedDate: string }) => {
               <span>
                 {t('exercise.dailyProgress.dailyProgress', 'Daily Progress')}
               </span>
-              <span>{Math.round(effectiveProgress)}%</span>
+              <span>%{Math.round(effectiveProgress)}</span>
             </div>
             <Progress value={effectiveProgress} className="h-2" />
           </div>

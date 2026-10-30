@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { formatDistanceToNow } from 'date-fns';
-import { tr } from 'date-fns/locale';
+import { timeAgo } from '@/utils/timeAgo';
 import {
   Check,
   Dumbbell,
@@ -45,9 +44,6 @@ const formatVolume = (kg: number) =>
   kg >= 1000
     ? `${(kg / 1000).toLocaleString('tr-TR', { maximumFractionDigits: 1 })} ton`
     : `${kg} kg`;
-
-const timeAgo = (at: string) =>
-  formatDistanceToNow(new Date(at), { addSuffix: true, locale: tr });
 
 const FeedCard = ({
   item,

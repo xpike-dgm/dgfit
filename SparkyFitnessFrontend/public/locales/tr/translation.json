@@ -825,7 +825,8 @@
     "autoCalculateSelect": "Toplu otomatik hesaplamaya dahil et",
     "autoCalculateSelectAll": "Tümünü Seç",
     "autoCalculateSelectNone": "Hiçbirini Seçme",
-    "autoCalculateApplySelected": "Seçilenleri Otomatik Hesapla ({{count}})"
+    "autoCalculateApplySelected": "Seçilenleri Otomatik Hesapla ({{count}})",
+    "carbsShort": "Karb."
   },
   "calculationSettings": {
     "showNetCarbs": "Net karbonhidratları göster (karbonhidrat eksi lif)",
