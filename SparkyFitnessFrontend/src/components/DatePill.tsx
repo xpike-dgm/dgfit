@@ -1,4 +1,5 @@
 import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useState } from 'react';
 import { addDays, localDateToDay } from '@workspace/shared';
 import { Calendar } from '@/components/ui/calendar';
 import {
@@ -31,26 +32,31 @@ interface DatePillProps {
  * sky blue, today stays plain.
  */
 const DatePill = ({ date, onChange }: DatePillProps) => {
-  const { getDateRelationToToday, parseDateInUserTimezone } = usePreferences();
+  const {
+    getDateRelationToToday,
+    parseDateInUserTimezone,
+    formatDateInUserTimezone,
+  } = usePreferences();
   const relation = getDateRelationToToday(date);
   const selected = parseDateInUserTimezone(date);
+  const [open, setOpen] = useState(false);
 
   return (
     <div className="flex items-center">
       <button
         type="button"
         aria-label="Önceki gün"
-        className="flex h-11 w-9 items-center justify-center text-muted-foreground"
+        className="flex h-11 w-11 items-center justify-center text-muted-foreground"
         onClick={() => onChange(addDays(date, -1))}
       >
         <ChevronLeft className="h-[18px] w-[18px]" />
       </button>
-      <Popover>
+      <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <button
             type="button"
             className={cn(
-              'flex items-center gap-1 rounded-full border px-2.5 py-1 text-base font-medium sm:text-lg',
+              'flex h-10 min-w-[8.5rem] items-center justify-center gap-1 rounded-full border px-3 text-base font-medium sm:text-lg',
               relation === 'today' && 'border-transparent text-foreground',
               relation === 'past' &&
                 'border-date-past/35 bg-date-past/12 text-date-past',
@@ -66,15 +72,31 @@ const DatePill = ({ date, onChange }: DatePillProps) => {
           <Calendar
             mode="single"
             selected={selected}
-            onSelect={(d) => d && onChange(localDateToDay(d))}
+            onSelect={(d) => {
+              if (!d) return;
+              onChange(localDateToDay(d));
+              setOpen(false);
+            }}
             yearsRange={10}
           />
+          {relation !== 'today' && (
+            <button
+              type="button"
+              className="mx-2 mb-2 h-10 w-[calc(100%-1rem)] rounded-xl bg-primary/12 text-sm font-semibold text-primary"
+              onClick={() => {
+                onChange(formatDateInUserTimezone(new Date(), 'yyyy-MM-dd'));
+                setOpen(false);
+              }}
+            >
+              Bugüne dön
+            </button>
+          )}
         </PopoverContent>
       </Popover>
       <button
         type="button"
         aria-label="Sonraki gün"
-        className="flex h-11 w-9 items-center justify-center text-muted-foreground"
+        className="flex h-11 w-11 items-center justify-center text-muted-foreground"
         onClick={() => onChange(addDays(date, 1))}
       >
         <ChevronRight className="h-[18px] w-[18px]" />

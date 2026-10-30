@@ -17,7 +17,8 @@ import {
   useUserAIPreferences,
   useUpdateUserAIPreferences,
 } from '@/hooks/AI/useAIServiceSettings';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { toast } from '@/hooks/use-toast';
 import { useClearChatHistoryMutation } from '@/hooks/AI/useSparkyChat';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -49,6 +50,21 @@ const SparkyChat = () => {
   const usableServices = services?.filter((service) => service.is_active) ?? [];
 
   const hasEnabledServices = usableServices.length > 0;
+  const servicesLoaded = services !== undefined;
+
+  // Every PT AI launcher (Özet, Menü, + sheet) just opens this panel; without
+  // a usable service it used to do nothing at all. Say why instead.
+  useEffect(() => {
+    if (!isChatOpen || !servicesLoaded || hasEnabledServices) return;
+    toast({
+      title: 'PT AI henüz hazır değil',
+      description:
+        user?.role === 'admin'
+          ? 'Menü → Yönetim → "PT AI – Claude API anahtarı" bölümünden anahtarı ekle ve "Aktif"i aç.'
+          : 'Yöneticinden PT AI’yı açmasını iste.',
+    });
+    closeChat();
+  }, [isChatOpen, servicesLoaded, hasEnabledServices, user?.role, closeChat]);
 
   if (!hasEnabledServices) {
     return null;

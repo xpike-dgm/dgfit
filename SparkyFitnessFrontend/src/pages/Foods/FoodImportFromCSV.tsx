@@ -944,13 +944,13 @@ const ImportFromCSV = ({ onSave }: ImportFromCSVProps) => {
                                       row.id,
                                       header,
                                       header === 'calories' &&
-                                        e.target.valueAsNumber
+                                        parseFloat(e.target.value)
                                         ? convertEnergy(
-                                            e.target.valueAsNumber,
+                                            parseFloat(e.target.value),
                                             energyUnit,
                                             'kcal'
                                           )
-                                        : e.target.valueAsNumber || 0
+                                        : parseFloat(e.target.value) || 0
                                     )
                                   }
                                   min="0"

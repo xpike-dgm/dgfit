@@ -164,7 +164,7 @@ const ImportFromCSV = ({ onSave }: ImportFromCSVProps) => {
         type="number"
         value={(value as number) || 0}
         onChange={(e) =>
-          handleEditCell(row.id, header, e.target.valueAsNumber || 0)
+          handleEditCell(row.id, header, parseFloat(e.target.value) || 0)
         }
         min="0"
         step="any"

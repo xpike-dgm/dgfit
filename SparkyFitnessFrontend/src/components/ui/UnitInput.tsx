@@ -105,52 +105,58 @@ export const UnitInput: React.FC<UnitInputProps> = ({
       ? null
       : placeholderValue;
 
+  // Commit while typing (not only on blur) so a "Devam"/"Kaydet" button
+  // enabled by the value works on the first tap. The local text is kept as
+  // typed: recording the committed value as already seen stops the sync
+  // above from reformatting "78." to "78" mid-entry.
+  const commitSingle = (text: string) => {
+    const num = parseFloat(text);
+    const converted =
+      text.trim() === '' || Number.isNaN(num)
+        ? null
+        : unit === 'lbs'
+          ? lbsToKg(num)
+          : unit === 'inches'
+            ? inchesToCm(num)
+            : num;
+    if (converted !== metricValue) {
+      setPrevMetricValue(converted);
+      onChange(converted);
+    }
+  };
   const handleSingleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setVal1(e.target.value);
+    commitSingle(e.target.value);
   };
-  const handleSingleBlur = () => {
-    if (val1.trim() === '') {
+  const handleSingleBlur = () => commitSingle(val1);
+
+  const commitSplit = (v1: string, v2: string) => {
+    if (v1.trim() === '' && v2.trim() === '') {
       if (metricValue !== null) {
+        setPrevMetricValue(null);
         onChange(null);
       }
       return;
     }
-    const num = parseFloat(val1);
-    if (Number.isNaN(num)) {
-      if (metricValue !== null) {
-        onChange(null);
-      }
-      return;
-    }
-    let converted = num;
-    if (unit === 'lbs') converted = lbsToKg(num);
-    if (unit === 'inches') converted = inchesToCm(num);
+    const n1 = parseFloat(v1) || 0;
+    const n2 = parseFloat(v2) || 0;
+    let converted = 0;
+    if (unit === 'st_lbs') converted = stonesLbsToKg(n1, n2);
+    else if (unit === 'ft_in') converted = feetInchesToCm(n1, n2);
     if (converted !== metricValue) {
+      setPrevMetricValue(converted);
       onChange(converted);
     }
   };
 
   const handleSplitChange = (v1: string, v2: string) => {
-    setVal1(v1.replace(/[^0-9]/g, ''));
+    const whole = v1.replace(/[^0-9]/g, '');
+    setVal1(whole);
     setVal2(v2);
+    commitSplit(whole, v2);
   };
 
-  const handleSplitBlur = () => {
-    if (val1.trim() === '' && val2.trim() === '') {
-      if (metricValue !== null) {
-        onChange(null);
-      }
-      return;
-    }
-    const n1 = parseFloat(val1) || 0;
-    const n2 = parseFloat(val2) || 0;
-    let converted = 0;
-    if (unit === 'st_lbs') converted = stonesLbsToKg(n1, n2);
-    else if (unit === 'ft_in') converted = feetInchesToCm(n1, n2);
-    if (converted !== metricValue) {
-      onChange(converted);
-    }
-  };
+  const handleSplitBlur = () => commitSplit(val1, val2);
 
   // Render two inputs for st_lbs or ft_in
   if (unit === 'st_lbs' || unit === 'ft_in') {

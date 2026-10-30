@@ -301,7 +301,9 @@ const DraggableChatbotButton: React.FC = () => {
 
   // While the chat panel is open it provides its own header controls (minimize
   // / close), so hide the floating launcher to avoid overlapping the panel.
-  if (!hasAiProvider || isChatOpen) {
+  // DG FIT phones already reach PT AI from Özet, Menü and the + sheet; the
+  // floating bubble only covered Save buttons and row actions there.
+  if (!hasAiProvider || isChatOpen || isMobile) {
     return null;
   }
 

@@ -14,6 +14,7 @@ import {
   type Locale,
 } from 'react-day-picker';
 
+import { tr } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { usePreferences } from '@/contexts/PreferencesContext';
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -57,14 +58,15 @@ function Calendar({
         className
       )}
       captionLayout={captionLayout}
-      locale={locale}
+      // DG FIT is Turkish-only: "Ekim 2026", "Pzt Sal Çar…".
+      locale={locale ?? tr}
       weekStartsOn={weekStartsOn ?? firstDayOfWeek}
       reverseYears
       startMonth={new Date(new Date().getFullYear() - yearsRange, 0)}
       endMonth={new Date(new Date().getFullYear() + 1, 11)}
       formatters={{
         formatMonthDropdown: (date) =>
-          date.toLocaleString(locale?.code, { month: 'short' }),
+          date.toLocaleString((locale ?? tr).code, { month: 'short' }),
         ...formatters,
       }}
       classNames={{
@@ -194,7 +196,7 @@ function Calendar({
           );
         },
         DayButton: ({ ...props }) => (
-          <CalendarDayButton locale={locale} {...props} />
+          <CalendarDayButton locale={locale ?? tr} {...props} />
         ),
         WeekNumber: ({ children, ...props }) => {
           return (

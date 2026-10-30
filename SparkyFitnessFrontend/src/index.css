@@ -292,6 +292,16 @@
     overflow-y: auto;
   }
 
+  /* Phones: dialogs are full-width bottom sheets (see DialogContent). */
+  @media (max-width: 639px) {
+    .dialog-viewport-fit {
+      width: 100vw;
+      max-width: 100vw;
+      max-height: 92dvh;
+      overscroll-behavior: contain;
+    }
+  }
+
   /* DialogContent is a grid, and grid/flex children default to `min-width: auto`,
      so a wide child (a search result row, a nutrient grid) can still push past the
      capped dialog. Allowing them to shrink keeps content inside the box. */
