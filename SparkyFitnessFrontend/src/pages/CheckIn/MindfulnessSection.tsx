@@ -829,7 +829,7 @@ export const MindfulnessSection: React.FC<MindfulnessSectionProps> = ({
                 <Input
                   id="hrAvg"
                   type="number"
-                  placeholder="e.g. 68"
+                  placeholder="örn. 68"
                   value={formHrAvg}
                   onChange={(e) => setFormHrAvg(e.target.value)}
                 />
@@ -842,7 +842,7 @@ export const MindfulnessSection: React.FC<MindfulnessSectionProps> = ({
                 <Input
                   id="hrv"
                   type="number"
-                  placeholder="e.g. 55"
+                  placeholder="örn. 55"
                   value={formHrv}
                   onChange={(e) => setFormHrv(e.target.value)}
                 />

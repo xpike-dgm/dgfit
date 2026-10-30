@@ -194,7 +194,7 @@ export const ProgressRow = ({
   unit: string;
   colorClass: string;
 }) => {
-  const progress = goal > 0 ? current / goal : current > 0 ? 1 : 0;
+  const progress = goal > 0 ? current / goal : 0;
   return (
     <div className="px-1 py-1.5">
       <div className="mb-2 flex items-center justify-between">
@@ -205,15 +205,17 @@ export const ProgressRow = ({
             : `${fmt(current)} ${unit}`}
         </span>
       </div>
-      <div className="h-2 overflow-hidden rounded bg-progress-track">
-        <div
-          className={cn(
-            'h-full rounded transition-[width] duration-500',
-            colorClass
-          )}
-          style={{ width: `${Math.min(progress, 1) * 100}%` }}
-        />
-      </div>
+      {goal > 0 && (
+        <div className="h-2 overflow-hidden rounded bg-progress-track">
+          <div
+            className={cn(
+              'h-full rounded transition-[width] duration-500',
+              colorClass
+            )}
+            style={{ width: `${Math.min(progress, 1) * 100}%` }}
+          />
+        </div>
+      )}
     </div>
   );
 };

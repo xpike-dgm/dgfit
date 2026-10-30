@@ -101,7 +101,10 @@ export const AccountSecurity = () => {
     });
   };
   return (
-    <AccordionItem value="account-security" className="border rounded-lg mb-4">
+    <AccordionItem
+      value="account-security"
+      className="mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
+    >
       <AccordionTrigger
         className="flex items-center gap-2 p-4 hover:no-underline"
         description={t(

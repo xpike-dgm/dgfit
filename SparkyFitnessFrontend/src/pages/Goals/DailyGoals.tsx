@@ -126,7 +126,17 @@ export const DailyGoals = ({
 
   const handleSaveGoals = async () => {
     if (!user) return;
-    const finalGoals = { ...goals };
+    // DG FIT logs into one meal type, which always gets the whole day.
+    const finalGoals =
+      visibleMeals.length === 1 && visibleMeals[0]
+        ? {
+            ...goals,
+            ...buildGoalsPayload(
+              { [visibleMeals[0].name.toLowerCase()]: 100 },
+              goals
+            ),
+          }
+        : { ...goals };
     if (macroInputType === 'percentages') {
       const cal = finalGoals.calories;
       const fiber = finalGoals.dietary_fiber || 0;
@@ -176,6 +186,7 @@ export const DailyGoals = ({
   );
 
   const isTotalPercentageValid = useMemo(() => {
+    if (visibleMeals.length <= 1) return true;
     const total = visibleMeals.reduce(
       (sum, meal) => sum + getMealPercentage(meal.name, goals),
       0
@@ -187,12 +198,12 @@ export const DailyGoals = ({
     <>
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center">
+          <CardTitle className="flex flex-col items-start gap-1">
             {t(
               'goals.goalsSettings.dailyNutritionGoals',
               'Daily Nutrition Goals'
             )}
-            <div className="text-sm font-normal text-gray-600 ml-2">
+            <div className="text-sm font-normal text-muted-foreground">
               {t(
                 'goals.goalsSettings.changesCascadeInfo',
                 '(Updates your daily goals for the next 6 months or until your next scheduled goal change)'
@@ -253,8 +264,9 @@ export const DailyGoals = ({
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
             {(['protein', 'carbs', 'fat'] as const).map((m) => (
               <div key={m} className="space-y-1.5">
-                <Label className="text-xs capitalize">
-                  {t(m, m)} {macroInputType === 'grams' ? '(g)' : '(%)'}
+                <Label className="text-xs">
+                  {t(`nutrition.${m}`, m)}{' '}
+                  {macroInputType === 'grams' ? '(g)' : '(%)'}
                 </Label>
                 <NumericInput
                   step={0.1}
@@ -396,19 +408,23 @@ export const DailyGoals = ({
             setState={(val) => setGoals(val)}
           />
 
-          <Separator className="my-6" />
+          {visibleMeals.length > 1 && (
+            <>
+              <Separator className="my-6" />
 
-          <h3 className="text-lg font-semibold mb-4">
-            {t(
-              'goals.goalsSettings.mealCalorieDistribution',
-              'Meal Calorie Distribution'
-            )}
-          </h3>
-          <MealPercentageManager
-            initialPercentages={memoizedGoalsPercentages}
-            totalCalories={goals.calories}
-            onPercentagesChange={handleGoalsPercentagesChange}
-          />
+              <h3 className="text-lg font-semibold mb-4">
+                {t(
+                  'goals.goalsSettings.mealCalorieDistribution',
+                  'Meal Calorie Distribution'
+                )}
+              </h3>
+              <MealPercentageManager
+                initialPercentages={memoizedGoalsPercentages}
+                totalCalories={goals.calories}
+                onPercentagesChange={handleGoalsPercentagesChange}
+              />
+            </>
+          )}
 
           <div className="mt-6">
             <Button

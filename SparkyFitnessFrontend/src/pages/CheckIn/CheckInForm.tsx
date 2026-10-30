@@ -419,7 +419,7 @@ export const CheckInForm: React.FC<CheckInFormProps> = ({
                 value={bmr}
                 onChange={(e) => setBmr(e.target.value)}
                 placeholder={
-                  placeholders.bmr ? placeholders.bmr.toString() : 'e.g. 1650'
+                  placeholders.bmr ? placeholders.bmr.toString() : 'örn. 1650'
                 }
               />
             </MeasurementField>

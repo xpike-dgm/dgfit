@@ -173,37 +173,37 @@ const Settings = () => {
           >
             <AccordionItem
               value="profile-information"
-              className="border rounded-lg mb-4"
+              className="mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
             >
               <ProfileInformation />
             </AccordionItem>
             <AccordionItem
               value="user-preferences"
-              className="border rounded-lg mb-4"
+              className="mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
             >
               <PreferenceSettings />
             </AccordionItem>
             <AccordionItem
               value="heart-rate-zones"
-              className="border rounded-lg mb-4"
+              className="mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
             >
               <HeartRateZoneSettings />
             </AccordionItem>
             <AccordionItem
               value="dgfit-social"
-              className="border rounded-lg mb-4"
+              className="mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
             >
               <DgfitSocialSettings />
             </AccordionItem>
             <AccordionItem
               value="dgfit-notifications"
-              className="border rounded-lg mb-4"
+              className="mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
             >
               <DgfitNotificationSettings />
             </AccordionItem>
             <AccordionItem
               value="data-management"
-              className="border rounded-lg mb-4"
+              className="mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
             >
               <AccordionTrigger
                 className="flex items-center gap-2 p-4 hover:no-underline"
@@ -232,7 +232,7 @@ const Settings = () => {
           >
             <AccordionItem
               value="allergen-preferences"
-              className="border rounded-lg mb-4"
+              className="mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
             >
               <AccordionTrigger
                 className="flex items-center gap-2 p-4 hover:no-underline"
@@ -253,7 +253,7 @@ const Settings = () => {
             </AccordionItem>
             <AccordionItem
               value="custom-nutrients"
-              className="border rounded-lg mb-4"
+              className="mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
             >
               <AccordionTrigger
                 className="flex items-center gap-2 p-4 hover:no-underline"
@@ -271,7 +271,7 @@ const Settings = () => {
             </AccordionItem>
             <AccordionItem
               value="nutrient-display"
-              className="border rounded-lg mb-4"
+              className="mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
             >
               <AccordionTrigger
                 className="flex items-center gap-2 p-4 hover:no-underline"
@@ -289,7 +289,7 @@ const Settings = () => {
             </AccordionItem>
             <AccordionItem
               value="nutrient-goal-direction"
-              className="border rounded-lg mb-4"
+              className="mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
             >
               <AccordionTrigger
                 className="flex items-center gap-2 p-4 hover:no-underline"
@@ -310,7 +310,7 @@ const Settings = () => {
             </AccordionItem>
             <AccordionItem
               value="custom-meals"
-              className="border rounded-lg mb-4"
+              className="mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
             >
               <AccordionTrigger
                 className="flex items-center gap-2 p-4 hover:no-underline"
@@ -328,7 +328,7 @@ const Settings = () => {
             </AccordionItem>
             <AccordionItem
               value="calculation-settings"
-              className="border rounded-lg mb-4"
+              className="mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
             >
               <AccordionTrigger
                 className="flex items-center gap-2 p-4 hover:no-underline"
@@ -349,7 +349,7 @@ const Settings = () => {
             </AccordionItem>
             <AccordionItem
               value="water-tracking"
-              className="border rounded-lg mb-4"
+              className="mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
             >
               <WaterTrackingSettings />
             </AccordionItem>
@@ -364,13 +364,13 @@ const Settings = () => {
           >
             <AccordionItem
               value="guided-workouts"
-              className="border rounded-lg mb-4"
+              className="mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
             >
               <GuidedWorkoutSettings />
             </AccordionItem>
             <AccordionItem
               value="custom-categories"
-              className="border rounded-lg mb-4"
+              className="mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
             >
               <AccordionTrigger
                 className="flex items-center gap-2 p-4 hover:no-underline"
@@ -398,7 +398,7 @@ const Settings = () => {
             >
               <AccordionItem
                 value="food-and-exercise-data-providers"
-                className="border rounded-lg mb-4"
+                className="mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
               >
                 <AccordionTrigger
                   className="flex items-center gap-2 p-4 hover:no-underline"
@@ -426,7 +426,7 @@ const Settings = () => {
               </AccordionItem>
               <AccordionItem
                 value="ai-service"
-                className="border rounded-lg mb-4"
+                className="mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
               >
                 <AccordionTrigger
                   className="flex items-center gap-2 p-4 hover:no-underline"

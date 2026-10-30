@@ -1,6 +1,4 @@
 import { useState, useMemo } from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Target } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { usePreferences } from '@/contexts/PreferencesContext';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -142,15 +140,7 @@ export const GoalsContent = ({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">
-          {t('goals.goalsSettings.title', 'Goals Settings')}
-        </h2>
-        <Badge variant="outline" className="text-lg px-3 py-1">
-          <Target className="w-4 h-4 mr-2" />
-          {t('goals.goalsSettings.cascadingGoals', 'Cascading Goals')}
-        </Badge>
-      </div>
+      <h1 className="text-2xl font-bold text-foreground">Hedefler</h1>
 
       {/* Goal Weight */}
       <GoalWeight />

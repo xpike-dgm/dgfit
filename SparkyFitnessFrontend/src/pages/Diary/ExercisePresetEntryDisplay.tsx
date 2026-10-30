@@ -184,8 +184,7 @@ const ExercisePresetEntryDisplay: React.FC<ExercisePresetEntryDisplayProps> = ({
                   )}
                   {exerciseCount > 0 && (
                     <span className="flex-shrink-0 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300">
-                      {exerciseCount}{' '}
-                      {exerciseCount === 1 ? 'exercise' : 'exercises'}
+                      {exerciseCount} hareket
                     </span>
                   )}
                   {(() => {
