@@ -1,6 +1,7 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import FoodDatabaseManager from '@/pages/Foods/Foods';
+import { MemoryRouter } from 'react-router-dom';
 import { renderWithClient } from '../test-utils';
 import { apiCall } from '@/api/api';
 
@@ -148,7 +149,11 @@ describe('FoodDatabaseManager', () => {
     });
   });
   it('shows a favorite indicator only on favorited food rows', async () => {
-    renderWithClient(<FoodDatabaseManager />);
+    renderWithClient(
+      <MemoryRouter>
+        <FoodDatabaseManager />
+      </MemoryRouter>
+    );
 
     expect(screen.getAllByText('Apple').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Banana').length).toBeGreaterThan(0);
@@ -166,7 +171,11 @@ describe('FoodDatabaseManager', () => {
   });
 
   it('offers one owned custom food for contribution without a bulk action', async () => {
-    renderWithClient(<FoodDatabaseManager />);
+    renderWithClient(
+      <MemoryRouter>
+        <FoodDatabaseManager />
+      </MemoryRouter>
+    );
     await screen.findAllByLabelText('Favorited');
 
     expect(
@@ -209,7 +218,11 @@ describe('FoodDatabaseManager', () => {
     'hides contribution actions for %s',
     async (_name, menuIndex, activeUserId) => {
       mockActiveUserId = activeUserId;
-      renderWithClient(<FoodDatabaseManager />);
+      renderWithClient(
+        <MemoryRouter>
+          <FoodDatabaseManager />
+        </MemoryRouter>
+      );
       await screen.findAllByLabelText('Favorited');
       const trigger = screen.getAllByRole('button', { name: 'Open menu' })[
         menuIndex

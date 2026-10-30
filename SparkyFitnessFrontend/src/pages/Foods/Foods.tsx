@@ -1,4 +1,6 @@
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -88,8 +90,16 @@ import {
   getProviderDisplayName,
 } from '@/utils/foodProviderLabels';
 
+const SECTIONS = ['yiyecekler', 'ogunler', 'plan'] as const;
+type Section = (typeof SECTIONS)[number];
+
 const FoodDatabaseManager = () => {
   const { t } = useTranslation();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const requested = searchParams.get('bolum');
+  const section: Section = SECTIONS.includes(requested as Section)
+    ? (requested as Section)
+    : 'yiyecekler';
   const isMobile = useIsMobile();
   const [viewingFood, setViewingFood] = useState<Food | null>(null);
   const [contributionFood, setContributionFood] = useState<Food | null>(null);
@@ -552,192 +562,207 @@ const FoodDatabaseManager = () => {
 
   return (
     <div className="space-y-6">
-      {/* Food Database Section */}
-      <Card>
-        <CardHeader className="pb-4">
-          <CardTitle className="font-bold tracking-tight">
-            {t('foodDatabaseManager.foodDatabase', 'Food Database')}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {/* Controls */}
-          <div className="flex flex-col gap-4 mb-4">
-            <div className="flex flex-row flex-wrap items-center gap-4">
-              <div className="relative flex-1 min-w-[180px]">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder={t(
-                    'foodDatabaseManager.searchFoodsPlaceholder',
-                    'Search foods...'
-                  )}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
+      {/* DG FIT: foods, saved meals and meal plans share this page behind a
+          switch instead of stacking three long lists. */}
+      <Tabs
+        value={section}
+        onValueChange={(value) =>
+          setSearchParams({ bolum: value }, { replace: true })
+        }
+      >
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="yiyecekler">Yiyecekler</TabsTrigger>
+          <TabsTrigger value="ogunler">Öğünlerim</TabsTrigger>
+          <TabsTrigger value="plan">Yemek Planı</TabsTrigger>
+        </TabsList>
+      </Tabs>
+      {section === 'yiyecekler' && (
+        <Card>
+          <CardHeader className="pb-4">
+            <CardTitle className="font-bold tracking-tight">
+              {t('foodDatabaseManager.foodDatabase', 'Food Database')}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {/* Controls */}
+            <div className="flex flex-col gap-4 mb-4">
+              <div className="flex flex-row flex-wrap items-center gap-4">
+                <div className="relative flex-1 min-w-[180px]">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder={t(
+                      'foodDatabaseManager.searchFoodsPlaceholder',
+                      'Search foods...'
+                    )}
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
 
-              {/* Filter dropdown */}
-              <div className="flex items-center gap-2 whitespace-nowrap">
-                <Filter className="h-4 w-4 text-gray-500" />
-                <Select
-                  value={foodFilter}
-                  onValueChange={(value: MealFilter) => {
-                    setFoodFilter(value);
-                    clearSelection();
-                    setRowSelection({});
-                  }}
-                >
-                  <SelectTrigger className="w-32">
-                    <SelectValue
-                      placeholder={t('foodDatabaseManager.all', 'All')}
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">
-                      {t('foodDatabaseManager.all', 'All')}
-                    </SelectItem>
-                    <SelectItem value="mine">
-                      {t('foodDatabaseManager.myFoods', 'My Foods')}
-                    </SelectItem>
-                    <SelectItem value="family">
-                      {t('foodDatabaseManager.family', 'Family')}
-                    </SelectItem>
-                    <SelectItem value="public">
-                      {t('foodDatabaseManager.public', 'Public')}
-                    </SelectItem>
-                    <SelectItem value="needs-review">
-                      {t('foodDatabaseManager.needsReview', 'Needs Review')}
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Data source dropdown */}
-              <div className="flex items-center gap-2 whitespace-nowrap">
-                <Select
-                  value={providerFilter}
-                  onValueChange={(value) => {
-                    setProviderFilter(value);
-                    clearSelection();
-                    setRowSelection({});
-                  }}
-                >
-                  <SelectTrigger
-                    className="w-44"
-                    aria-label={t('common.source', 'Data source')}
+                {/* Filter dropdown */}
+                <div className="flex items-center gap-2 whitespace-nowrap">
+                  <Filter className="h-4 w-4 text-gray-500" />
+                  <Select
+                    value={foodFilter}
+                    onValueChange={(value: MealFilter) => {
+                      setFoodFilter(value);
+                      clearSelection();
+                      setRowSelection({});
+                    }}
                   >
-                    <SelectValue
-                      placeholder={t('common.source', 'Data source')}
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">
-                      {t('foodDatabaseManager.all', 'All')}
-                    </SelectItem>
-                    {FOOD_PROVIDER_TYPES.map((providerType) => (
-                      <SelectItem key={providerType} value={providerType}>
-                        {getProviderDisplayName(providerType)}
+                    <SelectTrigger className="w-32">
+                      <SelectValue
+                        placeholder={t('foodDatabaseManager.all', 'All')}
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">
+                        {t('foodDatabaseManager.all', 'All')}
                       </SelectItem>
-                    ))}
-                    <SelectItem value="manual">
-                      {t('foodDatabaseManager.manual', 'Manual')}
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+                      <SelectItem value="mine">
+                        {t('foodDatabaseManager.myFoods', 'My Foods')}
+                      </SelectItem>
+                      <SelectItem value="family">
+                        {t('foodDatabaseManager.family', 'Family')}
+                      </SelectItem>
+                      <SelectItem value="public">
+                        {t('foodDatabaseManager.public', 'Public')}
+                      </SelectItem>
+                      <SelectItem value="needs-review">
+                        {t('foodDatabaseManager.needsReview', 'Needs Review')}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-              <div className="flex gap-2 shrink-0 ml-auto">
-                <Button
-                  variant="outline"
-                  size={isMobile ? 'icon' : 'default'}
-                  onClick={toggleEditMode}
-                  className={`shrink-0 ${
-                    isEditMode
-                      ? 'bg-blue-50 border-blue-200 text-blue-600 dark:bg-blue-900/30 dark:border-blue-800 dark:text-blue-400'
-                      : ''
-                  }`}
-                  title={
-                    isEditMode
-                      ? t('common.cancel', 'Cancel')
-                      : t('common.select', 'Select')
-                  }
-                >
-                  {isEditMode ? (
-                    isMobile ? (
-                      <X className="w-5 h-5" />
+                {/* Data source dropdown */}
+                <div className="flex items-center gap-2 whitespace-nowrap">
+                  <Select
+                    value={providerFilter}
+                    onValueChange={(value) => {
+                      setProviderFilter(value);
+                      clearSelection();
+                      setRowSelection({});
+                    }}
+                  >
+                    <SelectTrigger
+                      className="w-44"
+                      aria-label={t('common.source', 'Data source')}
+                    >
+                      <SelectValue
+                        placeholder={t('common.source', 'Data source')}
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">
+                        {t('foodDatabaseManager.all', 'All')}
+                      </SelectItem>
+                      {FOOD_PROVIDER_TYPES.map((providerType) => (
+                        <SelectItem key={providerType} value={providerType}>
+                          {getProviderDisplayName(providerType)}
+                        </SelectItem>
+                      ))}
+                      <SelectItem value="manual">
+                        {t('foodDatabaseManager.manual', 'Manual')}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex gap-2 shrink-0 ml-auto">
+                  <Button
+                    variant="outline"
+                    size={isMobile ? 'icon' : 'default'}
+                    onClick={toggleEditMode}
+                    className={`shrink-0 ${
+                      isEditMode
+                        ? 'bg-blue-50 border-blue-200 text-blue-600 dark:bg-blue-900/30 dark:border-blue-800 dark:text-blue-400'
+                        : ''
+                    }`}
+                    title={
+                      isEditMode
+                        ? t('common.cancel', 'Cancel')
+                        : t('common.select', 'Select')
+                    }
+                  >
+                    {isEditMode ? (
+                      isMobile ? (
+                        <X className="w-5 h-5" />
+                      ) : (
+                        t('common.cancel', 'Cancel')
+                      )
+                    ) : isMobile ? (
+                      <CheckSquare className="w-5 h-5" />
                     ) : (
-                      t('common.cancel', 'Cancel')
-                    )
-                  ) : isMobile ? (
-                    <CheckSquare className="w-5 h-5" />
-                  ) : (
-                    t('common.select', 'Select')
-                  )}
-                </Button>
-                <Button
-                  size={isMobile ? 'icon' : 'default'}
-                  onClick={() => setShowFoodSearchDialog(true)}
-                  className="shrink-0"
-                  title={t('foodDatabaseManager.addNewFood', 'Add New Food')}
-                >
-                  <Plus className={isMobile ? 'w-5 h-5' : 'w-4 h-4 mr-2'} />
-                  {!isMobile && (
-                    <span>
-                      {t('foodDatabaseManager.addNewFood', 'Add New Food')}
-                    </span>
-                  )}
-                </Button>
+                      t('common.select', 'Select')
+                    )}
+                  </Button>
+                  <Button
+                    size={isMobile ? 'icon' : 'default'}
+                    onClick={() => setShowFoodSearchDialog(true)}
+                    className="shrink-0"
+                    title={t('foodDatabaseManager.addNewFood', 'Add New Food')}
+                  >
+                    <Plus className={isMobile ? 'w-5 h-5' : 'w-4 h-4 mr-2'} />
+                    {!isMobile && (
+                      <span>
+                        {t('foodDatabaseManager.addNewFood', 'Add New Food')}
+                      </span>
+                    )}
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
 
-          <DataTable
-            titleColumnId="name"
-            getRowId={(row) => row.id}
-            onRowDoubleClick={(food) => {
-              if (isEditMode) return;
-              if (canEdit(food)) {
-                handleEdit(food);
-              } else {
-                // Rows the user can't edit (public/family foods) open the
-                // read-only view panel instead.
-                setViewingFood(food);
-              }
-            }}
-            onSortingChange={(sorting) => {
-              if (sorting.length > 0) {
-                const sort = sorting[0];
-                if (sort) {
-                  setSortOrder(`${sort.id}:${sort.desc ? 'desc' : 'asc'}`);
+            <DataTable
+              titleColumnId="name"
+              getRowId={(row) => row.id}
+              onRowDoubleClick={(food) => {
+                if (isEditMode) return;
+                if (canEdit(food)) {
+                  handleEdit(food);
+                } else {
+                  // Rows the user can't edit (public/family foods) open the
+                  // read-only view panel instead.
+                  setViewingFood(food);
                 }
-              } else {
-                setSortOrder('name:asc');
-              }
-            }}
-            manualSorting
-            rowSelection={rowSelection}
-            onRowSelectionChange={setRowSelection}
-            pagination={{
-              pageIndex: currentPage - 1,
-              pageSize: itemsPerPage,
-            }}
-            sorting={[
-              {
-                id: sortOrder.split(':')[0] || 'name',
-                desc: sortOrder.split(':')[1] === 'desc',
-              },
-            ]}
-            columns={displayColumns}
-            data={foodData?.foods || []}
-            isLoading={loading}
-            manualPagination
-            pageCount={totalPages}
-            onPaginationChange={(pageIndex, pageSize) => {
-              handlePageChange(pageIndex + 1, pageSize);
-            }}
-          />
-        </CardContent>
-      </Card>
+              }}
+              onSortingChange={(sorting) => {
+                if (sorting.length > 0) {
+                  const sort = sorting[0];
+                  if (sort) {
+                    setSortOrder(`${sort.id}:${sort.desc ? 'desc' : 'asc'}`);
+                  }
+                } else {
+                  setSortOrder('name:asc');
+                }
+              }}
+              manualSorting
+              rowSelection={rowSelection}
+              onRowSelectionChange={setRowSelection}
+              pagination={{
+                pageIndex: currentPage - 1,
+                pageSize: itemsPerPage,
+              }}
+              sorting={[
+                {
+                  id: sortOrder.split(':')[0] || 'name',
+                  desc: sortOrder.split(':')[1] === 'desc',
+                },
+              ]}
+              columns={displayColumns}
+              data={foodData?.foods || []}
+              isLoading={loading}
+              manualPagination
+              pageCount={totalPages}
+              onPaginationChange={(pageIndex, pageSize) => {
+                handlePageChange(pageIndex + 1, pageSize);
+              }}
+            />
+          </CardContent>
+        </Card>
+      )}
 
       <BulkActionToolbar
         selectedCount={selectedCount}
@@ -777,11 +802,8 @@ const FoodDatabaseManager = () => {
         onConfirm={handleBulkDeleteConfirm}
       />
 
-      {/* Meal Management Section */}
-      <MealManagement />
-
-      {/* Meal Plan Calendar Section */}
-      <MealPlanCalendar />
+      {section === 'ogunler' && <MealManagement />}
+      {section === 'plan' && <MealPlanCalendar />}
 
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
         <DialogContent

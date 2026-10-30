@@ -12,7 +12,21 @@ import MealCard from './MealCard';
 import ExerciseCard from './ExerciseCard';
 import DiaryWidgetGrid, { type DiaryWidget } from './DiaryWidgetGrid';
 import { mealWidgetKey } from '@/utils/dashboardLayout';
-import { Flame, Salad, Droplet, UtensilsCrossed, Dumbbell } from 'lucide-react';
+import {
+  ChevronDown,
+  Flame,
+  Salad,
+  Droplet,
+  UtensilsCrossed,
+  Dumbbell,
+} from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { useDailyHealthMetrics } from '@/hooks/useGenericHealth';
 import { selectDisplayableHealthMetrics } from '@/utils/dailyHealthMetrics';
 import EditFoodEntryDialog from './EditFoodEntryDialog';
@@ -96,6 +110,7 @@ const Diary = () => {
     useState<HTMLDivElement | null>(null);
 
   const currentUserId = activeUserId;
+  const isMobile = useIsMobile();
   const { data: customNutrients, isLoading: customNutrientsLoading } =
     useCustomNutrients();
   const { data: availableMealTypes, isLoading: mealTypesLoading } =
@@ -368,7 +383,31 @@ const Diary = () => {
         key: 'energy',
         title: t('diary.dailyEnergyGoal', 'Daily Energy Goal'),
         icon: Flame,
-        render: () => <DailyProgress selectedDate={selectedDate} />,
+        // The calorie bar above already shows the day's numbers on a phone,
+        // so the full energy breakdown waits behind a disclosure there.
+        render: () =>
+          isMobile ? (
+            <Collapsible>
+              <Card>
+                <CollapsibleTrigger className="group flex w-full items-center justify-between p-4 text-left">
+                  <span>
+                    <span className="block text-base font-semibold text-foreground">
+                      Enerji detayları
+                    </span>
+                    <span className="block text-sm text-muted-foreground">
+                      Hedefin nasıl hesaplandığı, yakılan ve net enerji
+                    </span>
+                  </span>
+                  <ChevronDown className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+                </CollapsibleTrigger>
+              </Card>
+              <CollapsibleContent className="mt-3">
+                <DailyProgress selectedDate={selectedDate} />
+              </CollapsibleContent>
+            </Collapsible>
+          ) : (
+            <DailyProgress selectedDate={selectedDate} />
+          ),
       },
       {
         key: 'nutrition',
@@ -466,6 +505,7 @@ const Diary = () => {
     calorieGoalPreference,
     visibleMealTypes,
     selectedDate,
+    isMobile,
     dayTotals,
     foodEntries,
     foodEntryMeals,
