@@ -453,7 +453,7 @@ const MealCard = ({
                     nutrient === 'calories'
                       ? Math.round(
                           convertEnergy(value, 'kcal', energyUnit)
-                        ).toString()
+                        ).toLocaleString('tr-TR')
                       : formatNutrientValue(nutrient, value, customNutrients);
 
                   const unitDisplay =
@@ -794,7 +794,7 @@ const MealCard = ({
                       nutrient === 'calories'
                         ? Math.round(
                             convertEnergy(Number(value), 'kcal', energyUnit)
-                          ).toString()
+                          ).toLocaleString('tr-TR')
                         : formatNutrientValue(nutrient, value, customNutrients);
 
                     const unitDisplay =

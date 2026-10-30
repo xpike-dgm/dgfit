@@ -110,7 +110,7 @@ const CheckIn = () => {
       >
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6 pb-2 border-b">
           {/* Tab Selector on the Left */}
-          <div className="flex flex-wrap items-center justify-center lg:justify-start gap-1">
+          <div className="-mx-4 flex items-center gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:flex-wrap sm:px-0">
             {/* DG FIT: weight, measurements and progress photos only. */}
             {[
               {
@@ -132,10 +132,10 @@ const CheckIn = () => {
                   variant={isActive ? 'secondary' : 'ghost'}
                   size="sm"
                   onClick={() => handleTabChange(tab.id)}
-                  className={`rounded-full px-4 h-9 gap-2 transition-all ${
+                  className={`shrink-0 rounded-full px-4 h-9 gap-2 transition-all ${
                     isActive
-                      ? 'bg-slate-200/60 dark:bg-muted shadow-sm text-foreground'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                      ? 'bg-primary text-primary-foreground shadow-sm hover:bg-primary'
+                      : 'bg-card text-muted-foreground hover:text-foreground hover:bg-card'
                   }`}
                 >
                   <Icon className="w-4.5 h-4.5" />

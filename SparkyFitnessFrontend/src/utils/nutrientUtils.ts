@@ -104,7 +104,10 @@ export const formatNutrientValue = (
   }
 
   const { decimals } = getNutrientMetadata(key, customNutrients);
-  return numValue.toFixed(decimals);
+  // Turkish display: 1.234,5 with trailing zeros dropped (30 g, not 30.0g).
+  return numValue.toLocaleString('tr-TR', {
+    maximumFractionDigits: decimals,
+  });
 };
 
 export const getNetCarbsValue = (

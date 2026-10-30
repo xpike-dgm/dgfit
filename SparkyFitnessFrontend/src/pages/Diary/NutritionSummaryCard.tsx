@@ -167,7 +167,7 @@ const NutritionSummaryCard = ({
               nutrient === 'calories'
                 ? Math.round(
                     convertEnergy(comparisonTotal, 'kcal', energyUnit)
-                  ).toString()
+                  ).toLocaleString('tr-TR')
                 : formatNutrientValue(
                     nutrient,
                     comparisonTotal,
@@ -176,7 +176,9 @@ const NutritionSummaryCard = ({
 
             const displayGoal =
               nutrient === 'calories'
-                ? Math.round(convertEnergy(goal, 'kcal', energyUnit)).toString()
+                ? Math.round(
+                    convertEnergy(goal, 'kcal', energyUnit)
+                  ).toLocaleString('tr-TR')
                 : formatNutrientValue(nutrient, goal, customNutrients);
 
             const unit =

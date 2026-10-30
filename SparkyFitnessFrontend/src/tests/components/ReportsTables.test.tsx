@@ -111,7 +111,7 @@ describe('ReportsTables net carbs', () => {
     renderTable();
     expect(screen.getByText('Carbohydrates (g)')).toBeInTheDocument();
     const cells = screen.getAllByRole('cell');
-    const carbsCell = cells.find((c) => within(c).queryByText('30.0') !== null);
+    const carbsCell = cells.find((c) => within(c).queryByText('30') !== null);
     expect(carbsCell).toBeDefined();
   });
 
@@ -121,7 +121,7 @@ describe('ReportsTables net carbs', () => {
     expect(screen.getByText('Net Carbs (g)')).toBeInTheDocument();
     expect(screen.queryByText('Carbohydrates (g)')).not.toBeInTheDocument();
     const cells = screen.getAllByRole('cell');
-    const netCell = cells.find((c) => within(c).queryByText('22.0') !== null);
+    const netCell = cells.find((c) => within(c).queryByText('22') !== null);
     expect(netCell).toBeDefined();
   });
 });

@@ -76,7 +76,7 @@ describe('NutritionSummaryCard net carbs summary', () => {
     renderSummary();
 
     expect(screen.getByText('Carbohydrates')).toBeInTheDocument();
-    expect(screen.getByText('30.0g')).toBeInTheDocument();
+    expect(screen.getByText('30g')).toBeInTheDocument();
   });
 
   it('shows net carbs and subtracts fiber when enabled', () => {
@@ -84,8 +84,8 @@ describe('NutritionSummaryCard net carbs summary', () => {
     renderSummary();
 
     expect(screen.getByText('Net Carbs')).toBeInTheDocument();
-    expect(screen.getByText('22.0g')).toBeInTheDocument();
-    expect(screen.getByText('of 50.0g')).toBeInTheDocument();
+    expect(screen.getByText('22g')).toBeInTheDocument();
+    expect(screen.getByText('of 50g')).toBeInTheDocument();
   });
 });
 
@@ -108,7 +108,7 @@ describe('NutritionSummaryCard calorie budget', () => {
         convertEnergy={(value) => value}
       />
     );
-    expect(screen.getByText('of 2481kcal')).toBeInTheDocument();
+    expect(screen.getByText('of 2.481kcal')).toBeInTheDocument();
     const bar = container.querySelector<HTMLElement>(
       '.h-1\\.5.rounded-full[style]'
     );

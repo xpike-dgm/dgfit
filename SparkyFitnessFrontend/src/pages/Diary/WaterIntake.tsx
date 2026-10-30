@@ -257,10 +257,12 @@ const WaterIntake = ({ selectedDate }: WaterIntakeProps) => {
               const goalVal = convertMlToSelectedUnit(waterGoalMl, activeUnit);
               const decimals =
                 activeUnit === 'oz' ? 1 : activeUnit === 'liter' ? 2 : 0;
-              return `${parseFloat(val.toFixed(decimals))} / ${parseFloat(goalVal.toFixed(decimals))}`;
+              const fmt = (n: number) =>
+                n.toLocaleString('tr-TR', { maximumFractionDigits: decimals });
+              return `${fmt(val)} / ${fmt(goalVal)}`;
             })()}
           </div>
-          <div className="text-gray-500 text-xs">
+          <div className="text-muted-foreground text-xs">
             {currentContainer?.unit || water_display_unit}
           </div>
           {foodWaterMl > 0 && (
@@ -316,8 +318,8 @@ const WaterIntake = ({ selectedDate }: WaterIntakeProps) => {
             </div>
 
             {/* Progress Percentage */}
-            <div className="text-xs text-gray-600 mt-1.5 font-medium">
-              {Math.round(fillPercentage)}%
+            <div className="text-xs text-muted-foreground mt-1.5 font-medium">
+              %{Math.round(fillPercentage)}
             </div>
           </div>
         </div>

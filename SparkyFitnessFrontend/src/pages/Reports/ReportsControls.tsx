@@ -63,7 +63,7 @@ const ReportsControls = ({
   return (
     <div className="w-full flex flex-col lg:flex-row items-center gap-4 lg:gap-6">
       {/* Navigation Pills */}
-      <div className="flex flex-wrap items-center justify-center lg:justify-start gap-1 flex-1">
+      <div className="-mx-4 flex items-center gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:flex-wrap sm:px-0 flex-1 w-full">
         {reportTypes.map((type) => {
           const Icon = type.icon;
           const isActive = activeTab === type.id;
@@ -73,10 +73,10 @@ const ReportsControls = ({
               variant={isActive ? 'secondary' : 'ghost'}
               size="sm"
               onClick={() => onTabChange(type.id)}
-              className={`rounded-full px-4 h-9 gap-2 transition-all ${
+              className={`shrink-0 rounded-full px-4 h-9 gap-2 transition-all ${
                 isActive
-                  ? 'bg-slate-200/60 dark:bg-muted shadow-sm text-foreground'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                  ? 'bg-primary text-primary-foreground shadow-sm hover:bg-primary'
+                  : 'bg-card text-muted-foreground hover:text-foreground hover:bg-card'
               }`}
             >
               <Icon className="w-4 h-4" />

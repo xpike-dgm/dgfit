@@ -315,7 +315,7 @@ export function DataTable<TData extends RowData>({
       {/* Mobile Row View (Super Clean) */}
       <div className="md:hidden space-y-2 relative">
         {isLoading && !table.getRowModel().rows?.length ? (
-          <div className="p-12 text-center text-muted-foreground italic border-2 border-dashed rounded-2xl bg-gray-50/50 dark:bg-gray-900/20">
+          <div className="p-12 text-center text-sm text-muted-foreground">
             <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2 opacity-50" />
             {t('dataTable.loading', 'Loading...')}
           </div>
@@ -331,10 +331,8 @@ export function DataTable<TData extends RowData>({
                 key={row.id}
                 onDoubleClick={() => onRowDoubleClick?.(row.original)}
                 onClick={(event) => handleRowClick(event, row.original, true)}
-                className={`transition-all duration-200 border-2 overflow-hidden shadow-sm ${
-                  row.getIsSelected()
-                    ? 'border-blue-500 bg-blue-50/30 dark:bg-blue-900/10'
-                    : 'border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900'
+                className={`overflow-hidden rounded-xl border-0 bg-raised shadow-none transition-all duration-200 ${
+                  row.getIsSelected() ? 'ring-2 ring-primary' : ''
                 } ${onRowClick || onRowDoubleClick ? 'active:scale-[0.98]' : ''} ${
                   isLoading ? 'opacity-70 grayscale-[0.3]' : ''
                 }`}
@@ -354,7 +352,7 @@ export function DataTable<TData extends RowData>({
                           : null;
                       })()}
 
-                      <div className="truncate font-bold text-gray-900 dark:text-gray-100 text-sm flex-1">
+                      <div className="truncate font-semibold text-foreground text-base flex-1">
                         {(() => {
                           const titleCell = row
                             .getVisibleCells()
@@ -454,14 +452,14 @@ export function DataTable<TData extends RowData>({
                             ).meta?.colSpan === 4 && 'col-span-4'
                           )}
                         >
-                          <span className="text-[9px] uppercase font-bold text-gray-400 dark:text-gray-500 tracking-tighter truncate">
+                          <span className="truncate text-[11px] text-caption">
                             {tableHeader
                               ? flexRender(header, tableHeader.getContext())
                               : typeof header === 'string'
                                 ? header
                                 : cell.column.id}
                           </span>
-                          <div className="text-xs text-gray-700 dark:text-gray-300 font-medium truncate">
+                          <div className="truncate text-sm font-medium text-foreground">
                             {flexRender(
                               cell.column.columnDef.cell,
                               cell.getContext()
@@ -476,13 +474,13 @@ export function DataTable<TData extends RowData>({
             ))}
           </>
         ) : (
-          <div className="p-12 text-center text-muted-foreground italic border-2 border-dashed rounded-2xl bg-gray-50/50 dark:bg-gray-900/20">
+          <div className="rounded-xl bg-raised p-8 text-center text-sm text-muted-foreground">
             {t('dataTable.noResults', 'No results found.')}
           </div>
         )}
       </div>
 
-      <DataTablePagination table={table} />
+      {table.getPageCount() > 1 && <DataTablePagination table={table} />}
     </div>
   );
 }
