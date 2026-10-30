@@ -74,22 +74,23 @@ export function useExerciseSearchHook({
         return;
       }
 
-      if (
-        searchSource === 'internal' &&
-        !hasSearchTerm &&
-        !hasFilters &&
-        !isInitialLoad
-      ) {
+      // DG FIT: the landing view shows recent, most used and the whole
+      // library, so a brand-new account (no recent/top yet) still sees
+      // exercises without typing.
+      if (searchSource === 'internal' && !hasSearchTerm && !hasFilters) {
         try {
-          const recent = await queryClient.fetchQuery(
-            recentExercisesOptions(user?.id || '', itemDisplayLimit)
-          );
-          const top = await queryClient.fetchQuery(
-            topExercisesOptions(user?.id || '', itemDisplayLimit)
-          );
+          const [recent, top, all] = await Promise.all([
+            queryClient.fetchQuery(
+              recentExercisesOptions(user?.id || '', itemDisplayLimit)
+            ),
+            queryClient.fetchQuery(
+              topExercisesOptions(user?.id || '', itemDisplayLimit)
+            ),
+            queryClient.fetchQuery(internalSearchOptions('', [], [])),
+          ]);
           setRecentExercises(recent);
           setTopExercises(top);
-          setExercises([]);
+          setExercises(all || []);
         } catch (err) {
           error(loggingLevel, 'Error fetching recent/top exercises:', err);
         }

@@ -46,7 +46,7 @@ describe('HeartRateZoneLegend', () => {
     );
     expect(
       screen.getByRole('link', { name: /zone settings/i }).getAttribute('href')
-    ).toBe('/settings?tab=heart-rate-zones');
+    ).toBe('/settings?section=heart-rate-zones');
   });
 
   it('shows the four tiers when chosen', () => {

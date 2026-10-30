@@ -20,7 +20,7 @@ import { GlobalSettings } from '@/types/admin';
 const CopyableEnvVar: React.FC<{ value: string }> = ({ value }) => {
   const { t } = useTranslation();
   return (
-    <code className="font-mono bg-gray-200 dark:bg-gray-700 p-1 rounded flex items-center">
+    <code className="font-mono bg-gray-200 dark:bg-gray-700 p-1 rounded flex items-center break-all">
       {value}
       <Button
         variant="ghost"

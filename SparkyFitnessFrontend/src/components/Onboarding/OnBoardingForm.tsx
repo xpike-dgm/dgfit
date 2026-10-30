@@ -8,7 +8,6 @@ import { OnboardingSteps } from './OnBoardingSteps';
 import { Profile } from '@/types/settings';
 import { OnboardingData, Sex } from '@/types/onboarding';
 import { RecentCheckInMeasurementsResponse } from '@workspace/shared';
-import { useExternalProvidersQuery } from '@/hooks/Settings/useExternalProviderSettings';
 import { useSkipOnboarding } from '@/hooks/Onboarding/useOnboarding';
 import { useTranslation } from 'react-i18next';
 
@@ -21,20 +20,10 @@ interface OnBoardingFormProps extends OnBoardingProps {
   heightData?: RecentCheckInMeasurementsResponse;
 }
 
-const CORE_INPUT_STEPS = 10;
-const FOOD_SOURCES_STEP = 11;
-const LOADING_STEP = 12;
-const PLAN_STEP = 13;
-
-const FOOD_PROVIDER_TYPES_BEYOND_OFF = new Set([
-  'nutritionix',
-  'fatsecret',
-  'usda',
-  'mealie',
-  'tandoor',
-  'norish',
-  'yazio',
-]);
+// DG FIT: no food-source (API key) step; the shared providers are enough.
+const LAST_INPUT_STEP = 10;
+const LOADING_STEP = 11;
+const PLAN_STEP = 12;
 
 export const OnBoardingForm = ({
   onOnboardingComplete,
@@ -43,12 +32,7 @@ export const OnBoardingForm = ({
   heightData,
 }: OnBoardingFormProps) => {
   const { t } = useTranslation();
-  // Get preferences including algorithm settings
-  const {
-    weightUnit: preferredWeightUnit,
-    measurementUnit: preferredMeasurementUnit,
-    dateFormat,
-  } = usePreferences();
+  const { dateFormat } = usePreferences();
 
   const skipOnboardingMutation = useSkipOnboarding();
 
@@ -80,46 +64,12 @@ export const OnBoardingForm = ({
     };
   });
 
-  // Local unit states (can differ from saved preferences during onboarding)
-  const [localWeightUnit, setLocalWeightUnit] = useState<
-    'kg' | 'lbs' | 'st_lbs'
-  >(preferredWeightUnit);
-  const [localHeightUnit, setLocalHeightUnit] = useState<
-    'cm' | 'inches' | 'ft_in'
-  >(preferredMeasurementUnit);
-  const [localDateFormat, setLocalDateFormat] = useState(dateFormat);
+  // DG FIT is metric-only, so onboarding does not offer lbs/inch toggles.
+  const weightUnit = 'kg';
+  const heightUnit = 'cm';
+  const lastInputStep = LAST_INPUT_STEP;
 
-  // Computed unit values (use local units during onboarding)
-  const weightUnit = localWeightUnit;
-  const heightUnit = localHeightUnit;
-
-  // Lock the decision once `existingProviders` first resolves. The query
-  // gets invalidated when FoodSourcesStep saves a provider, which would
-  // otherwise flip this back to false mid-flow and cause the back button
-  // from the plan screen to skip over the step the user just filled in.
-  const { data: existingProviders } = useExternalProvidersQuery();
-  const [showFoodSourcesStep, setShowFoodSourcesStep] = useState<
-    boolean | null
-  >(null);
-  if (showFoodSourcesStep === null && existingProviders) {
-    setShowFoodSourcesStep(
-      !existingProviders.some((p) =>
-        FOOD_PROVIDER_TYPES_BEYOND_OFF.has(p.provider_type)
-      )
-    );
-  }
-
-  const lastInputStep =
-    showFoodSourcesStep === true ? FOOD_SOURCES_STEP : CORE_INPUT_STEPS;
-
-  const nextStep = () =>
-    setStep((prev) => {
-      // Skip the food-sources step when the user already has a non-OFF food provider.
-      if (prev === CORE_INPUT_STEPS && showFoodSourcesStep !== true) {
-        return LOADING_STEP;
-      }
-      return prev + 1;
-    });
+  const nextStep = () => setStep((prev) => prev + 1);
   const prevStep = () =>
     setStep((prev) => {
       // Skip the auto-advancing loading screen when going back from the plan.
@@ -141,7 +91,7 @@ export const OnBoardingForm = ({
       return (
         <PersonalPlan
           formData={formData}
-          localDateFormat={localDateFormat}
+          localDateFormat={dateFormat}
           heightUnit={heightUnit}
           weightUnit={weightUnit}
           onOnboardingComplete={onOnboardingComplete}
@@ -155,12 +105,6 @@ export const OnBoardingForm = ({
         formData={formData}
         setFormData={setFormData}
         nextStep={nextStep}
-        weightUnit={weightUnit}
-        setLocalWeightUnit={setLocalWeightUnit}
-        heightUnit={heightUnit}
-        setLocalHeightUnit={setLocalHeightUnit}
-        localDateFormat={localDateFormat}
-        setLocalDateFormat={setLocalDateFormat}
       />
     );
   };

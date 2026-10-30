@@ -545,7 +545,7 @@ export const ProviderCard = ({
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <h4 className="font-medium">{provider.provider_name}</h4>
           {provider.is_public && (
@@ -561,7 +561,7 @@ export const ProviderCard = ({
               </span>
             )}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {isAdminMode && isCnf && (
             <Button
               variant={cnfStatus?.isRunning ? 'secondary' : 'outline'}

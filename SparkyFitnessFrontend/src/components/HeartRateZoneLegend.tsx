@@ -83,7 +83,7 @@ export const HeartRateZoneLegend = ({
                 source: maxHrSourceLabel(t, resolved.maxHrSource),
               })}{' '}
           <Link
-            to="/settings?tab=heart-rate-zones"
+            to="/settings?section=heart-rate-zones"
             className="underline hover:text-foreground"
           >
             {t('heartRate.zoneSettingsLink', 'Heart rate zone settings')}

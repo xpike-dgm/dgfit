@@ -11,7 +11,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Save, Settings as SettingsIcon } from 'lucide-react';
+import { ChevronDown, Save, Settings as SettingsIcon } from 'lucide-react';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import { AccordionTrigger, AccordionContent } from '@/components/ui/accordion'; // Import Accordion components
 import { useTranslation } from 'react-i18next';
 import { STANDARD_DRINK_PRESETS } from '@workspace/shared';
@@ -130,51 +135,6 @@ export const PreferenceSettings = () => {
       <AccordionContent className="p-4 pt-0 space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <Label htmlFor="date_format">
-              {t('settings.preferences.dateFormat', 'Date Format')}
-            </Label>
-            <Select value={dateFormat} onValueChange={setDateFormat}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="dd.MM.yyyy">
-                  dd.MM.yyyy (25.12.2024)
-                </SelectItem>
-                <SelectItem value="MM/dd/yyyy">
-                  {t(
-                    'settings.preferenceSettings.mmDdYyyy1225',
-                    'MM/dd/yyyy (12/25/2024)'
-                  )}
-                </SelectItem>
-                <SelectItem value="dd/MM/yyyy">
-                  {t(
-                    'settings.preferenceSettings.ddMMYyyy2512',
-                    'dd/MM/yyyy (25/12/2024)'
-                  )}
-                </SelectItem>
-                <SelectItem value="dd-MMM-yyyy">
-                  {t(
-                    'settings.preferenceSettings.ddMMMYyyy25Dec',
-                    'dd-MMM-yyyy (25-Dec-2024)'
-                  )}
-                </SelectItem>
-                <SelectItem value="yyyy-MM-dd">
-                  {t(
-                    'settings.preferenceSettings.yyyyMMDd202412',
-                    'yyyy-MM-dd (2024-12-25)'
-                  )}
-                </SelectItem>
-                <SelectItem value="MMM dd, yyyy">
-                  {t(
-                    'settings.preferenceSettings.mmmDdYyyyDec25',
-                    'MMM dd, yyyy (Dec 25, 2024)'
-                  )}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
             <Label htmlFor="time_format">
               {t('settings.preferences.timeFormat', 'Time Format')}
             </Label>
@@ -196,35 +156,6 @@ export const PreferenceSettings = () => {
                   {t(
                     'settings.preferences.timeFormat12Lower',
                     '12-hour am/pm (2:30 pm)'
-                  )}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label htmlFor="chart_scale_mode">
-              {t('settings.preferences.chartScaleMode', 'Chart Scale Mode')}
-            </Label>
-            <Select
-              value={chartScaleMode}
-              onValueChange={(value) =>
-                setChartScaleMode(value as ChartScaleMode)
-              }
-            >
-              <SelectTrigger id="chart_scale_mode">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="time">
-                  {t(
-                    'settings.preferences.chartScaleTime',
-                    'Time proportional (gaps between entries are visible)'
-                  )}
-                </SelectItem>
-                <SelectItem value="point">
-                  {t(
-                    'settings.preferences.chartScalePoint',
-                    'Evenly spaced (every entry gets the same width)'
                   )}
                 </SelectItem>
               </SelectContent>
@@ -305,117 +236,6 @@ export const PreferenceSettings = () => {
             </Select>
           </div>
           <div>
-            <Label htmlFor="energy_unit">
-              {t('settings.preferences.energyUnit', 'Energy Unit')}
-            </Label>
-            <Select
-              value={energyUnit}
-              onValueChange={(value) => setEnergyUnit(value as 'kcal' | 'kJ')}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="kcal">
-                  {t('settings.preferences.calories', 'Calories (kcal)')}
-                </SelectItem>
-                <SelectItem value="kJ">
-                  {t('settings.preferences.joules', 'Joules (kJ)')}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label htmlFor="standard_drink_unit">
-              {t(
-                'settings.preferences.standardDrinkUnit',
-                'Standard Drink Unit'
-              )}
-            </Label>
-            <Select
-              value={String(standardDrinkGrams)}
-              onValueChange={(value) => setStandardDrinkGrams(Number(value))}
-            >
-              <SelectTrigger id="standard_drink_unit">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {STANDARD_DRINK_PRESETS.map((preset) => (
-                  <SelectItem key={preset.code} value={String(preset.grams)}>
-                    {t(
-                      'settings.preferenceSettings.gPureAlcohol',
-                      '{{label}} ({{grams}}g pure alcohol)',
-                      { label: preset.label, grams: preset.grams }
-                    )}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label htmlFor="weekly_alcohol_limit">
-              {t(
-                'settings.preferences.weeklyAlcoholLimit',
-                'Weekly Alcohol Limit (Standard Drinks)'
-              )}
-            </Label>
-            <Input
-              id="weekly_alcohol_limit"
-              type="number"
-              min={0}
-              step="0.5"
-              placeholder={t(
-                'settings.preferences.noWeeklyLimit',
-                'No limit set'
-              )}
-              value={
-                weeklyAlcoholLimitG != null && standardDrinkGrams > 0
-                  ? String(
-                      Math.round(
-                        (weeklyAlcoholLimitG / standardDrinkGrams) * 10
-                      ) / 10
-                    )
-                  : ''
-              }
-              onChange={(e) => {
-                const val = e.target.value.trim();
-                if (!val || parseFloat(val) <= 0) {
-                  setWeeklyAlcoholLimitG(null);
-                } else {
-                  setWeeklyAlcoholLimitG(
-                    parseFloat(
-                      (parseFloat(val) * standardDrinkGrams).toFixed(2)
-                    )
-                  );
-                }
-              }}
-            />
-          </div>
-          <div>
-            <Label htmlFor="caffeine_half_life">
-              {t(
-                'settings.preferences.caffeineHalfLife',
-                'Caffeine Half-Life (Hours)'
-              )}
-            </Label>
-            <Input
-              id="caffeine_half_life"
-              type="number"
-              min={2.0}
-              max={8.0}
-              step="0.1"
-              value={caffeineHalfLifeHours}
-              onChange={(e) =>
-                setCaffeineHalfLifeHours(
-                  Math.min(
-                    8.0,
-                    Math.max(2.0, parseFloat(e.target.value) || 5.0)
-                  )
-                )
-              }
-            />
-          </div>
-          <div>
             <Label id="target_bedtime-label">
               {t('settings.preferences.targetBedtime', 'Target Bedtime')}
             </Label>
@@ -424,25 +244,6 @@ export const PreferenceSettings = () => {
               aria-labelledby="target_bedtime-label"
               value={targetBedtime}
               onChange={setTargetBedtime}
-            />
-          </div>
-          <div>
-            <Label htmlFor="measurement_decimal_places">
-              {t(
-                'settings.preferences.measurementDecimalPlaces',
-                'Measurement Decimal Places'
-              )}
-            </Label>
-            <Input
-              id="measurement_decimal_places"
-              type="number"
-              min={0}
-              value={measurementDecimalPlaces}
-              onChange={(e) =>
-                setMeasurementDecimalPlaces(
-                  Math.max(0, parseInt(e.target.value, 10) || 0)
-                )
-              }
             />
           </div>
           <div>
@@ -512,125 +313,349 @@ export const PreferenceSettings = () => {
             </Label>
             <TimezoneSelect value={timezone} onValueChange={setTimezone} />
           </div>
-          <div>
-            <Label htmlFor="logging_level">
-              {t('settings.preferences.loggingLevel', 'Minimum Logging Level')}
-            </Label>
-            <Select
-              value={localLoggingLevel}
-              onValueChange={(value) =>
-                setLocalLoggingLevel(
-                  value as 'DEBUG' | 'INFO' | 'WARN' | 'ERROR' | 'SILENT'
-                )
-              }
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="DEBUG">
-                  {t('settings.preferences.debug', 'DEBUG (Most Detailed)')}
-                </SelectItem>
-                <SelectItem value="INFO">
-                  {t('settings.preferences.info', 'INFO')}
-                </SelectItem>
-                <SelectItem value="WARN">
-                  {t('settings.preferences.warn', 'WARN')}
-                </SelectItem>
-                <SelectItem value="ERROR">
-                  {t('settings.preferences.error', 'ERROR')}
-                </SelectItem>
-                <SelectItem value="SILENT">
-                  {t('settings.preferences.silent', 'SILENT (No Logs)')}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label htmlFor="item_display_limit">
-              {t(
-                'settings.preferences.itemDisplayLimit',
-                'Search/Recent/Top Limit'
-              )}
-            </Label>
-            <Select
-              value={String(itemDisplayLimit)}
-              onValueChange={(value) => setItemDisplayLimit(Number(value))}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="5">
-                  {t('settings.preferences.items', {
-                    count: 5,
-                    defaultValue: '{{count}} items',
-                  })}
-                </SelectItem>
-                <SelectItem value="10">
-                  {t('settings.preferences.items', {
-                    count: 10,
-                    defaultValue: '{{count}} items',
-                  })}
-                </SelectItem>
-                <SelectItem value="15">
-                  {t('settings.preferences.items', {
-                    count: 15,
-                    defaultValue: '{{count}} items',
-                  })}
-                </SelectItem>
-                <SelectItem value="20">
-                  {t('settings.preferences.items', {
-                    count: 20,
-                    defaultValue: '{{count}} items',
-                  })}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center justify-between col-span-2 py-2">
-            <div className="space-y-0.5">
-              <Label htmlFor="auto-scale-openfoodfacts">
-                {t(
-                  'settings.preferences.autoScaleOpenFoodFacts',
-                  'Auto-scale OpenFoodFacts Imports'
-                )}
-              </Label>
-              <p className="text-sm text-muted-foreground">
-                {t(
-                  'settings.preferences.autoScaleOpenFoodFactsHint',
-                  "When enabled, nutrition values from OpenFoodFacts will be automatically scaled from per-100g to the product's serving size."
-                )}
-              </p>
-            </div>
-            <Switch
-              id="auto-scale-openfoodfacts"
-              checked={autoScaleOpenFoodFactsImports}
-              onCheckedChange={setAutoScaleOpenFoodFactsImports}
-            />
-          </div>
-          <div className="flex items-center justify-between col-span-full py-2">
-            <div className="space-y-0.5">
-              <Label htmlFor="auto-scale-online-imports">
-                {t(
-                  'settings.preferences.autoScaleOnlineImports',
-                  'Auto-Scale foods by default'
-                )}
-              </Label>
-              <p className="text-sm text-muted-foreground">
-                {t(
-                  'settings.preferences.autoScaleOnlineImportsHint',
-                  'When enabled, the Auto-Scale checkbox is checked whenever you edit a food, meaning its nutrition values scale automatically as you change the serving size.'
-                )}
-              </p>
-            </div>
-            <Switch
-              id="auto-scale-online-imports"
-              checked={autoScaleOnlineImports}
-              onCheckedChange={setAutoScaleOnlineImports}
-            />
-          </div>
         </div>
+        <Collapsible>
+          <CollapsibleTrigger className="group flex w-full items-center justify-between py-2 text-left text-sm font-semibold text-muted-foreground">
+            Diğer tercihler
+            <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+          </CollapsibleTrigger>
+          <CollapsibleContent className="pt-2">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <Label htmlFor="date_format">
+                  {t('settings.preferences.dateFormat', 'Date Format')}
+                </Label>
+                <Select value={dateFormat} onValueChange={setDateFormat}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="dd.MM.yyyy">
+                      dd.MM.yyyy (25.12.2024)
+                    </SelectItem>
+                    <SelectItem value="MM/dd/yyyy">
+                      {t(
+                        'settings.preferenceSettings.mmDdYyyy1225',
+                        'MM/dd/yyyy (12/25/2024)'
+                      )}
+                    </SelectItem>
+                    <SelectItem value="dd/MM/yyyy">
+                      {t(
+                        'settings.preferenceSettings.ddMMYyyy2512',
+                        'dd/MM/yyyy (25/12/2024)'
+                      )}
+                    </SelectItem>
+                    <SelectItem value="dd-MMM-yyyy">
+                      {t(
+                        'settings.preferenceSettings.ddMMMYyyy25Dec',
+                        'dd-MMM-yyyy (25-Dec-2024)'
+                      )}
+                    </SelectItem>
+                    <SelectItem value="yyyy-MM-dd">
+                      {t(
+                        'settings.preferenceSettings.yyyyMMDd202412',
+                        'yyyy-MM-dd (2024-12-25)'
+                      )}
+                    </SelectItem>
+                    <SelectItem value="MMM dd, yyyy">
+                      {t(
+                        'settings.preferenceSettings.mmmDdYyyyDec25',
+                        'MMM dd, yyyy (Dec 25, 2024)'
+                      )}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="chart_scale_mode">
+                  {t('settings.preferences.chartScaleMode', 'Chart Scale Mode')}
+                </Label>
+                <Select
+                  value={chartScaleMode}
+                  onValueChange={(value) =>
+                    setChartScaleMode(value as ChartScaleMode)
+                  }
+                >
+                  <SelectTrigger id="chart_scale_mode">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="time">
+                      {t(
+                        'settings.preferences.chartScaleTime',
+                        'Time proportional (gaps between entries are visible)'
+                      )}
+                    </SelectItem>
+                    <SelectItem value="point">
+                      {t(
+                        'settings.preferences.chartScalePoint',
+                        'Evenly spaced (every entry gets the same width)'
+                      )}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="energy_unit">
+                  {t('settings.preferences.energyUnit', 'Energy Unit')}
+                </Label>
+                <Select
+                  value={energyUnit}
+                  onValueChange={(value) =>
+                    setEnergyUnit(value as 'kcal' | 'kJ')
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="kcal">
+                      {t('settings.preferences.calories', 'Calories (kcal)')}
+                    </SelectItem>
+                    <SelectItem value="kJ">
+                      {t('settings.preferences.joules', 'Joules (kJ)')}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="standard_drink_unit">
+                  {t(
+                    'settings.preferences.standardDrinkUnit',
+                    'Standard Drink Unit'
+                  )}
+                </Label>
+                <Select
+                  value={String(standardDrinkGrams)}
+                  onValueChange={(value) =>
+                    setStandardDrinkGrams(Number(value))
+                  }
+                >
+                  <SelectTrigger id="standard_drink_unit">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {STANDARD_DRINK_PRESETS.map((preset) => (
+                      <SelectItem
+                        key={preset.code}
+                        value={String(preset.grams)}
+                      >
+                        {t(
+                          'settings.preferenceSettings.gPureAlcohol',
+                          '{{label}} ({{grams}}g pure alcohol)',
+                          { label: preset.label, grams: preset.grams }
+                        )}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="weekly_alcohol_limit">
+                  {t(
+                    'settings.preferences.weeklyAlcoholLimit',
+                    'Weekly Alcohol Limit (Standard Drinks)'
+                  )}
+                </Label>
+                <Input
+                  id="weekly_alcohol_limit"
+                  type="number"
+                  min={0}
+                  step="0.5"
+                  placeholder={t(
+                    'settings.preferences.noWeeklyLimit',
+                    'No limit set'
+                  )}
+                  value={
+                    weeklyAlcoholLimitG != null && standardDrinkGrams > 0
+                      ? String(
+                          Math.round(
+                            (weeklyAlcoholLimitG / standardDrinkGrams) * 10
+                          ) / 10
+                        )
+                      : ''
+                  }
+                  onChange={(e) => {
+                    const val = e.target.value.trim();
+                    if (!val || parseFloat(val) <= 0) {
+                      setWeeklyAlcoholLimitG(null);
+                    } else {
+                      setWeeklyAlcoholLimitG(
+                        parseFloat(
+                          (parseFloat(val) * standardDrinkGrams).toFixed(2)
+                        )
+                      );
+                    }
+                  }}
+                />
+              </div>
+              <div>
+                <Label htmlFor="caffeine_half_life">
+                  {t(
+                    'settings.preferences.caffeineHalfLife',
+                    'Caffeine Half-Life (Hours)'
+                  )}
+                </Label>
+                <Input
+                  id="caffeine_half_life"
+                  type="number"
+                  min={2.0}
+                  max={8.0}
+                  step="0.1"
+                  value={caffeineHalfLifeHours}
+                  onChange={(e) =>
+                    setCaffeineHalfLifeHours(
+                      Math.min(
+                        8.0,
+                        Math.max(2.0, parseFloat(e.target.value) || 5.0)
+                      )
+                    )
+                  }
+                />
+              </div>
+              <div>
+                <Label htmlFor="measurement_decimal_places">
+                  {t(
+                    'settings.preferences.measurementDecimalPlaces',
+                    'Measurement Decimal Places'
+                  )}
+                </Label>
+                <Input
+                  id="measurement_decimal_places"
+                  type="number"
+                  min={0}
+                  value={measurementDecimalPlaces}
+                  onChange={(e) =>
+                    setMeasurementDecimalPlaces(
+                      Math.max(0, parseInt(e.target.value, 10) || 0)
+                    )
+                  }
+                />
+              </div>
+              <div>
+                <Label htmlFor="logging_level">
+                  {t(
+                    'settings.preferences.loggingLevel',
+                    'Minimum Logging Level'
+                  )}
+                </Label>
+                <Select
+                  value={localLoggingLevel}
+                  onValueChange={(value) =>
+                    setLocalLoggingLevel(
+                      value as 'DEBUG' | 'INFO' | 'WARN' | 'ERROR' | 'SILENT'
+                    )
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="DEBUG">
+                      {t('settings.preferences.debug', 'DEBUG (Most Detailed)')}
+                    </SelectItem>
+                    <SelectItem value="INFO">
+                      {t('settings.preferences.info', 'INFO')}
+                    </SelectItem>
+                    <SelectItem value="WARN">
+                      {t('settings.preferences.warn', 'WARN')}
+                    </SelectItem>
+                    <SelectItem value="ERROR">
+                      {t('settings.preferences.error', 'ERROR')}
+                    </SelectItem>
+                    <SelectItem value="SILENT">
+                      {t('settings.preferences.silent', 'SILENT (No Logs)')}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="item_display_limit">
+                  {t(
+                    'settings.preferences.itemDisplayLimit',
+                    'Search/Recent/Top Limit'
+                  )}
+                </Label>
+                <Select
+                  value={String(itemDisplayLimit)}
+                  onValueChange={(value) => setItemDisplayLimit(Number(value))}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="5">
+                      {t('settings.preferences.items', {
+                        count: 5,
+                        defaultValue: '{{count}} items',
+                      })}
+                    </SelectItem>
+                    <SelectItem value="10">
+                      {t('settings.preferences.items', {
+                        count: 10,
+                        defaultValue: '{{count}} items',
+                      })}
+                    </SelectItem>
+                    <SelectItem value="15">
+                      {t('settings.preferences.items', {
+                        count: 15,
+                        defaultValue: '{{count}} items',
+                      })}
+                    </SelectItem>
+                    <SelectItem value="20">
+                      {t('settings.preferences.items', {
+                        count: 20,
+                        defaultValue: '{{count}} items',
+                      })}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex items-center justify-between col-span-full py-2">
+                <div className="space-y-0.5">
+                  <Label htmlFor="auto-scale-openfoodfacts">
+                    {t(
+                      'settings.preferences.autoScaleOpenFoodFacts',
+                      'Auto-scale OpenFoodFacts Imports'
+                    )}
+                  </Label>
+                  <p className="text-sm text-muted-foreground">
+                    {t(
+                      'settings.preferences.autoScaleOpenFoodFactsHint',
+                      "When enabled, nutrition values from OpenFoodFacts will be automatically scaled from per-100g to the product's serving size."
+                    )}
+                  </p>
+                </div>
+                <Switch
+                  id="auto-scale-openfoodfacts"
+                  checked={autoScaleOpenFoodFactsImports}
+                  onCheckedChange={setAutoScaleOpenFoodFactsImports}
+                />
+              </div>
+              <div className="flex items-center justify-between col-span-full py-2">
+                <div className="space-y-0.5">
+                  <Label htmlFor="auto-scale-online-imports">
+                    {t(
+                      'settings.preferences.autoScaleOnlineImports',
+                      'Auto-Scale foods by default'
+                    )}
+                  </Label>
+                  <p className="text-sm text-muted-foreground">
+                    {t(
+                      'settings.preferences.autoScaleOnlineImportsHint',
+                      'When enabled, the Auto-Scale checkbox is checked whenever you edit a food, meaning its nutrition values scale automatically as you change the serving size.'
+                    )}
+                  </p>
+                </div>
+                <Switch
+                  id="auto-scale-online-imports"
+                  checked={autoScaleOnlineImports}
+                  onCheckedChange={setAutoScaleOnlineImports}
+                />
+              </div>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
         <Button onClick={handlePreferencesUpdate} disabled={loading}>
           <Save className="h-4 w-4 mr-2" />
           {loading

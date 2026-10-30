@@ -1,37 +1,17 @@
-import { format, parseISO } from 'date-fns';
 import { Button } from '@/components/ui/button';
-import { CalendarIcon, Utensils } from 'lucide-react';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Utensils } from 'lucide-react';
+import { localDateToDay } from '@workspace/shared';
 import { OptionButton } from './OptionButton';
-import { FoodSourcesStep } from './FoodSourcesStep';
 import { useTranslation } from 'react-i18next';
 import { OnboardingData } from '@/types/onboarding';
 import { UnitInput } from '@/components/ui/UnitInput';
-import { getDateLocale } from '@/utils/languageUtils';
 
 interface OnboardingStepsProps {
   step: number;
   formData: OnboardingData;
   setFormData: React.Dispatch<React.SetStateAction<OnboardingData>>;
   nextStep: () => void;
-  weightUnit: 'kg' | 'lbs' | 'st_lbs';
-  setLocalWeightUnit: (unit: 'kg' | 'lbs' | 'st_lbs') => void;
-  heightUnit: 'cm' | 'inches' | 'ft_in';
-  setLocalHeightUnit: (unit: 'cm' | 'inches' | 'ft_in') => void;
-  localDateFormat: string;
-  setLocalDateFormat: (format: string) => void;
 }
 
 export const OnboardingSteps = ({
@@ -39,15 +19,9 @@ export const OnboardingSteps = ({
   formData,
   setFormData,
   nextStep,
-  weightUnit,
-  setLocalWeightUnit,
-  heightUnit,
-  setLocalHeightUnit,
-  localDateFormat,
-  setLocalDateFormat,
 }: OnboardingStepsProps) => {
-  const { t, i18n } = useTranslation();
-  const dateLocale = getDateLocale(i18n.resolvedLanguage ?? i18n.language);
+  const { t } = useTranslation();
+  const today = localDateToDay(new Date());
 
   const handleSelect = (
     field: keyof OnboardingData,
@@ -125,36 +99,15 @@ export const OnboardingSteps = ({
           </h1>
           <p className="text-muted-foreground mb-8">
             {t('onboarding.enterInUnit', 'Enter in {{unit}}.', {
-              unit: weightUnit,
+              unit: 'kg',
             })}
           </p>
-
-          <div className="flex justify-center mb-6 bg-muted p-1 rounded-lg w-fit mx-auto">
-            <button
-              onClick={() => setLocalWeightUnit('kg')}
-              className={`px-4 py-2 rounded-md transition-all ${weightUnit === 'kg' ? 'bg-primary text-white shadow-md' : 'text-muted-foreground hover:text-foreground'}`}
-            >
-              kg
-            </button>
-            <button
-              onClick={() => setLocalWeightUnit('lbs')}
-              className={`px-4 py-2 rounded-md transition-all ${weightUnit === 'lbs' ? 'bg-primary text-white shadow-md' : 'text-muted-foreground hover:text-foreground'}`}
-            >
-              lbs
-            </button>
-            <button
-              onClick={() => setLocalWeightUnit('st_lbs')}
-              className={`px-4 py-2 rounded-md transition-all ${weightUnit === 'st_lbs' ? 'bg-primary text-white shadow-md' : 'text-muted-foreground hover:text-foreground'}`}
-            >
-              st/lb
-            </button>
-          </div>
 
           <div className="flex items-center justify-center">
             <UnitInput
               id="current-weight"
               type="weight"
-              unit={weightUnit}
+              unit="kg"
               value={formData.currentWeight}
               onChange={(val) =>
                 handleInputChange(
@@ -182,36 +135,15 @@ export const OnboardingSteps = ({
           </h1>
           <p className="text-muted-foreground mb-8">
             {t('onboarding.enterInUnit', 'Enter in {{unit}}.', {
-              unit: heightUnit,
+              unit: 'cm',
             })}
           </p>
-
-          <div className="flex justify-center mb-6 bg-muted p-1 rounded-lg w-fit mx-auto">
-            <button
-              onClick={() => setLocalHeightUnit('cm')}
-              className={`px-4 py-2 rounded-md transition-all ${heightUnit === 'cm' ? 'bg-primary text-white shadow-md' : 'text-muted-foreground hover:text-foreground'}`}
-            >
-              cm
-            </button>
-            <button
-              onClick={() => setLocalHeightUnit('inches')}
-              className={`px-4 py-2 rounded-md transition-all ${heightUnit === 'inches' ? 'bg-primary text-white shadow-md' : 'text-muted-foreground hover:text-foreground'}`}
-            >
-              in
-            </button>
-            <button
-              onClick={() => setLocalHeightUnit('ft_in')}
-              className={`px-4 py-2 rounded-md transition-all ${heightUnit === 'ft_in' ? 'bg-primary text-white shadow-md' : 'text-muted-foreground hover:text-foreground'}`}
-            >
-              ft/in
-            </button>
-          </div>
 
           <div className="flex items-center justify-center">
             <UnitInput
               id="height"
               type="height"
-              unit={heightUnit}
+              unit="cm"
               value={formData.height}
               onChange={(val) =>
                 handleInputChange('height', val !== null ? val.toString() : '')
@@ -240,82 +172,18 @@ export const OnboardingSteps = ({
               'Age is a key factor in your metabolism.'
             )}
           </p>
-          <div className="flex justify-center mb-6 bg-muted p-1 rounded-lg w-fit mx-auto">
-            <Select value={localDateFormat} onValueChange={setLocalDateFormat}>
-              <SelectTrigger className="w-[180px] bg-card border-none rounded-md">
-                <SelectValue
-                  placeholder={t(
-                    'onboarding.selectDateFormat',
-                    'Select format'
-                  )}
-                />
-              </SelectTrigger>
-              <SelectContent>
-                {[
-                  'MM/dd/yyyy',
-                  'dd/MM/yyyy',
-                  'dd-MMM-yyyy',
-                  'yyyy-MM-dd',
-                  'MMM dd, yyyy',
-                ].map((dateFormat) => (
-                  <SelectItem key={dateFormat} value={dateFormat}>
-                    {dateFormat} (
-                    {format(new Date(2024, 11, 25), dateFormat, {
-                      locale: dateLocale,
-                    })}
-                    )
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
           <div className="flex justify-center">
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={'outline'}
-                  className={`w-[240px] pl-3 text-left font-normal h-14 text-lg rounded-xl justify-start ${!formData.birthDate && 'text-muted-foreground'}`}
-                >
-                  {formData.birthDate ? (
-                    <span>
-                      {format(parseISO(formData.birthDate), localDateFormat, {
-                        locale: dateLocale,
-                      })}
-                    </span>
-                  ) : (
-                    <span className="text-muted-foreground">
-                      {t('onboarding.pickDate', 'Pick a date')}
-                    </span>
-                  )}
-                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="center">
-                <Calendar
-                  locale={dateLocale}
-                  captionLayout="dropdown"
-                  mode="single"
-                  selected={
-                    formData.birthDate
-                      ? parseISO(formData.birthDate)
-                      : undefined
-                  }
-                  onSelect={(date) => {
-                    if (date) {
-                      setFormData((prev) => ({
-                        ...prev,
-                        birthDate: format(date, 'yyyy-MM-dd'),
-                      }));
-                    }
-                  }}
-                  disabled={(date) =>
-                    date > new Date() || date < new Date('1900-01-01')
-                  }
-                  yearsRange={100}
-                />
-              </PopoverContent>
-            </Popover>
+            <Input
+              type="date"
+              aria-label={t('onboarding.pickDate', 'Pick a date')}
+              value={formData.birthDate}
+              min="1900-01-01"
+              max={today}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, birthDate: e.target.value }))
+              }
+              className="h-14 w-64 text-lg"
+            />
           </div>
           <Button
             onClick={nextStep}
@@ -379,7 +247,7 @@ export const OnboardingSteps = ({
             <UnitInput
               id="target-weight"
               type="weight"
-              unit={weightUnit}
+              unit="kg"
               value={formData.targetWeight}
               onChange={(val) =>
                 handleInputChange(
@@ -508,8 +376,6 @@ export const OnboardingSteps = ({
         </>
       );
     case 11:
-      return <FoodSourcesStep onContinue={nextStep} />;
-    case 12:
       return (
         <div className="flex flex-col items-center justify-center h-full animate-in fade-in duration-700">
           <div className="relative flex h-32 w-32 mb-8">

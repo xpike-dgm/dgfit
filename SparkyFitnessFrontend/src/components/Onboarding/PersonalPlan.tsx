@@ -1,7 +1,10 @@
 import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import type { ExpandedGoals } from '@/types/goals';
 import {
   FatBreakdownAlgorithm,
@@ -9,7 +12,7 @@ import {
   VitaminCalculationAlgorithm,
   SugarCalculationAlgorithm,
 } from '@workspace/shared';
-import { Save, PlayCircle } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { useSaveGoalsMutation } from '@/hooks/Goals/useGoals';
 import { calculateBasePlan } from '@/utils/nutritionCalculations';
 import { usePreferences } from '@/contexts/PreferencesContext';
@@ -22,7 +25,6 @@ import { DietApproach } from './DietApproach';
 import { CalculationSettings } from './CalculationSettings';
 import { NutrientGoals } from './NutrientGoals';
 import { PersonalPlanHeader } from './PersonalPlanHeader';
-import { OnboardingDialog } from './OnboardingDialog';
 import { createInitialPlan } from '@/utils/onboarding';
 import { useUpdateProfileMutation } from '@/hooks/Settings/useProfile';
 import { useAuth } from '@/hooks/useAuth';
@@ -62,13 +64,11 @@ const PersonalPlan = ({
 }: PersonalPlanProps) => {
   const {
     convertEnergy,
-    getEnergyUnitString,
     saveAllPreferences,
     fatBreakdownAlgorithm,
     mineralCalculationAlgorithm,
     vitaminCalculationAlgorithm,
     sugarCalculationAlgorithm,
-    energyUnit,
     calorieSafetyFloorMode,
     calorieSafetyFloorValue,
   } = usePreferences();
@@ -76,8 +76,6 @@ const PersonalPlan = ({
   const { user } = useAuth();
   const [showDietApproach, setShowDietApproach] = useState(false);
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
-  const [isSavePresetOpen, setIsSavePresetOpen] = useState(false);
-  const [presetName, setPresetName] = useState('');
   const [localFatBreakdownAlgorithm, setLocalFatBreakdownAlgorithm] =
     useState<FatBreakdownAlgorithm>(fatBreakdownAlgorithm);
   const [localMineralAlgorithm, setLocalMineralAlgorithm] =
@@ -86,9 +84,8 @@ const PersonalPlan = ({
     useState<VitaminCalculationAlgorithm>(vitaminCalculationAlgorithm);
   const [localSugarAlgorithm, setLocalSugarAlgorithm] =
     useState<SugarCalculationAlgorithm>(sugarCalculationAlgorithm);
-  const [localEnergyUnit, setLocalEnergyUnit] = useState<'kcal' | 'kJ'>(
-    energyUnit
-  );
+  // DG FIT always uses kcal.
+  const localEnergyUnit = 'kcal' as const;
   const [localSelectedDiet, setLocalSelectedDiet] =
     useState<string>('balanced');
   const [customPercentages, setCustomPercentages] = useState({
@@ -407,8 +404,8 @@ const PersonalPlan = ({
   if (!plan) return null;
 
   return (
-    <div className="animate-in slide-in-from-bottom duration-500 pb-8">
-      <div className="text-center mb-8">
+    <div className="animate-in fade-in duration-300 pb-8">
+      <div className="text-center mb-6">
         <h1 className="text-3xl font-bold text-foreground">
           {t('onboarding.plan.title', 'Your Personal Plan')}
         </h1>
@@ -425,106 +422,81 @@ const PersonalPlan = ({
         </p>
       </div>
 
-      <Alert className="mb-6 bg-yellow-50 dark:bg-yellow-900/20 border-yellow-400 dark:border-yellow-600/50 text-yellow-900 dark:text-yellow-200">
-        <AlertTriangle className="h-4 w-4 stroke-yellow-600 dark:stroke-yellow-500" />
-        <AlertDescription className="text-sm">
-          <strong>
-            {t('onboarding.plan.medicalDisclaimerTitle', 'Medical Disclaimer:')}
-          </strong>{' '}
-          {t(
-            'onboarding.plan.medicalDisclaimer',
-            'This plan is for informational purposes only and should not replace professional medical advice. Please consult with your doctor or a certified nutritionist before making significant changes to your diet or exercise routine.'
-          )}
-        </AlertDescription>
-      </Alert>
-
       <PersonalPlanHeader
         formData={formData}
-        convertEnergy={convertEnergy}
         editedPlan={editedPlan}
-        getEnergyUnitString={getEnergyUnitString}
-        localEnergyUnit={localEnergyUnit}
         plan={plan}
         setEditedPlan={setEditedPlan}
-        setLocalEnergyUnit={setLocalEnergyUnit}
       />
 
-      {/* Diet Selection */}
-      <DietApproach
-        customPercentages={customPercentages}
-        handleMacroValueChange={handleMacroValueChange}
-        localSelectedDiet={localSelectedDiet}
-        lockedMacros={lockedMacros}
-        setCustomPercentages={setCustomPercentages}
-        setLocalSelectedDiet={handleDietChange}
-        setLockedMacros={setLockedMacros}
-        setShowDietApproach={setShowDietApproach}
-        showDietApproach={showDietApproach}
-      />
+      <Button
+        onClick={handleSubmit}
+        disabled={isSubmitting}
+        className="h-14 w-full rounded-full text-lg font-bold disabled:opacity-70"
+      >
+        {isSubmitting ? t('common.saving', 'Saving...') : 'Planı başlat'}
+      </Button>
+      <p className="mt-2 mb-6 text-center text-xs text-caption">
+        Hedeflerini sonra Menü → Hedefler'den değiştirebilirsin.
+      </p>
 
-      {/* Advanced Calculation Settings */}
-      <CalculationSettings
-        localFatBreakdownAlgorithm={localFatBreakdownAlgorithm}
-        localMineralAlgorithm={localMineralAlgorithm}
-        localSugarAlgorithm={localSugarAlgorithm}
-        localVitaminAlgorithm={localVitaminAlgorithm}
-        setLocalFatBreakdownAlgorithm={setLocalFatBreakdownAlgorithm}
-        setLocalMineralAlgorithm={setLocalMineralAlgorithm}
-        setLocalSugarAlgorithm={setLocalSugarAlgorithm}
-        setLocalVitaminAlgorithm={setLocalVitaminAlgorithm}
-        setShowAdvancedSettings={setShowAdvancedSettings}
-        showAdvancedSettings={showAdvancedSettings}
-      />
+      {/* Everything below is optional fine-tuning, closed by default. */}
+      <Collapsible>
+        <CollapsibleTrigger className="group flex w-full items-center justify-between rounded-2xl bg-card px-4 py-3 text-left text-sm font-semibold text-foreground">
+          Gelişmiş ayarlar (diyet, mikro besinler, öğünler)
+          <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+        </CollapsibleTrigger>
+        <CollapsibleContent className="pt-4">
+          {/* Diet Selection */}
+          <DietApproach
+            customPercentages={customPercentages}
+            handleMacroValueChange={handleMacroValueChange}
+            localSelectedDiet={localSelectedDiet}
+            lockedMacros={lockedMacros}
+            setCustomPercentages={setCustomPercentages}
+            setLocalSelectedDiet={handleDietChange}
+            setLockedMacros={setLockedMacros}
+            setShowDietApproach={setShowDietApproach}
+            showDietApproach={showDietApproach}
+          />
 
-      {/* Nutrient Sections Grid */}
-      <h2 className="text-xl font-bold text-foreground mb-4 ml-1 mt-8">
-        {t('onboarding.plan.nutrientGoals', 'Nutrient Goals')}
-      </h2>
-      <NutrientGoals
-        convertEnergy={convertEnergy}
-        editedPlan={editedPlan}
-        handlePercentagesChange={handlePercentagesChange}
-        localEnergyUnit={localEnergyUnit}
-        localWaterUnit={localWaterUnit}
-        memoizedInitialPercentages={memoizedInitialPercentages}
-        setEditedPlan={setEditedPlan}
-        setLocalWaterUnit={setLocalWaterUnit}
-      />
+          {/* Advanced Calculation Settings */}
+          <CalculationSettings
+            localFatBreakdownAlgorithm={localFatBreakdownAlgorithm}
+            localMineralAlgorithm={localMineralAlgorithm}
+            localSugarAlgorithm={localSugarAlgorithm}
+            localVitaminAlgorithm={localVitaminAlgorithm}
+            setLocalFatBreakdownAlgorithm={setLocalFatBreakdownAlgorithm}
+            setLocalMineralAlgorithm={setLocalMineralAlgorithm}
+            setLocalSugarAlgorithm={setLocalSugarAlgorithm}
+            setLocalVitaminAlgorithm={setLocalVitaminAlgorithm}
+            setShowAdvancedSettings={setShowAdvancedSettings}
+            showAdvancedSettings={showAdvancedSettings}
+          />
 
-      <div className="flex flex-col gap-4 mt-8 mb-12">
-        <Button
-          onClick={handleSubmit}
-          disabled={isSubmitting}
-          className="w-full h-14 text-lg rounded-full font-bold disabled:opacity-70"
-        >
-          <PlayCircle className="mr-2 h-5 w-5" />
-          {isSubmitting
-            ? t('common.saving', 'Saving...')
-            : t('goals.startCascadingPlan', 'Start 6-Month Cascading Plan')}
-        </Button>
+          {/* Nutrient Sections Grid */}
+          <h2 className="text-xl font-bold text-foreground mb-4 ml-1 mt-8">
+            {t('onboarding.plan.nutrientGoals', 'Nutrient Goals')}
+          </h2>
+          <NutrientGoals
+            convertEnergy={convertEnergy}
+            editedPlan={editedPlan}
+            handlePercentagesChange={handlePercentagesChange}
+            localEnergyUnit={localEnergyUnit}
+            localWaterUnit={localWaterUnit}
+            memoizedInitialPercentages={memoizedInitialPercentages}
+            setEditedPlan={setEditedPlan}
+            setLocalWaterUnit={setLocalWaterUnit}
+          />
+        </CollapsibleContent>
+      </Collapsible>
 
-        <Button
-          variant="outline"
-          onClick={() => setIsSavePresetOpen(true)}
-          disabled={isSubmitting}
-          className="w-full h-12 text-base rounded-full"
-        >
-          <Save className="mr-2 h-4 w-4" />
-          {t(
-            'goals.saveAsPreset',
-            'Save Preset & Start 6-Month Cascading Goal'
-          )}
-        </Button>
-      </div>
-
-      <OnboardingDialog
-        isSavePresetOpen={isSavePresetOpen}
-        presetName={presetName}
-        handleSubmit={handleSubmit}
-        editedPlan={editedPlan}
-        setIsSavePresetOpen={setIsSavePresetOpen}
-        setPresetName={setPresetName}
-      />
+      <p className="mt-6 text-center text-[11px] leading-snug text-caption">
+        {t(
+          'onboarding.plan.medicalDisclaimer',
+          'This plan is for informational purposes only and should not replace professional medical advice. Please consult with your doctor or a certified nutritionist before making significant changes to your diet or exercise routine.'
+        )}
+      </p>
     </div>
   );
 };

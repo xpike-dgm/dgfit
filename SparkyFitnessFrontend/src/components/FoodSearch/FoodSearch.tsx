@@ -1310,24 +1310,6 @@ const EnhancedFoodSearch = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row flex-wrap gap-2">
-        <Button
-          onClick={() => setShowAddFoodDialog(true)}
-          className="whitespace-nowrap"
-        >
-          <Plus className="w-4 h-4 mr-2" />{' '}
-          {t('enhancedFoodSearch.customFood', 'Custom Food')}
-        </Button>
-        <Button
-          variant="outline"
-          onClick={() => setShowBarcodeScanner(true)}
-          className="whitespace-nowrap"
-        >
-          <Camera className="w-4 h-4 mr-2" />{' '}
-          {t('enhancedFoodSearch.scanBarcode', 'Scan Barcode')}
-        </Button>
-      </div>
-
       <div className="flex flex-wrap gap-2 items-center">
         <div className="relative flex-1 min-w-[12rem]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -1345,7 +1327,7 @@ const EnhancedFoodSearch = ({
         {(isOnlineLoading || localPending || anyProviderLoading) && (
           <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
         )}
-        <div className="flex items-center gap-1 shrink-0">
+        <div className="hidden items-center gap-1 shrink-0 sm:flex">
           <Filter className="h-4 w-4 text-muted-foreground shrink-0" />
           <Select
             value={ownershipFilter}
@@ -1411,6 +1393,26 @@ const EnhancedFoodSearch = ({
             </SelectContent>
           </Select>
         )}
+      </div>
+
+      {/* Search comes first; adding a custom food or scanning are secondary. */}
+      <div className="grid grid-cols-2 gap-2">
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => setShowAddFoodDialog(true)}
+        >
+          <Plus className="w-4 h-4" />
+          {t('enhancedFoodSearch.customFood', 'Custom Food')}
+        </Button>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => setShowBarcodeScanner(true)}
+        >
+          <Camera className="w-4 h-4" />
+          {t('enhancedFoodSearch.scanBarcode', 'Scan Barcode')}
+        </Button>
       </div>
 
       <div className="space-y-2 max-h-96 overflow-y-auto">

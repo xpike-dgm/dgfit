@@ -6,124 +6,111 @@ import { useTranslation } from 'react-i18next';
 
 export interface PersonalPlanHeaderProps {
   formData: OnboardingData;
-  convertEnergy: (
-    value: number,
-    fromUnit: 'kcal' | 'kJ',
-    toUnit: 'kcal' | 'kJ'
-  ) => number;
   editedPlan: ExpandedGoals | null;
-  getEnergyUnitString: (unit: 'kcal' | 'kJ') => string;
-  localEnergyUnit: 'kcal' | 'kJ';
   plan: BasePlan | null;
   setEditedPlan: React.Dispatch<React.SetStateAction<ExpandedGoals | null>>;
-  setLocalEnergyUnit: React.Dispatch<React.SetStateAction<'kcal' | 'kJ'>>;
 }
+
+const fmt = (value: number | undefined) =>
+  Math.round(value ?? 0).toLocaleString('tr-TR');
+
+/** DG FIT plan summary: the editable daily kcal plus the macro and water targets. */
 export const PersonalPlanHeader = ({
-  convertEnergy,
   editedPlan,
-  getEnergyUnitString,
-  localEnergyUnit,
   plan,
   setEditedPlan,
-  setLocalEnergyUnit,
   formData,
 }: PersonalPlanHeaderProps) => {
   const { t } = useTranslation();
+  const tiles = [
+    {
+      label: t('nutrition.protein', 'Protein'),
+      value: editedPlan?.protein,
+      unit: 'g',
+      color: 'bg-protein',
+    },
+    {
+      label: t('nutrition.carbsShort', 'Carbs'),
+      value: editedPlan?.carbs,
+      unit: 'g',
+      color: 'bg-carbs',
+    },
+    {
+      label: t('nutrition.fat', 'Fat'),
+      value: editedPlan?.fat,
+      unit: 'g',
+      color: 'bg-fat',
+    },
+    {
+      label: 'Su',
+      value: editedPlan?.water_goal_ml,
+      unit: 'ml',
+      color: 'bg-hydration',
+    },
+  ];
   return (
-    <>
-      <div className="bg-card rounded-2xl p-6 mb-6 text-center border border-border">
-        <div className="flex justify-center mb-6 bg-muted p-1 rounded-lg w-fit mx-auto">
-          <button
-            onClick={() => {
-              if (localEnergyUnit !== 'kcal' && editedPlan?.calories) {
-                setEditedPlan((prev) =>
-                  prev
-                    ? {
-                        ...prev,
-                        calories: Math.round(
-                          convertEnergy(prev.calories, 'kJ', 'kcal')
-                        ),
-                      }
-                    : null
-                );
-              }
-              setLocalEnergyUnit('kcal');
-            }}
-            className={`px-4 py-2 rounded-md transition-all ${localEnergyUnit === 'kcal' ? 'bg-primary text-white shadow-md' : 'text-muted-foreground hover:text-foreground'}`}
-          >
-            {t('settings.preferences.calories', 'Calories (kcal)')}
-          </button>
-          <button
-            onClick={() => {
-              if (localEnergyUnit !== 'kJ' && editedPlan?.calories) {
-                setEditedPlan((prev) =>
-                  prev
-                    ? {
-                        ...prev,
-                        calories: Math.round(
-                          convertEnergy(prev.calories, 'kcal', 'kJ')
-                        ),
-                      }
-                    : null
-                );
-              }
-              setLocalEnergyUnit('kJ');
-            }}
-            className={`px-4 py-2 rounded-md transition-all ${localEnergyUnit === 'kJ' ? 'bg-primary text-white shadow-md' : 'text-muted-foreground hover:text-foreground'}`}
-          >
-            {t('settings.preferences.joules', 'Joules (kJ)')}
-          </button>
-        </div>
-
-        <p className="text-muted-foreground uppercase text-sm font-bold tracking-wider mb-2">
-          {t('onboarding.plan.dailyCalorieBudget', 'Daily Calorie Budget')}
-        </p>
-        <div className="text-6xl font-extrabold text-primary flex justify-center">
-          <Input
-            type="number"
-            step={1}
-            value={editedPlan?.calories ? editedPlan.calories.toFixed(0) : ''}
-            onChange={(e) =>
-              setEditedPlan((prev) =>
-                prev ? { ...prev, calories: Number(e.target.value) } : null
-              )
-            }
-            className="w-48 text-center bg-transparent border-none text-6xl text-primary font-extrabold focus-visible:ring-0 p-0 h-auto"
-          />
-        </div>
-        <p className="text-xl text-foreground font-medium mt-1">
-          {t('onboarding.plan.perDay', '{{unit}} / day', {
-            unit: getEnergyUnitString(localEnergyUnit),
-          })}
-        </p>
-
-        <div className="mt-6 pt-6 border-t border-border flex justify-between text-sm text-muted-foreground">
-          <span>
-            {t('onboarding.plan.baseBmr', 'Base BMR:')}{' '}
-            {!!plan?.bmr && (
-              <span>
-                {Math.round(convertEnergy(plan.bmr, 'kcal', localEnergyUnit))}
-              </span>
-            )}
-            {getEnergyUnitString(localEnergyUnit)}
-          </span>
-
-          <span>
-            {t('onboarding.plan.calorieBuyback', 'Calorie Buyback:')}{' '}
-            <span
-              className={
-                formData.addBurnedCalories
-                  ? 'text-primary'
-                  : 'text-muted-foreground'
-              }
-            >
-              {formData.addBurnedCalories
-                ? t('onboarding.plan.on', 'ON')
-                : t('onboarding.plan.off', 'OFF')}
-            </span>
-          </span>
-        </div>
+    <div className="mb-4 rounded-2xl bg-card p-5 text-center shadow-[0_1px_3px_rgba(15,23,41,0.06)] dark:shadow-none">
+      <p className="mb-1 text-sm font-semibold text-muted-foreground">
+        {t('onboarding.plan.dailyCalorieBudget', 'Daily Calorie Budget')}
+      </p>
+      <div className="flex items-baseline justify-center gap-1">
+        <Input
+          type="text"
+          inputMode="numeric"
+          aria-label={t(
+            'onboarding.plan.dailyCalorieBudget',
+            'Daily Calorie Budget'
+          )}
+          value={editedPlan?.calories ? editedPlan.calories.toFixed(0) : ''}
+          onChange={(e) =>
+            setEditedPlan((prev) =>
+              prev
+                ? {
+                    ...prev,
+                    calories: Number(e.target.value.replace(/\D/g, '')),
+                  }
+                : null
+            )
+          }
+          style={{
+            width: `${Math.max(3, editedPlan?.calories?.toFixed(0).length ?? 3) + 0.5}ch`,
+          }}
+          className="h-auto border-none bg-transparent p-0 text-center text-5xl font-extrabold text-primary focus-visible:ring-0"
+        />
+        <span className="text-lg font-medium text-foreground">kcal</span>
       </div>
-    </>
+      <p className="mt-1 text-xs text-caption">
+        Rakama dokunup değiştirebilirsin
+      </p>
+
+      <div className="mt-4 grid grid-cols-2 gap-2">
+        {tiles.map((tile) => (
+          <div
+            key={tile.label}
+            className="rounded-xl bg-raised px-3 py-2 text-left"
+          >
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <span className={`h-2 w-2 rounded-full ${tile.color}`} />
+              {tile.label}
+            </div>
+            <div className="text-lg font-bold text-foreground">
+              {fmt(tile.value)} {tile.unit}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-4 flex justify-between border-t border-border pt-3 text-xs text-muted-foreground">
+        <span>
+          {t('onboarding.plan.baseBmr', 'Base BMR:')} {fmt(plan?.bmr)} kcal
+        </span>
+        <span>
+          {t('onboarding.plan.calorieBuyback', 'Calorie Buyback:')}{' '}
+          {formData.addBurnedCalories
+            ? t('onboarding.plan.on', 'ON')
+            : t('onboarding.plan.off', 'OFF')}
+        </span>
+      </div>
+    </div>
   );
 };

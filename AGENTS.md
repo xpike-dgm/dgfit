@@ -36,6 +36,11 @@ friends (fit.dgmcraft.online). Everything DG FIT adds is namespaced:
 - Web: `src/pages/{Dashboard,Workouts,Friends,Recipes,Menu}/`, `src/api/Dgfit/`,
   `src/hooks/Dgfit/`, `src/pages/Admin/{InviteCodes,AiUsage}.tsx`,
   `src/pages/Settings/Dgfit*.tsx`, `public/push-sw.js`.
+- Phone-first simplifications: onboarding is metric-only with no food-source
+  (API key) step and a one-screen plan summary (details collapsed); Settings
+  and Admin are one list with rarely used sections under "Gelişmiş"; the
+  exercise picker lists the library on open and filters by muscle/equipment
+  chips without typing.
 - UI language is forced to Turkish (`src/i18n.ts`); only `en` (fallback) and
   `tr` locales ship, and `tr/translation.json` is edited directly here.
 - Deployment: `deploy/` (Docker Compose, `deploy.sh`, `backup.sh`).

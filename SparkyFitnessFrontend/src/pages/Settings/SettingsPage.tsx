@@ -1,8 +1,8 @@
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Separator } from '@/components/ui/separator';
-import { Button } from '@/components/ui/button';
 import {
+  ChevronDown,
   Settings as SettingsIcon,
   ListChecks,
   Tag,
@@ -11,11 +11,13 @@ import {
   UtensilsCrossed,
   ShieldAlert,
   Target,
-  User,
   Database,
-  Heart,
 } from 'lucide-react';
-import { Tabs, TabsContent } from '@/components/ui/tabs';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import { DgfitSocialSettings } from './DgfitSocialSettings';
 import { DgfitNotificationSettings } from './DgfitNotificationSettings';
 import { useAuth } from '@/hooks/useAuth';
@@ -52,159 +54,91 @@ export interface PasswordFormState {
   new_password: string;
   confirm_password: string;
 }
-const SECTION_TO_TAB_MAP: Record<string, string> = {
-  'profile-information': 'profile-account',
-  'user-preferences': 'profile-account',
-  'account-security': 'profile-account',
-  'dgfit-social': 'profile-account',
-  'dgfit-notifications': 'profile-account',
-  'data-management': 'profile-account',
-  'allergen-preferences': 'nutrition-diet',
-  'custom-nutrients': 'nutrition-diet',
-  'nutrient-display': 'nutrition-diet',
-  'nutrient-goal-direction': 'nutrition-diet',
-  'custom-meals': 'nutrition-diet',
-  'calculation-settings': 'nutrition-diet',
-  'water-tracking': 'nutrition-diet',
-  'guided-workouts': 'wellness',
-  'custom-categories': 'wellness',
-  'food-and-exercise-data-providers': 'developer-integrations',
-  'ai-service': 'developer-integrations',
-  'api-settings': 'developer-integrations',
-  'oauth-clients': 'developer-integrations',
-  'developer-resources': 'developer-integrations',
-  integrations: 'developer-integrations',
-};
+// DG FIT: one flat list. Rarely used sections live under "Gelişmiş ayarlar"
+// (closed by default) and admin-only integrations under "Geliştirici".
+const ADVANCED_SECTIONS = new Set([
+  'heart-rate-zones',
+  'data-management',
+  'allergen-preferences',
+  'custom-nutrients',
+  'nutrient-display',
+  'nutrient-goal-direction',
+  'custom-meals',
+  'calculation-settings',
+  'custom-categories',
+]);
+const DEVELOPER_SECTIONS = new Set([
+  'food-and-exercise-data-providers',
+  'ai-service',
+  'api-settings',
+  'oauth-clients',
+  'developer-resources',
+]);
+
+const CARD =
+  'mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none';
+
+const GroupToggle = ({ label }: { label: string }) => (
+  <CollapsibleTrigger className="group mb-3 flex w-full items-center justify-between px-1 pt-2 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground">
+    {label}
+    <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+  </CollapsibleTrigger>
+);
 
 const Settings = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const { user } = useAuth();
 
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const section = queryParams.get('section');
-  const tab = queryParams.get('tab');
-  const defaultExpanded: string[] = [];
-
-  if (section) {
-    if (section === 'integrations') {
-      defaultExpanded.push('food-and-exercise-data-providers');
-    } else {
-      defaultExpanded.push(section);
-    }
-  }
-
-  const activeTab = (() => {
-    if (section && SECTION_TO_TAB_MAP[section]) {
-      return SECTION_TO_TAB_MAP[section];
-    }
-    if (tab) {
-      return tab;
-    }
-    return 'profile-account';
-  })();
-
-  const handleTabChange = (value: string) => {
-    navigate(`/settings?tab=${value}`);
-  };
+  const section =
+    queryParams.get('section') === 'integrations'
+      ? 'food-and-exercise-data-providers'
+      : (queryParams.get('section') ?? queryParams.get('tab'));
+  const defaultExpanded = section ? [section] : [];
 
   return (
-    <div className="space-y-6 w-full">
-      <Tabs value={activeTab} className="w-full">
-        {/* Navigation Pills */}
-        <div className="-mx-4 flex items-center gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:flex-wrap sm:px-0 mb-6">
-          {[
-            {
-              id: 'profile-account',
-              label: t('settings.tabs.profileAccount', 'Profile & Account'),
-              icon: User,
-            },
-            {
-              id: 'nutrition-diet',
-              label: t('settings.tabs.nutritionDiet', 'Nutrition & Diet'),
-              icon: UtensilsCrossed,
-            },
-            {
-              id: 'wellness',
-              label: 'Antrenman & Ölçümler',
-              icon: Heart,
-            },
-            // DG FIT: AI keys, providers and API access are admin business.
-            ...(user?.role === 'admin'
-              ? [
-                  {
-                    id: 'developer-integrations',
-                    label: t(
-                      'settings.tabs.developerIntegrations',
-                      'Developer & Integrations'
-                    ),
-                    icon: SettingsIcon,
-                  },
-                ]
-              : []),
-          ].map((type) => {
-            const Icon = type.icon;
-            const isActive = activeTab === type.id;
-            return (
-              <Button
-                key={type.id}
-                variant={isActive ? 'secondary' : 'ghost'}
-                size="sm"
-                onClick={() => handleTabChange(type.id)}
-                className={`shrink-0 rounded-full px-4 h-9 gap-2 transition-all ${
-                  isActive
-                    ? 'bg-primary text-primary-foreground shadow-sm hover:bg-primary font-semibold'
-                    : 'bg-card text-muted-foreground hover:text-foreground hover:bg-card font-normal'
-                }`}
-              >
-                <Icon className="w-4 h-4" />
-                <span className="text-xs">{type.label}</span>
-              </Button>
-            );
-          })}
-        </div>
+    <div className="w-full">
+      <div>
+        <Accordion
+          type="multiple"
+          className="w-full"
+          defaultValue={defaultExpanded}
+        >
+          <AccordionItem value="profile-information" className={CARD}>
+            <ProfileInformation />
+          </AccordionItem>
+          <AccordionItem value="user-preferences" className={CARD}>
+            <PreferenceSettings />
+          </AccordionItem>
+          <AccordionItem value="dgfit-social" className={CARD}>
+            <DgfitSocialSettings />
+          </AccordionItem>
+          <AccordionItem value="dgfit-notifications" className={CARD}>
+            <DgfitNotificationSettings />
+          </AccordionItem>
+          <AccordionItem value="water-tracking" className={CARD}>
+            <WaterTrackingSettings />
+          </AccordionItem>
+          <AccordionItem value="guided-workouts" className={CARD}>
+            <GuidedWorkoutSettings />
+          </AccordionItem>
+          <AccountSecurity />
+        </Accordion>
+      </div>
 
-        <TabsContent value="profile-account" className="mt-0">
+      <Collapsible defaultOpen={!!section && ADVANCED_SECTIONS.has(section)}>
+        <GroupToggle label="Gelişmiş ayarlar" />
+        <CollapsibleContent>
           <Accordion
             type="multiple"
             className="w-full"
             defaultValue={defaultExpanded}
           >
-            <AccordionItem
-              value="profile-information"
-              className="mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
-            >
-              <ProfileInformation />
-            </AccordionItem>
-            <AccordionItem
-              value="user-preferences"
-              className="mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
-            >
-              <PreferenceSettings />
-            </AccordionItem>
-            <AccordionItem
-              value="heart-rate-zones"
-              className="mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
-            >
+            <AccordionItem value="heart-rate-zones" className={CARD}>
               <HeartRateZoneSettings />
             </AccordionItem>
-            <AccordionItem
-              value="dgfit-social"
-              className="mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
-            >
-              <DgfitSocialSettings />
-            </AccordionItem>
-            <AccordionItem
-              value="dgfit-notifications"
-              className="mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
-            >
-              <DgfitNotificationSettings />
-            </AccordionItem>
-            <AccordionItem
-              value="data-management"
-              className="mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
-            >
+            <AccordionItem value="data-management" className={CARD}>
               <AccordionTrigger
                 className="flex items-center gap-2 p-4 hover:no-underline"
                 description={t(
@@ -220,20 +154,7 @@ const Settings = () => {
                 <DataManagementSettings />
               </AccordionContent>
             </AccordionItem>
-            <AccountSecurity />
-          </Accordion>
-        </TabsContent>
-
-        <TabsContent value="nutrition-diet" className="mt-0">
-          <Accordion
-            type="multiple"
-            className="w-full"
-            defaultValue={defaultExpanded}
-          >
-            <AccordionItem
-              value="allergen-preferences"
-              className="mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
-            >
+            <AccordionItem value="allergen-preferences" className={CARD}>
               <AccordionTrigger
                 className="flex items-center gap-2 p-4 hover:no-underline"
                 description={t(
@@ -251,10 +172,7 @@ const Settings = () => {
                 <AllergenSettings />
               </AccordionContent>
             </AccordionItem>
-            <AccordionItem
-              value="custom-nutrients"
-              className="mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
-            >
+            <AccordionItem value="custom-nutrients" className={CARD}>
               <AccordionTrigger
                 className="flex items-center gap-2 p-4 hover:no-underline"
                 description={t(
@@ -269,10 +187,7 @@ const Settings = () => {
                 <CustomNutrientsSettings />
               </AccordionContent>
             </AccordionItem>
-            <AccordionItem
-              value="nutrient-display"
-              className="mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
-            >
+            <AccordionItem value="nutrient-display" className={CARD}>
               <AccordionTrigger
                 className="flex items-center gap-2 p-4 hover:no-underline"
                 description={t(
@@ -287,10 +202,7 @@ const Settings = () => {
                 <NutrientDisplaySettings />
               </AccordionContent>
             </AccordionItem>
-            <AccordionItem
-              value="nutrient-goal-direction"
-              className="mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
-            >
+            <AccordionItem value="nutrient-goal-direction" className={CARD}>
               <AccordionTrigger
                 className="flex items-center gap-2 p-4 hover:no-underline"
                 description={t(
@@ -308,10 +220,7 @@ const Settings = () => {
                 <NutrientGoalDirectionSettings />
               </AccordionContent>
             </AccordionItem>
-            <AccordionItem
-              value="custom-meals"
-              className="mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
-            >
+            <AccordionItem value="custom-meals" className={CARD}>
               <AccordionTrigger
                 className="flex items-center gap-2 p-4 hover:no-underline"
                 description={t(
@@ -326,10 +235,7 @@ const Settings = () => {
                 <MealTypeManager />
               </AccordionContent>
             </AccordionItem>
-            <AccordionItem
-              value="calculation-settings"
-              className="mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
-            >
+            <AccordionItem value="calculation-settings" className={CARD}>
               <AccordionTrigger
                 className="flex items-center gap-2 p-4 hover:no-underline"
                 description={t(
@@ -347,31 +253,7 @@ const Settings = () => {
                 <CalculationSettings />
               </AccordionContent>
             </AccordionItem>
-            <AccordionItem
-              value="water-tracking"
-              className="mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
-            >
-              <WaterTrackingSettings />
-            </AccordionItem>
-          </Accordion>
-        </TabsContent>
-
-        <TabsContent value="wellness" className="mt-0">
-          <Accordion
-            type="multiple"
-            className="w-full"
-            defaultValue={defaultExpanded}
-          >
-            <AccordionItem
-              value="guided-workouts"
-              className="mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
-            >
-              <GuidedWorkoutSettings />
-            </AccordionItem>
-            <AccordionItem
-              value="custom-categories"
-              className="mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
-            >
+            <AccordionItem value="custom-categories" className={CARD}>
               <AccordionTrigger
                 className="flex items-center gap-2 p-4 hover:no-underline"
                 description={t(
@@ -387,10 +269,13 @@ const Settings = () => {
               </AccordionContent>
             </AccordionItem>
           </Accordion>
-        </TabsContent>
+        </CollapsibleContent>
+      </Collapsible>
 
-        {user?.role === 'admin' && (
-          <TabsContent value="developer-integrations" className="mt-0">
+      {user?.role === 'admin' && (
+        <Collapsible defaultOpen={!!section && DEVELOPER_SECTIONS.has(section)}>
+          <GroupToggle label="Geliştirici (yalnızca yönetici)" />
+          <CollapsibleContent>
             <Accordion
               type="multiple"
               className="w-full"
@@ -398,7 +283,7 @@ const Settings = () => {
             >
               <AccordionItem
                 value="food-and-exercise-data-providers"
-                className="mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
+                className={CARD}
               >
                 <AccordionTrigger
                   className="flex items-center gap-2 p-4 hover:no-underline"
@@ -424,10 +309,7 @@ const Settings = () => {
                   <Separator />
                 </AccordionContent>
               </AccordionItem>
-              <AccordionItem
-                value="ai-service"
-                className="mb-3 rounded-2xl border-0 bg-card shadow-[0_1px_3px_rgba(15,23,41,0.06),0_1px_2px_rgba(15,23,41,0.04)] dark:shadow-none"
-              >
+              <AccordionItem value="ai-service" className={CARD}>
                 <AccordionTrigger
                   className="flex items-center gap-2 p-4 hover:no-underline"
                   description={t(
@@ -452,9 +334,9 @@ const Settings = () => {
               <OAuthClientSettings />
               <DeveloperResources />
             </Accordion>
-          </TabsContent>
-        )}
-      </Tabs>
+          </CollapsibleContent>
+        </Collapsible>
+      )}
     </div>
   );
 };

@@ -64,7 +64,8 @@ const AddExerciseDialog = ({
     if (open) setActiveTab(openingTab);
   }
 
-  const tabsListClass = 'h-10 flex w-full justify-center flex-wrap';
+  const tabsListClass =
+    'flex h-auto w-full [&>button]:px-1.5 [&>button]:text-xs sm:[&>button]:px-3 sm:[&>button]:text-sm';
 
   const handleExerciseSelect = (
     exercise: Exercise,
@@ -125,9 +126,13 @@ const AddExerciseDialog = ({
                 )}
               </TabsTrigger>
             )}
-            <TabsTrigger value="online">
-              {t('exercise.addExerciseDialog.onlineTab', 'Online')}
-            </TabsTrigger>
+            {/* DG FIT: the library already holds the whole free-exercise-db set,
+                so pickers skip the "Online" source; only the library manager keeps it. */}
+            {mode === 'database-manager' && (
+              <TabsTrigger value="online">
+                {t('exercise.addExerciseDialog.onlineTab', 'Online')}
+              </TabsTrigger>
+            )}
             <TabsTrigger value="custom">
               {t('exercise.addExerciseDialog.addCustomTab', 'Add Custom')}
             </TabsTrigger>
