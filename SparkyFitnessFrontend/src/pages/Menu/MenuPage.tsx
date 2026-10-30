@@ -61,7 +61,7 @@ const RowGroup = ({ title, rows }: { title: string; rows: Row[] }) => (
           <span className="block text-base font-semibold text-foreground">
             {label}
           </span>
-          <span className="mt-0.5 block text-sm text-muted-foreground">
+          <span className="mt-0.5 block truncate text-sm text-muted-foreground">
             {hint}
           </span>
         </span>
@@ -81,7 +81,7 @@ const MenuPage = () => {
   const library: Row[] = [
     {
       label: 'Hareketler',
-      hint: 'Hareket kütüphanesi ve antrenmanlarım',
+      hint: 'Hareket kütüphanesi',
       icon: Dumbbell,
       tint: 'text-primary',
       onClick: () => navigate('/exercises'),

@@ -15,11 +15,18 @@ import {
   Edit,
   Trash2,
   History,
-  Utensils,
+  Plus,
   ClipboardCopy,
   PlusCircle,
   Users,
+  MoreHorizontal,
 } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useState } from 'react';
 import EnhancedFoodSearch from '../../components/FoodSearch/FoodSearch';
 import { usePreferences } from '@/contexts/PreferencesContext';
@@ -240,29 +247,28 @@ const MealCard = ({
     <>
       <Card>
         <CardHeader>
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
-            <div className="flex items-center gap-2">
-              <CardTitle className="text-lg sm:text-xl dark:text-slate-300">
-                {meal.name}
-              </CardTitle>
-              <span className="text-xs sm:text-sm text-gray-500">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex min-w-0 items-baseline gap-2">
+              <CardTitle className="truncate text-lg">{meal.name}</CardTitle>
+              <span className="whitespace-nowrap text-sm text-muted-foreground">
                 {Math.round(convertEnergy(totals.calories, 'kcal', energyUnit))}
                 {!!meal.targetCalories && (
                   <span>{` / ${Math.round(
                     convertEnergy(meal.targetCalories, 'kcal', energyUnit)
                   )}`}</span>
                 )}
-                {getEnergyUnitString(energyUnit)}
+                {` ${getEnergyUnitString(energyUnit)}`}
               </span>
             </div>
-            <div className="flex flex-wrap gap-2 sm:gap-4 justify-end">
+            <div className="flex shrink-0 items-center gap-1">
               <Dialog
                 open={isFoodSearchOpen}
                 onOpenChange={handleFoodSearchOpenChange}
               >
                 <DialogTrigger asChild>
                   <Button
-                    size="default"
+                    size="sm"
+                    className="rounded-full px-4"
                     onClick={() =>
                       debug(
                         loggingLevel,
@@ -271,7 +277,8 @@ const MealCard = ({
                     }
                     title={t('mealCard.addFoodTo', 'Add Food to')}
                   >
-                    <Utensils className="w-4 h-4" />
+                    <Plus className="h-4 w-4" />
+                    Ekle
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-6xl max-h-[80vh] overflow-y-auto">
@@ -334,41 +341,40 @@ const MealCard = ({
                   />
                 </DialogContent>
               </Dialog>
-              {/* Existing clock icon would go here if it were part of this component */}
-              <Button
-                size="default"
-                onClick={() => onCopyClick(meal.type)}
-                title={t('diary.copyAllToDate', 'Copy entire day to date')}
-              >
-                <ClipboardCopy className="w-4 h-4" />
-              </Button>
-              <Button
-                size="default"
-                onClick={() => onCopyFamilyClick(meal.type)}
-                title={t('diary.copyFamilyTitle', 'Copy Food with Family')}
-              >
-                <Users className="w-4 h-4" />
-              </Button>
-              <Button
-                size="default"
-                onClick={handleCopyFromYesterday}
-                title={t(
-                  'diary.copyAllFromYesterday',
-                  'Copy all from yesterday'
-                )}
-              >
-                <History className="w-4 h-4" />
-              </Button>
-              <Button
-                size="default"
-                onClick={() => onConvertToMealClick(meal.type)}
-                title={t(
-                  'mealCreation.convertToMeal',
-                  'Create Meal from Diary'
-                )}
-              >
-                <PlusCircle className="w-4 h-4" />
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Diğer işlemler"
+                    className="text-muted-foreground"
+                  >
+                    <MoreHorizontal className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuItem onSelect={handleCopyFromYesterday}>
+                    <History className="h-4 w-4 text-primary" />
+                    {t('diary.copyAllFromYesterday', 'Copy all from yesterday')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => onCopyClick(meal.type)}>
+                    <ClipboardCopy className="h-4 w-4 text-primary" />
+                    {t('diary.copyAllToDate', 'Copy entire day to date')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onSelect={() => onConvertToMealClick(meal.type)}
+                  >
+                    <PlusCircle className="h-4 w-4 text-primary" />
+                    {t('mealCreation.convertToMeal', 'Create Meal from Diary')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onSelect={() => onCopyFamilyClick(meal.type)}
+                  >
+                    <Users className="h-4 w-4 text-primary" />
+                    {t('diary.copyFamilyTitle', 'Copy Food with Family')}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </CardHeader>
@@ -764,59 +770,67 @@ const MealCard = ({
                 );
               })}
 
-              <Separator />
+              {meal.entries.length > 1 && (
+                <>
+                  <Separator />
 
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pt-2 gap-4">
-                <span className="font-semibold dark:text-slate-300">
-                  {t('mealCard.mealTotal', {
-                    mealName: t(`common.${meal.type}`, meal.name),
-                    defaultValue: `${meal.name} Total:`,
-                  })}
-                </span>
-                <div
-                  className="grid gap-x-2 gap-y-2 text-xs sm:text-sm w-full sm:w-[35%] sm:ml-auto"
-                  style={{
-                    gridTemplateColumns: `repeat(auto-fit, minmax(${isMobile ? '64px' : '60px'}, 1fr))`,
-                  }}
-                >
-                  {visibleNutrientsForGrid.map((nutrient) => {
-                    const metadata = getNutrientMetadata(
-                      nutrient,
-                      customNutrients
-                    );
-                    const val = totals[nutrient as keyof MealTotals];
-                    const value =
-                      (typeof val === 'number' || typeof val === 'string'
-                        ? val
-                        : totals.custom_nutrients?.[nutrient]) ?? 0;
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pt-2 gap-4">
+                    <span className="font-semibold dark:text-slate-300">
+                      {t('mealCard.mealTotal', {
+                        mealName: t(`common.${meal.type}`, meal.name),
+                        defaultValue: `${meal.name} Total:`,
+                      })}
+                    </span>
+                    <div
+                      className="grid gap-x-2 gap-y-2 text-xs sm:text-sm w-full sm:w-[35%] sm:ml-auto"
+                      style={{
+                        gridTemplateColumns: `repeat(auto-fit, minmax(${isMobile ? '64px' : '60px'}, 1fr))`,
+                      }}
+                    >
+                      {visibleNutrientsForGrid.map((nutrient) => {
+                        const metadata = getNutrientMetadata(
+                          nutrient,
+                          customNutrients
+                        );
+                        const val = totals[nutrient as keyof MealTotals];
+                        const value =
+                          (typeof val === 'number' || typeof val === 'string'
+                            ? val
+                            : totals.custom_nutrients?.[nutrient]) ?? 0;
 
-                    const displayValue =
-                      nutrient === 'calories'
-                        ? Math.round(
-                            convertEnergy(Number(value), 'kcal', energyUnit)
-                          ).toLocaleString('tr-TR')
-                        : formatNutrientValue(nutrient, value, customNutrients);
+                        const displayValue =
+                          nutrient === 'calories'
+                            ? Math.round(
+                                convertEnergy(Number(value), 'kcal', energyUnit)
+                              ).toLocaleString('tr-TR')
+                            : formatNutrientValue(
+                                nutrient,
+                                value,
+                                customNutrients
+                              );
 
-                    const unitDisplay =
-                      nutrient === 'calories'
-                        ? getEnergyUnitString(energyUnit)
-                        : metadata.unit;
+                        const unitDisplay =
+                          nutrient === 'calories'
+                            ? getEnergyUnitString(energyUnit)
+                            : metadata.unit;
 
-                    return (
-                      <div key={nutrient} className="min-w-0 text-center">
-                        <div
-                          className={`whitespace-nowrap font-bold ${metadata.color}`}
-                        >
-                          {displayValue} {unitDisplay}
-                        </div>
-                        <div className="truncate text-xs text-muted-foreground">
-                          {t(metadata.label, metadata.defaultLabel)}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
+                        return (
+                          <div key={nutrient} className="min-w-0 text-center">
+                            <div
+                              className={`whitespace-nowrap font-bold ${metadata.color}`}
+                            >
+                              {displayValue} {unitDisplay}
+                            </div>
+                            <div className="truncate text-xs text-muted-foreground">
+                              {t(metadata.label, metadata.defaultLabel)}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           )}
         </CardContent>

@@ -799,49 +799,54 @@ const ExerciseCard = ({
                 );
               }
             })}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pt-2 gap-4">
-              <span className="font-semibold">
-                {t('exerciseCard.exerciseTotal2', 'Exercise Total:')}
-              </span>
-              <div className="grid grid-cols-4 gap-2 sm:gap-4 text-xs sm:text-sm">
-                <div className="text-center">
-                  <div className="font-bold text-gray-900 dark:text-gray-100">
-                    {stats.totalSets}
+            {(exerciseEntries?.length ?? 0) > 1 && (
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pt-2 gap-4">
+                <span className="font-semibold">
+                  {t('exerciseCard.exerciseTotal2', 'Exercise Total:')}
+                </span>
+                <div className="grid grid-cols-4 gap-2 sm:gap-4 text-xs sm:text-sm">
+                  <div className="text-center">
+                    <div className="font-bold text-gray-900 dark:text-gray-100">
+                      {stats.totalSets}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {t('common.totalSets', 'Total Sets')}
+                    </div>
                   </div>
-                  <div className="text-xs text-gray-500">
-                    {t('common.totalSets', 'Total Sets')}
+                  <div className="text-center">
+                    <div className="font-bold text-gray-900 dark:text-gray-100">
+                      {formatMinutesToHHMM(stats.totalDuration)}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {t('common.minutesUnit', 'Min')}
+                    </div>
                   </div>
-                </div>
-                <div className="text-center">
-                  <div className="font-bold text-gray-900 dark:text-gray-100">
-                    {formatMinutesToHHMM(stats.totalDuration)}
+                  <div className="text-center">
+                    <div className="font-bold text-gray-900 dark:text-gray-100">
+                      {stats.averageHeartRate > 0
+                        ? Math.round(stats.averageHeartRate)
+                        : 0}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {t('common.avgHrUnit', 'Avg HR')}
+                    </div>
                   </div>
-                  <div className="text-xs text-gray-500">
-                    {t('common.minutesUnit', 'Min')}
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="font-bold text-gray-900 dark:text-gray-100">
-                    {stats.averageHeartRate > 0
-                      ? Math.round(stats.averageHeartRate)
-                      : 0}
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    {t('common.avgHrUnit', 'Avg HR')}
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="font-bold text-gray-900 dark:text-gray-100">
-                    {Math.round(
-                      convertEnergy(stats.totalCalories, 'kcal', energyUnit)
-                    )}
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    {t('common.caloriesUnit', getEnergyUnitString(energyUnit))}
+                  <div className="text-center">
+                    <div className="font-bold text-gray-900 dark:text-gray-100">
+                      {Math.round(
+                        convertEnergy(stats.totalCalories, 'kcal', energyUnit)
+                      )}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {t(
+                        'common.caloriesUnit',
+                        getEnergyUnitString(energyUnit)
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         )}
 

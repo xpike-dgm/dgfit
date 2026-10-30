@@ -534,8 +534,13 @@ export const CheckInForm: React.FC<CheckInFormProps> = ({
             })}
           </div>
 
-          <div className="flex justify-center">
-            <Button type="submit" disabled={loading} size="sm">
+          <div className="sticky bottom-[calc(env(safe-area-inset-bottom)+4.5rem)] z-10 sm:static">
+            <Button
+              type="submit"
+              disabled={loading}
+              size="lg"
+              className="w-full shadow-lg sm:shadow-none"
+            >
               {loading
                 ? t('checkIn.saving', 'Saving...')
                 : t('checkIn.saveCheckIn', 'Save Check-In')}
