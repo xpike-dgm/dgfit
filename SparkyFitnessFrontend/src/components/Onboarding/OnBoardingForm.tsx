@@ -168,9 +168,7 @@ export const OnBoardingForm = ({
   return (
     <div
       className="min-h-screen bg-background flex flex-col"
-      style={
-        { '--color-ring': 'hsl(142.1 70.6% 45.3%)' } as React.CSSProperties
-      }
+      style={{ '--color-ring': 'hsl(var(--primary))' } as React.CSSProperties}
     >
       <div className="px-4 pt-6 pb-2 flex items-center sticky top-0 bg-background z-10">
         {(step > 1 && step <= lastInputStep) || step === PLAN_STEP ? (
@@ -189,7 +187,7 @@ export const OnBoardingForm = ({
         {step <= lastInputStep && (
           <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
             <div
-              className="h-full bg-green-500 transition-all duration-500 ease-out rounded-full"
+              className="h-full bg-primary transition-all duration-500 ease-out rounded-full"
               style={{ width: `${(step / lastInputStep) * 100}%` }}
             />
           </div>

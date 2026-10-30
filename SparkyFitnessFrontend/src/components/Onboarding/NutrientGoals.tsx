@@ -571,7 +571,7 @@ export const NutrientGoals = ({
             <button
               key={unit}
               onClick={() => setLocalWaterUnit(unit)}
-              className={`px-2 py-1 rounded text-xs font-medium transition-colors ${localWaterUnit === unit ? 'bg-green-600 text-white' : 'bg-muted text-muted-foreground hover:text-foreground'}`}
+              className={`px-2 py-1 rounded text-xs font-medium transition-colors ${localWaterUnit === unit ? 'bg-primary text-white' : 'bg-muted text-muted-foreground hover:text-foreground'}`}
             >
               {unit}
             </button>

@@ -1,0 +1,4970 @@
+[
+ {
+  "name": "Beyaz Peynir (Tam Yağlı)",
+  "per100g": {
+   "calories": 265,
+   "protein": 17.5,
+   "carbs": 1.5,
+   "fat": 21,
+   "fiber": 0,
+   "sugar": 1.5,
+   "saturated_fat": 13.5,
+   "sodium_mg": 1100
+  },
+  "portions": [
+   {
+    "label": "1 dilim (30 g)",
+    "grams": 30
+   },
+   {
+    "label": "1 kibrit kutusu (40 g)",
+    "grams": 40
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Beyaz Peynir (Az Yağlı)",
+  "per100g": {
+   "calories": 170,
+   "protein": 18,
+   "carbs": 2,
+   "fat": 10,
+   "fiber": 0,
+   "sugar": 2,
+   "saturated_fat": 6.5,
+   "sodium_mg": 1000
+  },
+  "portions": [
+   {
+    "label": "1 dilim (30 g)",
+    "grams": 30
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Kaşar Peyniri",
+  "per100g": {
+   "calories": 367,
+   "protein": 25,
+   "carbs": 1.5,
+   "fat": 29,
+   "fiber": 0,
+   "sugar": 1,
+   "saturated_fat": 18,
+   "sodium_mg": 750
+  },
+  "portions": [
+   {
+    "label": "1 dilim (20 g)",
+    "grams": 20
+   },
+   {
+    "label": "2 dilim (40 g)",
+    "grams": 40
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Tulum Peyniri",
+  "per100g": {
+   "calories": 348,
+   "protein": 22,
+   "carbs": 2,
+   "fat": 28,
+   "fiber": 0,
+   "sugar": 1,
+   "saturated_fat": 17,
+   "sodium_mg": 1300
+  },
+  "portions": [
+   {
+    "label": "1 dilim (30 g)",
+    "grams": 30
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Lor Peyniri",
+  "per100g": {
+   "calories": 94,
+   "protein": 11,
+   "carbs": 3.5,
+   "fat": 4,
+   "fiber": 0,
+   "sugar": 3,
+   "saturated_fat": 2.5,
+   "sodium_mg": 60
+  },
+  "portions": [
+   {
+    "label": "1 yemek kaşığı (25 g)",
+    "grams": 25
+   },
+   {
+    "label": "1 kase (100 g)",
+    "grams": 100
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Labne",
+  "per100g": {
+   "calories": 220,
+   "protein": 6,
+   "carbs": 4,
+   "fat": 20,
+   "fiber": 0,
+   "sugar": 4,
+   "saturated_fat": 14,
+   "sodium_mg": 350
+  },
+  "portions": [
+   {
+    "label": "1 yemek kaşığı (20 g)",
+    "grams": 20
+   },
+   {
+    "label": "1 tatlı kaşığı (10 g)",
+    "grams": 10
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Krem Peynir",
+  "per100g": {
+   "calories": 310,
+   "protein": 6,
+   "carbs": 4,
+   "fat": 30,
+   "fiber": 0,
+   "sugar": 3,
+   "saturated_fat": 19,
+   "sodium_mg": 350
+  },
+  "portions": [
+   {
+    "label": "1 yemek kaşığı (20 g)",
+    "grams": 20
+   },
+   {
+    "label": "1 üçgen (17 g)",
+    "grams": 17
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Çökelek",
+  "per100g": {
+   "calories": 86,
+   "protein": 14,
+   "carbs": 3,
+   "fat": 2,
+   "fiber": 0,
+   "sugar": 3,
+   "saturated_fat": 1.2,
+   "sodium_mg": 500
+  },
+  "portions": [
+   {
+    "label": "1 yemek kaşığı (25 g)",
+    "grams": 25
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Örgü Peyniri",
+  "per100g": {
+   "calories": 288,
+   "protein": 25,
+   "carbs": 2,
+   "fat": 20,
+   "fiber": 0,
+   "sugar": 1,
+   "saturated_fat": 13,
+   "sodium_mg": 1000
+  },
+  "portions": [
+   {
+    "label": "1 dilim (30 g)",
+    "grams": 30
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Mozzarella Peyniri",
+  "per100g": {
+   "calories": 294,
+   "protein": 22,
+   "carbs": 2,
+   "fat": 22,
+   "fiber": 0,
+   "sugar": 1,
+   "saturated_fat": 14,
+   "sodium_mg": 600
+  },
+  "portions": [
+   {
+    "label": "1 dilim (25 g)",
+    "grams": 25
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Siyah Zeytin",
+  "per100g": {
+   "calories": 210,
+   "protein": 1.5,
+   "carbs": 6,
+   "fat": 20,
+   "fiber": 3.5,
+   "sugar": 0,
+   "saturated_fat": 3,
+   "sodium_mg": 1700
+  },
+  "portions": [
+   {
+    "label": "1 adet (4 g)",
+    "grams": 4
+   },
+   {
+    "label": "10 adet (40 g)",
+    "grams": 40
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Yeşil Zeytin",
+  "per100g": {
+   "calories": 146,
+   "protein": 1,
+   "carbs": 4,
+   "fat": 14,
+   "fiber": 3,
+   "sugar": 0,
+   "saturated_fat": 2,
+   "sodium_mg": 1500
+  },
+  "portions": [
+   {
+    "label": "1 adet (5 g)",
+    "grams": 5
+   },
+   {
+    "label": "10 adet (50 g)",
+    "grams": 50
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Bal",
+  "per100g": {
+   "calories": 329,
+   "protein": 0.3,
+   "carbs": 82,
+   "fat": 0,
+   "fiber": 0.2,
+   "sugar": 82,
+   "saturated_fat": 0,
+   "sodium_mg": 4
+  },
+  "portions": [
+   {
+    "label": "1 yemek kaşığı (20 g)",
+    "grams": 20
+   },
+   {
+    "label": "1 tatlı kaşığı (10 g)",
+    "grams": 10
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Reçel (Karışık Meyve)",
+  "per100g": {
+   "calories": 262,
+   "protein": 0.4,
+   "carbs": 65,
+   "fat": 0.1,
+   "fiber": 1,
+   "sugar": 60,
+   "saturated_fat": 0,
+   "sodium_mg": 10
+  },
+  "portions": [
+   {
+    "label": "1 yemek kaşığı (20 g)",
+    "grams": 20
+   },
+   {
+    "label": "1 tatlı kaşığı (10 g)",
+    "grams": 10
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Üzüm Pekmezi",
+  "per100g": {
+   "calories": 284,
+   "protein": 1,
+   "carbs": 70,
+   "fat": 0,
+   "fiber": 0,
+   "sugar": 65,
+   "saturated_fat": 0,
+   "sodium_mg": 30
+  },
+  "portions": [
+   {
+    "label": "1 yemek kaşığı (20 g)",
+    "grams": 20
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Tahin",
+  "per100g": {
+   "calories": 610,
+   "protein": 17,
+   "carbs": 14,
+   "fat": 54,
+   "fiber": 9,
+   "sugar": 0.5,
+   "saturated_fat": 7.5,
+   "sodium_mg": 115
+  },
+  "portions": [
+   {
+    "label": "1 yemek kaşığı (15 g)",
+    "grams": 15
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Tahin-Pekmez",
+  "per100g": {
+   "calories": 447,
+   "protein": 9,
+   "carbs": 42,
+   "fat": 27,
+   "fiber": 4,
+   "sugar": 36,
+   "saturated_fat": 3.8,
+   "sodium_mg": 70
+  },
+  "portions": [
+   {
+    "label": "1 yemek kaşığı (20 g)",
+    "grams": 20
+   },
+   {
+    "label": "1 servis (40 g)",
+    "grams": 40
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Tereyağı",
+  "per100g": {
+   "calories": 733,
+   "protein": 0.9,
+   "carbs": 0.1,
+   "fat": 81,
+   "fiber": 0,
+   "sugar": 0.1,
+   "saturated_fat": 51,
+   "sodium_mg": 11
+  },
+  "portions": [
+   {
+    "label": "1 tatlı kaşığı (5 g)",
+    "grams": 5
+   },
+   {
+    "label": "1 yemek kaşığı (14 g)",
+    "grams": 14
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Kaymak",
+  "per100g": {
+   "calories": 380,
+   "protein": 2,
+   "carbs": 3,
+   "fat": 40,
+   "fiber": 0,
+   "sugar": 3,
+   "saturated_fat": 25,
+   "sodium_mg": 30
+  },
+  "portions": [
+   {
+    "label": "1 yemek kaşığı (20 g)",
+    "grams": 20
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Sucuk",
+  "per100g": {
+   "calories": 448,
+   "protein": 20,
+   "carbs": 2,
+   "fat": 40,
+   "fiber": 0,
+   "sugar": 1,
+   "saturated_fat": 16,
+   "sodium_mg": 1500
+  },
+  "portions": [
+   {
+    "label": "1 dilim (10 g)",
+    "grams": 10
+   },
+   {
+    "label": "5 dilim (50 g)",
+    "grams": 50
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Pastırma",
+  "per100g": {
+   "calories": 232,
+   "protein": 30,
+   "carbs": 1,
+   "fat": 12,
+   "fiber": 0,
+   "sugar": 0.5,
+   "saturated_fat": 4.5,
+   "sodium_mg": 1900
+  },
+  "portions": [
+   {
+    "label": "1 dilim (10 g)",
+    "grams": 10
+   },
+   {
+    "label": "5 dilim (50 g)",
+    "grams": 50
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Dana Salam",
+  "per100g": {
+   "calories": 289,
+   "protein": 14,
+   "carbs": 2,
+   "fat": 25,
+   "fiber": 0,
+   "sugar": 1,
+   "saturated_fat": 10,
+   "sodium_mg": 1200
+  },
+  "portions": [
+   {
+    "label": "1 dilim (15 g)",
+    "grams": 15
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Hindi Salam",
+  "per100g": {
+   "calories": 130,
+   "protein": 17,
+   "carbs": 2,
+   "fat": 6,
+   "fiber": 0,
+   "sugar": 1,
+   "saturated_fat": 2,
+   "sodium_mg": 1000
+  },
+  "portions": [
+   {
+    "label": "1 dilim (15 g)",
+    "grams": 15
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Sosis (Dana)",
+  "per100g": {
+   "calories": 285,
+   "protein": 12,
+   "carbs": 3,
+   "fat": 25,
+   "fiber": 0,
+   "sugar": 1,
+   "saturated_fat": 10,
+   "sodium_mg": 950
+  },
+  "portions": [
+   {
+    "label": "1 adet (40 g)",
+    "grams": 40
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Menemen",
+  "per100g": {
+   "calories": 134,
+   "protein": 6,
+   "carbs": 5,
+   "fat": 10,
+   "fiber": 1.2,
+   "sugar": 3,
+   "saturated_fat": 3,
+   "sodium_mg": 300
+  },
+  "portions": [
+   {
+    "label": "1 porsiyon (200 g)",
+    "grams": 200
+   },
+   {
+    "label": "1 kepçe (100 g)",
+    "grams": 100
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Sucuklu Yumurta",
+  "per100g": {
+   "calories": 258,
+   "protein": 14,
+   "carbs": 1,
+   "fat": 22,
+   "fiber": 0,
+   "sugar": 1,
+   "saturated_fat": 7.5,
+   "sodium_mg": 600
+  },
+  "portions": [
+   {
+    "label": "1 porsiyon (150 g)",
+    "grams": 150
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Haşlanmış Yumurta",
+  "per100g": {
+   "calories": 150,
+   "protein": 12.6,
+   "carbs": 1,
+   "fat": 10.6,
+   "fiber": 0,
+   "sugar": 0.6,
+   "saturated_fat": 3.3,
+   "sodium_mg": 124
+  },
+  "portions": [
+   {
+    "label": "1 adet (50 g)",
+    "grams": 50
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Sahanda Yumurta",
+  "per100g": {
+   "calories": 209,
+   "protein": 13,
+   "carbs": 1,
+   "fat": 17,
+   "fiber": 0,
+   "sugar": 0.7,
+   "saturated_fat": 5,
+   "sodium_mg": 300
+  },
+  "portions": [
+   {
+    "label": "1 adet (50 g)",
+    "grams": 50
+   },
+   {
+    "label": "2 adet (100 g)",
+    "grams": 100
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Omlet",
+  "per100g": {
+   "calories": 170,
+   "protein": 10,
+   "carbs": 1,
+   "fat": 14,
+   "fiber": 0,
+   "sugar": 0.8,
+   "saturated_fat": 4.5,
+   "sodium_mg": 280
+  },
+  "portions": [
+   {
+    "label": "1 porsiyon (120 g)",
+    "grams": 120
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Yumurta Beyazı",
+  "per100g": {
+   "calories": 49,
+   "protein": 11,
+   "carbs": 0.7,
+   "fat": 0.2,
+   "fiber": 0,
+   "sugar": 0.7,
+   "saturated_fat": 0,
+   "sodium_mg": 166
+  },
+  "portions": [
+   {
+    "label": "1 adet (33 g)",
+    "grams": 33
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Tam Yağlı Yoğurt",
+  "per100g": {
+   "calories": 62,
+   "protein": 3.5,
+   "carbs": 4.7,
+   "fat": 3.3,
+   "fiber": 0,
+   "sugar": 4.7,
+   "saturated_fat": 2.1,
+   "sodium_mg": 46
+  },
+  "portions": [
+   {
+    "label": "1 kase (150 g)",
+    "grams": 150
+   },
+   {
+    "label": "1 yemek kaşığı (25 g)",
+    "grams": 25
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Yarım Yağlı Yoğurt",
+  "per100g": {
+   "calories": 49,
+   "protein": 3.8,
+   "carbs": 5,
+   "fat": 1.5,
+   "fiber": 0,
+   "sugar": 5,
+   "saturated_fat": 1,
+   "sodium_mg": 48
+  },
+  "portions": [
+   {
+    "label": "1 kase (150 g)",
+    "grams": 150
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Süzme Yoğurt",
+  "per100g": {
+   "calories": 97,
+   "protein": 9,
+   "carbs": 4,
+   "fat": 5,
+   "fiber": 0,
+   "sugar": 4,
+   "saturated_fat": 3.2,
+   "sodium_mg": 45
+  },
+  "portions": [
+   {
+    "label": "1 yemek kaşığı (25 g)",
+    "grams": 25
+   },
+   {
+    "label": "1 kase (150 g)",
+    "grams": 150
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Fındık Ezmesi (Kakaolu)",
+  "per100g": {
+   "calories": 531,
+   "protein": 6,
+   "carbs": 57,
+   "fat": 31,
+   "fiber": 3,
+   "sugar": 52,
+   "saturated_fat": 10,
+   "sodium_mg": 40
+  },
+  "portions": [
+   {
+    "label": "1 yemek kaşığı (15 g)",
+    "grams": 15
+   },
+   {
+    "label": "1 tatlı kaşığı (8 g)",
+    "grams": 8
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Fıstık Ezmesi",
+  "per100g": {
+   "calories": 614,
+   "protein": 25,
+   "carbs": 16,
+   "fat": 50,
+   "fiber": 6,
+   "sugar": 6,
+   "saturated_fat": 10,
+   "sodium_mg": 300
+  },
+  "portions": [
+   {
+    "label": "1 yemek kaşığı (16 g)",
+    "grams": 16
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Beyaz Ekmek",
+  "per100g": {
+   "calories": 244,
+   "protein": 8.5,
+   "carbs": 49,
+   "fat": 1.5,
+   "fiber": 2.5,
+   "sugar": 3,
+   "saturated_fat": 0.3,
+   "sodium_mg": 500
+  },
+  "portions": [
+   {
+    "label": "1 dilim (30 g)",
+    "grams": 30
+   },
+   {
+    "label": "1/4 ekmek (100 g)",
+    "grams": 100
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Tam Buğday Ekmeği",
+  "per100g": {
+   "calories": 235,
+   "protein": 10,
+   "carbs": 42,
+   "fat": 3,
+   "fiber": 7,
+   "sugar": 3,
+   "saturated_fat": 0.5,
+   "sodium_mg": 450
+  },
+  "portions": [
+   {
+    "label": "1 dilim (30 g)",
+    "grams": 30
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Çavdar Ekmeği",
+  "per100g": {
+   "calories": 242,
+   "protein": 8,
+   "carbs": 48,
+   "fat": 2,
+   "fiber": 5.8,
+   "sugar": 3.5,
+   "saturated_fat": 0.4,
+   "sodium_mg": 550
+  },
+  "portions": [
+   {
+    "label": "1 dilim (30 g)",
+    "grams": 30
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Çok Tahıllı Ekmek",
+  "per100g": {
+   "calories": 245,
+   "protein": 10,
+   "carbs": 40,
+   "fat": 5,
+   "fiber": 7,
+   "sugar": 4,
+   "saturated_fat": 0.7,
+   "sodium_mg": 450
+  },
+  "portions": [
+   {
+    "label": "1 dilim (35 g)",
+    "grams": 35
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Lavaş",
+  "per100g": {
+   "calories": 265,
+   "protein": 9,
+   "carbs": 55,
+   "fat": 1,
+   "fiber": 2,
+   "sugar": 2,
+   "saturated_fat": 0.2,
+   "sodium_mg": 550
+  },
+  "portions": [
+   {
+    "label": "1 adet (60 g)",
+    "grams": 60
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Bazlama",
+  "per100g": {
+   "calories": 250,
+   "protein": 8,
+   "carbs": 50,
+   "fat": 2,
+   "fiber": 2,
+   "sugar": 1,
+   "saturated_fat": 0.3,
+   "sodium_mg": 400
+  },
+  "portions": [
+   {
+    "label": "1 adet (100 g)",
+    "grams": 100
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Yufka Ekmeği",
+  "per100g": {
+   "calories": 269,
+   "protein": 9,
+   "carbs": 56,
+   "fat": 1,
+   "fiber": 2,
+   "sugar": 1,
+   "saturated_fat": 0.2,
+   "sodium_mg": 300
+  },
+  "portions": [
+   {
+    "label": "1 adet (50 g)",
+    "grams": 50
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Pide Ekmeği",
+  "per100g": {
+   "calories": 254,
+   "protein": 8,
+   "carbs": 52,
+   "fat": 1.5,
+   "fiber": 2,
+   "sugar": 2,
+   "saturated_fat": 0.3,
+   "sodium_mg": 450
+  },
+  "portions": [
+   {
+    "label": "1/4 pide (50 g)",
+    "grams": 50
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Simit",
+  "per100g": {
+   "calories": 309,
+   "protein": 10,
+   "carbs": 56,
+   "fat": 5,
+   "fiber": 3,
+   "sugar": 4,
+   "saturated_fat": 1,
+   "sodium_mg": 700
+  },
+  "portions": [
+   {
+    "label": "1 adet (110 g)",
+    "grams": 110
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Poğaça (Peynirli)",
+  "per100g": {
+   "calories": 336,
+   "protein": 8,
+   "carbs": 40,
+   "fat": 16,
+   "fiber": 2,
+   "sugar": 3,
+   "saturated_fat": 6,
+   "sodium_mg": 550
+  },
+  "portions": [
+   {
+    "label": "1 adet (70 g)",
+    "grams": 70
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Galeta",
+  "per100g": {
+   "calories": 384,
+   "protein": 12,
+   "carbs": 75,
+   "fat": 4,
+   "fiber": 3,
+   "sugar": 6,
+   "saturated_fat": 1,
+   "sodium_mg": 600
+  },
+  "portions": [
+   {
+    "label": "1 adet (10 g)",
+    "grams": 10
+   },
+   {
+    "label": "3 adet (30 g)",
+    "grams": 30
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Tuzlu Kraker",
+  "per100g": {
+   "calories": 416,
+   "protein": 9,
+   "carbs": 68,
+   "fat": 12,
+   "fiber": 2.5,
+   "sugar": 3,
+   "saturated_fat": 5,
+   "sodium_mg": 900
+  },
+  "portions": [
+   {
+    "label": "1 avuç (30 g)",
+    "grams": 30
+   },
+   {
+    "label": "1 adet (5 g)",
+    "grams": 5
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Mısır Gevreği",
+  "per100g": {
+   "calories": 372,
+   "protein": 7,
+   "carbs": 84,
+   "fat": 0.9,
+   "fiber": 3,
+   "sugar": 8,
+   "saturated_fat": 0.2,
+   "sodium_mg": 700
+  },
+  "portions": [
+   {
+    "label": "1 kase (30 g)",
+    "grams": 30
+   },
+   {
+    "label": "1 su bardağı (25 g)",
+    "grams": 25
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Müsli",
+  "per100g": {
+   "calories": 358,
+   "protein": 10,
+   "carbs": 66,
+   "fat": 6,
+   "fiber": 8,
+   "sugar": 15,
+   "saturated_fat": 1,
+   "sodium_mg": 50
+  },
+  "portions": [
+   {
+    "label": "1 kase (40 g)",
+    "grams": 40
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Yulaf Ezmesi (Kuru)",
+  "per100g": {
+   "calories": 379,
+   "protein": 13,
+   "carbs": 66,
+   "fat": 7,
+   "fiber": 10,
+   "sugar": 1,
+   "saturated_fat": 1.2,
+   "sodium_mg": 5
+  },
+  "portions": [
+   {
+    "label": "1 yemek kaşığı (10 g)",
+    "grams": 10
+   },
+   {
+    "label": "1 kase (40 g)",
+    "grams": 40
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Pirinç Pilavı",
+  "per100g": {
+   "calories": 153,
+   "protein": 2.4,
+   "carbs": 28,
+   "fat": 3.5,
+   "fiber": 0.4,
+   "sugar": 0.1,
+   "saturated_fat": 0.8,
+   "sodium_mg": 300
+  },
+  "portions": [
+   {
+    "label": "1 kepçe (100 g)",
+    "grams": 100
+   },
+   {
+    "label": "1 porsiyon (180 g)",
+    "grams": 180
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Bulgur Pilavı",
+  "per100g": {
+   "calories": 124,
+   "protein": 3,
+   "carbs": 20,
+   "fat": 3.5,
+   "fiber": 4,
+   "sugar": 0.5,
+   "saturated_fat": 0.7,
+   "sodium_mg": 300
+  },
+  "portions": [
+   {
+    "label": "1 kepçe (100 g)",
+    "grams": 100
+   },
+   {
+    "label": "1 porsiyon (180 g)",
+    "grams": 180
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Haşlanmış Makarna",
+  "per100g": {
+   "calories": 155,
+   "protein": 5.8,
+   "carbs": 31,
+   "fat": 0.9,
+   "fiber": 1.8,
+   "sugar": 0.6,
+   "saturated_fat": 0.2,
+   "sodium_mg": 5
+  },
+  "portions": [
+   {
+    "label": "1 porsiyon (150 g)",
+    "grams": 150
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Bulgur (Çiğ)",
+  "per100g": {
+   "calories": 365,
+   "protein": 12.3,
+   "carbs": 76,
+   "fat": 1.3,
+   "fiber": 12.5,
+   "sugar": 0.4,
+   "saturated_fat": 0.2,
+   "sodium_mg": 17
+  },
+  "portions": [
+   {
+    "label": "1 su bardağı (170 g)",
+    "grams": 170
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Pirinç (Çiğ)",
+  "per100g": {
+   "calories": 350,
+   "protein": 7,
+   "carbs": 79,
+   "fat": 0.7,
+   "fiber": 1.3,
+   "sugar": 0.1,
+   "saturated_fat": 0.2,
+   "sodium_mg": 5
+  },
+  "portions": [
+   {
+    "label": "1 su bardağı (190 g)",
+    "grams": 190
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Kırmızı Mercimek (Kuru)",
+  "per100g": {
+   "calories": 341,
+   "protein": 25,
+   "carbs": 58,
+   "fat": 1,
+   "fiber": 11,
+   "sugar": 2,
+   "saturated_fat": 0.2,
+   "sodium_mg": 6
+  },
+  "portions": [
+   {
+    "label": "1 su bardağı (200 g)",
+    "grams": 200
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Nohut (Haşlanmış)",
+  "per100g": {
+   "calories": 163,
+   "protein": 8.9,
+   "carbs": 26,
+   "fat": 2.6,
+   "fiber": 7.6,
+   "sugar": 4.8,
+   "saturated_fat": 0.3,
+   "sodium_mg": 7
+  },
+  "portions": [
+   {
+    "label": "1 yemek kaşığı (15 g)",
+    "grams": 15
+   },
+   {
+    "label": "1 kase (150 g)",
+    "grams": 150
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Kuru Fasulye (Haşlanmış)",
+  "per100g": {
+   "calories": 127,
+   "protein": 8.7,
+   "carbs": 22,
+   "fat": 0.5,
+   "fiber": 6.4,
+   "sugar": 0.3,
+   "saturated_fat": 0.1,
+   "sodium_mg": 2
+  },
+  "portions": [
+   {
+    "label": "1 kepçe (100 g)",
+    "grams": 100
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Domates",
+  "per100g": {
+   "calories": 21,
+   "protein": 0.9,
+   "carbs": 3.9,
+   "fat": 0.2,
+   "fiber": 1.2,
+   "sugar": 2.6,
+   "saturated_fat": 0,
+   "sodium_mg": 5
+  },
+  "portions": [
+   {
+    "label": "1 adet orta (120 g)",
+    "grams": 120
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Salatalık",
+  "per100g": {
+   "calories": 18,
+   "protein": 0.7,
+   "carbs": 3.6,
+   "fat": 0.1,
+   "fiber": 0.5,
+   "sugar": 1.7,
+   "saturated_fat": 0,
+   "sodium_mg": 2
+  },
+  "portions": [
+   {
+    "label": "1 adet orta (100 g)",
+    "grams": 100
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Sivri Biber",
+  "per100g": {
+   "calories": 26,
+   "protein": 1,
+   "carbs": 5,
+   "fat": 0.2,
+   "fiber": 2,
+   "sugar": 3,
+   "saturated_fat": 0,
+   "sodium_mg": 3
+  },
+  "portions": [
+   {
+    "label": "1 adet (25 g)",
+    "grams": 25
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Dolmalık Biber",
+  "per100g": {
+   "calories": 24,
+   "protein": 0.9,
+   "carbs": 4.6,
+   "fat": 0.2,
+   "fiber": 1.7,
+   "sugar": 2.4,
+   "saturated_fat": 0.1,
+   "sodium_mg": 3
+  },
+  "portions": [
+   {
+    "label": "1 adet (120 g)",
+    "grams": 120
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Kırmızı Biber",
+  "per100g": {
+   "calories": 31,
+   "protein": 1,
+   "carbs": 6,
+   "fat": 0.3,
+   "fiber": 2.1,
+   "sugar": 4.2,
+   "saturated_fat": 0.1,
+   "sodium_mg": 4
+  },
+  "portions": [
+   {
+    "label": "1 adet (120 g)",
+    "grams": 120
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Marul",
+  "per100g": {
+   "calories": 19,
+   "protein": 1.4,
+   "carbs": 2.9,
+   "fat": 0.2,
+   "fiber": 1.3,
+   "sugar": 0.8,
+   "saturated_fat": 0,
+   "sodium_mg": 28
+  },
+  "portions": [
+   {
+    "label": "1 avuç (30 g)",
+    "grams": 30
+   },
+   {
+    "label": "1 kase (80 g)",
+    "grams": 80
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Roka",
+  "per100g": {
+   "calories": 32,
+   "protein": 2.6,
+   "carbs": 3.7,
+   "fat": 0.7,
+   "fiber": 1.6,
+   "sugar": 2.1,
+   "saturated_fat": 0.1,
+   "sodium_mg": 27
+  },
+  "portions": [
+   {
+    "label": "1 avuç (20 g)",
+    "grams": 20
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Maydanoz",
+  "per100g": {
+   "calories": 43,
+   "protein": 3,
+   "carbs": 6,
+   "fat": 0.8,
+   "fiber": 3.3,
+   "sugar": 0.9,
+   "saturated_fat": 0.1,
+   "sodium_mg": 56
+  },
+  "portions": [
+   {
+    "label": "1 yemek kaşığı (4 g)",
+    "grams": 4
+   },
+   {
+    "label": "1 demet (40 g)",
+    "grams": 40
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Soğan",
+  "per100g": {
+   "calories": 42,
+   "protein": 1.1,
+   "carbs": 9.3,
+   "fat": 0.1,
+   "fiber": 1.7,
+   "sugar": 4.2,
+   "saturated_fat": 0,
+   "sodium_mg": 4
+  },
+  "portions": [
+   {
+    "label": "1 adet orta (110 g)",
+    "grams": 110
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Sarımsak",
+  "per100g": {
+   "calories": 162,
+   "protein": 6.4,
+   "carbs": 33,
+   "fat": 0.5,
+   "fiber": 2.1,
+   "sugar": 1,
+   "saturated_fat": 0.1,
+   "sodium_mg": 17
+  },
+  "portions": [
+   {
+    "label": "1 diş (4 g)",
+    "grams": 4
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Havuç",
+  "per100g": {
+   "calories": 44,
+   "protein": 0.9,
+   "carbs": 9.6,
+   "fat": 0.2,
+   "fiber": 2.8,
+   "sugar": 4.7,
+   "saturated_fat": 0,
+   "sodium_mg": 69
+  },
+  "portions": [
+   {
+    "label": "1 adet orta (60 g)",
+    "grams": 60
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Karnabahar (Haşlanmış)",
+  "per100g": {
+   "calories": 30,
+   "protein": 1.9,
+   "carbs": 5,
+   "fat": 0.3,
+   "fiber": 2,
+   "sugar": 1.9,
+   "saturated_fat": 0.1,
+   "sodium_mg": 30
+  },
+  "portions": [
+   {
+    "label": "1 kase (100 g)",
+    "grams": 100
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Brokoli (Haşlanmış)",
+  "per100g": {
+   "calories": 41,
+   "protein": 2.4,
+   "carbs": 7,
+   "fat": 0.4,
+   "fiber": 3.3,
+   "sugar": 1.4,
+   "saturated_fat": 0.1,
+   "sodium_mg": 41
+  },
+  "portions": [
+   {
+    "label": "1 kase (100 g)",
+    "grams": 100
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Ispanak (Çiğ)",
+  "per100g": {
+   "calories": 30,
+   "protein": 2.9,
+   "carbs": 3.6,
+   "fat": 0.4,
+   "fiber": 2.2,
+   "sugar": 0.4,
+   "saturated_fat": 0.1,
+   "sodium_mg": 79
+  },
+  "portions": [
+   {
+    "label": "1 avuç (30 g)",
+    "grams": 30
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Ispanak (Haşlanmış)",
+  "per100g": {
+   "calories": 30,
+   "protein": 3,
+   "carbs": 3.8,
+   "fat": 0.3,
+   "fiber": 2.4,
+   "sugar": 0.4,
+   "saturated_fat": 0.1,
+   "sodium_mg": 70
+  },
+  "portions": [
+   {
+    "label": "1 kase (100 g)",
+    "grams": 100
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Sakız Kabağı",
+  "per100g": {
+   "calories": 20,
+   "protein": 1.2,
+   "carbs": 3.1,
+   "fat": 0.3,
+   "fiber": 1,
+   "sugar": 2.5,
+   "saturated_fat": 0.1,
+   "sodium_mg": 8
+  },
+  "portions": [
+   {
+    "label": "1 adet (200 g)",
+    "grams": 200
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Patlıcan",
+  "per100g": {
+   "calories": 29,
+   "protein": 1,
+   "carbs": 5.9,
+   "fat": 0.2,
+   "fiber": 3,
+   "sugar": 3.5,
+   "saturated_fat": 0,
+   "sodium_mg": 2
+  },
+  "portions": [
+   {
+    "label": "1 adet orta (200 g)",
+    "grams": 200
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Taze Fasulye (Haşlanmış)",
+  "per100g": {
+   "calories": 38,
+   "protein": 1.9,
+   "carbs": 7,
+   "fat": 0.3,
+   "fiber": 3.2,
+   "sugar": 1.4,
+   "saturated_fat": 0.1,
+   "sodium_mg": 1
+  },
+  "portions": [
+   {
+    "label": "1 kase (120 g)",
+    "grams": 120
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Bezelye (Haşlanmış)",
+  "per100g": {
+   "calories": 81,
+   "protein": 5.4,
+   "carbs": 14,
+   "fat": 0.4,
+   "fiber": 5.5,
+   "sugar": 5.9,
+   "saturated_fat": 0.1,
+   "sodium_mg": 5
+  },
+  "portions": [
+   {
+    "label": "1 yemek kaşığı (15 g)",
+    "grams": 15
+   },
+   {
+    "label": "1 kase (120 g)",
+    "grams": 120
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Mantar",
+  "per100g": {
+   "calories": 28,
+   "protein": 3.1,
+   "carbs": 3.3,
+   "fat": 0.3,
+   "fiber": 1,
+   "sugar": 2,
+   "saturated_fat": 0.1,
+   "sodium_mg": 5
+  },
+  "portions": [
+   {
+    "label": "1 adet (18 g)",
+    "grams": 18
+   },
+   {
+    "label": "1 kase (100 g)",
+    "grams": 100
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Pırasa",
+  "per100g": {
+   "calories": 61,
+   "protein": 1.5,
+   "carbs": 13,
+   "fat": 0.3,
+   "fiber": 1.8,
+   "sugar": 3.9,
+   "saturated_fat": 0,
+   "sodium_mg": 20
+  },
+  "portions": [
+   {
+    "label": "1 adet orta (90 g)",
+    "grams": 90
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Turp",
+  "per100g": {
+   "calories": 17,
+   "protein": 0.7,
+   "carbs": 3.4,
+   "fat": 0.1,
+   "fiber": 1.6,
+   "sugar": 1.9,
+   "saturated_fat": 0,
+   "sodium_mg": 39
+  },
+  "portions": [
+   {
+    "label": "1 adet (10 g)",
+    "grams": 10
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Beyaz Lahana",
+  "per100g": {
+   "calories": 29,
+   "protein": 1.3,
+   "carbs": 5.8,
+   "fat": 0.1,
+   "fiber": 2.5,
+   "sugar": 3.2,
+   "saturated_fat": 0,
+   "sodium_mg": 18
+  },
+  "portions": [
+   {
+    "label": "1 kase (80 g)",
+    "grams": 80
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Kırmızı Lahana",
+  "per100g": {
+   "calories": 35,
+   "protein": 1,
+   "carbs": 7.4,
+   "fat": 0.2,
+   "fiber": 2.1,
+   "sugar": 3.8,
+   "saturated_fat": 0,
+   "sodium_mg": 27
+  },
+  "portions": [
+   {
+    "label": "1 kase (80 g)",
+    "grams": 80
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Haşlanmış Mısır",
+  "per100g": {
+   "calories": 103,
+   "protein": 3.4,
+   "carbs": 19,
+   "fat": 1.5,
+   "fiber": 2.4,
+   "sugar": 4.5,
+   "saturated_fat": 0.2,
+   "sodium_mg": 15
+  },
+  "portions": [
+   {
+    "label": "1 koçan (150 g)",
+    "grams": 150
+   },
+   {
+    "label": "1 bardak tane (100 g)",
+    "grams": 100
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Haşlanmış Patates",
+  "per100g": {
+   "calories": 76,
+   "protein": 1.9,
+   "carbs": 17,
+   "fat": 0.1,
+   "fiber": 1.8,
+   "sugar": 0.8,
+   "saturated_fat": 0,
+   "sodium_mg": 5
+  },
+  "portions": [
+   {
+    "label": "1 adet orta (150 g)",
+    "grams": 150
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Fırında Patates",
+  "per100g": {
+   "calories": 95,
+   "protein": 2.5,
+   "carbs": 21,
+   "fat": 0.1,
+   "fiber": 2.2,
+   "sugar": 1.2,
+   "saturated_fat": 0,
+   "sodium_mg": 10
+  },
+  "portions": [
+   {
+    "label": "1 adet orta (170 g)",
+    "grams": 170
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Patates Kızartması",
+  "per100g": {
+   "calories": 301,
+   "protein": 3.4,
+   "carbs": 38,
+   "fat": 15,
+   "fiber": 3.8,
+   "sugar": 0.5,
+   "saturated_fat": 2.3,
+   "sodium_mg": 250
+  },
+  "portions": [
+   {
+    "label": "1 porsiyon (150 g)",
+    "grams": 150
+   },
+   {
+    "label": "1 avuç (30 g)",
+    "grams": 30
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Tatlı Patates (Haşlanmış)",
+  "per100g": {
+   "calories": 87,
+   "protein": 1.6,
+   "carbs": 20,
+   "fat": 0.1,
+   "fiber": 3,
+   "sugar": 6.5,
+   "saturated_fat": 0,
+   "sodium_mg": 36
+  },
+  "portions": [
+   {
+    "label": "1 adet orta (130 g)",
+    "grams": 130
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Çoban Salatası",
+  "per100g": {
+   "calories": 56,
+   "protein": 1,
+   "carbs": 5,
+   "fat": 3.5,
+   "fiber": 1.5,
+   "sugar": 3,
+   "saturated_fat": 0.5,
+   "sodium_mg": 150
+  },
+  "portions": [
+   {
+    "label": "1 porsiyon (200 g)",
+    "grams": 200
+   },
+   {
+    "label": "1 kase (150 g)",
+    "grams": 150
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Mevsim Salata",
+  "per100g": {
+   "calories": 52,
+   "protein": 1.2,
+   "carbs": 5,
+   "fat": 3,
+   "fiber": 1.8,
+   "sugar": 2.5,
+   "saturated_fat": 0.4,
+   "sodium_mg": 100
+  },
+  "portions": [
+   {
+    "label": "1 porsiyon (200 g)",
+    "grams": 200
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Gavurdağı Salatası",
+  "per100g": {
+   "calories": 94,
+   "protein": 2,
+   "carbs": 8,
+   "fat": 6,
+   "fiber": 2,
+   "sugar": 4,
+   "saturated_fat": 0.9,
+   "sodium_mg": 200
+  },
+  "portions": [
+   {
+    "label": "1 porsiyon (150 g)",
+    "grams": 150
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Cacık",
+  "per100g": {
+   "calories": 57,
+   "protein": 3.5,
+   "carbs": 4,
+   "fat": 3,
+   "fiber": 0.4,
+   "sugar": 3.5,
+   "saturated_fat": 1.9,
+   "sodium_mg": 250
+  },
+  "portions": [
+   {
+    "label": "1 kase (150 g)",
+    "grams": 150
+   },
+   {
+    "label": "1 yemek kaşığı (20 g)",
+    "grams": 20
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Haydari",
+  "per100g": {
+   "calories": 153,
+   "protein": 5,
+   "carbs": 4,
+   "fat": 13,
+   "fiber": 0.5,
+   "sugar": 3,
+   "saturated_fat": 6,
+   "sodium_mg": 350
+  },
+  "portions": [
+   {
+    "label": "1 yemek kaşığı (25 g)",
+    "grams": 25
+   },
+   {
+    "label": "1 kase (100 g)",
+    "grams": 100
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Acılı Ezme",
+  "per100g": {
+   "calories": 70,
+   "protein": 1.5,
+   "carbs": 7,
+   "fat": 4,
+   "fiber": 2,
+   "sugar": 5,
+   "saturated_fat": 0.6,
+   "sodium_mg": 300
+  },
+  "portions": [
+   {
+    "label": "1 yemek kaşığı (25 g)",
+    "grams": 25
+   },
+   {
+    "label": "1 kase (100 g)",
+    "grams": 100
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Patlıcan Salatası",
+  "per100g": {
+   "calories": 84,
+   "protein": 1.5,
+   "carbs": 6,
+   "fat": 6,
+   "fiber": 2.5,
+   "sugar": 3,
+   "saturated_fat": 0.9,
+   "sodium_mg": 200
+  },
+  "portions": [
+   {
+    "label": "1 kase (100 g)",
+    "grams": 100
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Zeytinyağlı Taze Fasulye",
+  "per100g": {
+   "calories": 90,
+   "protein": 2,
+   "carbs": 7,
+   "fat": 6,
+   "fiber": 3,
+   "sugar": 3,
+   "saturated_fat": 0.9,
+   "sodium_mg": 200
+  },
+  "portions": [
+   {
+    "label": "1 porsiyon (150 g)",
+    "grams": 150
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Zeytinyağlı Yaprak Sarma",
+  "per100g": {
+   "calories": 162,
+   "protein": 3,
+   "carbs": 24,
+   "fat": 6,
+   "fiber": 3,
+   "sugar": 2,
+   "saturated_fat": 0.9,
+   "sodium_mg": 350
+  },
+  "portions": [
+   {
+    "label": "1 adet (25 g)",
+    "grams": 25
+   },
+   {
+    "label": "5 adet (125 g)",
+    "grams": 125
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Karışık Turşu",
+  "per100g": {
+   "calories": 17,
+   "protein": 0.8,
+   "carbs": 3,
+   "fat": 0.2,
+   "fiber": 1.5,
+   "sugar": 1.5,
+   "saturated_fat": 0,
+   "sodium_mg": 1200
+  },
+  "portions": [
+   {
+    "label": "1 porsiyon (50 g)",
+    "grams": 50
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Humus",
+  "per100g": {
+   "calories": 174,
+   "protein": 7.9,
+   "carbs": 14,
+   "fat": 9.6,
+   "fiber": 6,
+   "sugar": 0.3,
+   "saturated_fat": 1.4,
+   "sodium_mg": 380
+  },
+  "portions": [
+   {
+    "label": "1 yemek kaşığı (25 g)",
+    "grams": 25
+   },
+   {
+    "label": "1 kase (100 g)",
+    "grams": 100
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Elma",
+  "per100g": {
+   "calories": 55,
+   "protein": 0.3,
+   "carbs": 13,
+   "fat": 0.2,
+   "fiber": 2.4,
+   "sugar": 10.4,
+   "saturated_fat": 0,
+   "sodium_mg": 1
+  },
+  "portions": [
+   {
+    "label": "1 adet orta (180 g)",
+    "grams": 180
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Muz",
+  "per100g": {
+   "calories": 89,
+   "protein": 1.1,
+   "carbs": 20.5,
+   "fat": 0.3,
+   "fiber": 2.6,
+   "sugar": 12.2,
+   "saturated_fat": 0.1,
+   "sodium_mg": 1
+  },
+  "portions": [
+   {
+    "label": "1 adet orta (120 g)",
+    "grams": 120
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Portakal",
+  "per100g": {
+   "calories": 48,
+   "protein": 0.9,
+   "carbs": 11,
+   "fat": 0.1,
+   "fiber": 2.4,
+   "sugar": 9.4,
+   "saturated_fat": 0,
+   "sodium_mg": 0
+  },
+  "portions": [
+   {
+    "label": "1 adet orta (180 g)",
+    "grams": 180
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Mandalina",
+  "per100g": {
+   "calories": 54,
+   "protein": 0.8,
+   "carbs": 12,
+   "fat": 0.3,
+   "fiber": 1.8,
+   "sugar": 10.6,
+   "saturated_fat": 0,
+   "sodium_mg": 2
+  },
+  "portions": [
+   {
+    "label": "1 adet (80 g)",
+    "grams": 80
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Üzüm",
+  "per100g": {
+   "calories": 73,
+   "protein": 0.7,
+   "carbs": 17,
+   "fat": 0.2,
+   "fiber": 0.9,
+   "sugar": 16,
+   "saturated_fat": 0.1,
+   "sodium_mg": 2
+  },
+  "portions": [
+   {
+    "label": "1 salkım (100 g)",
+    "grams": 100
+   },
+   {
+    "label": "1 avuç (80 g)",
+    "grams": 80
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Karpuz",
+  "per100g": {
+   "calories": 31,
+   "protein": 0.6,
+   "carbs": 6.8,
+   "fat": 0.2,
+   "fiber": 0.4,
+   "sugar": 6.2,
+   "saturated_fat": 0,
+   "sodium_mg": 1
+  },
+  "portions": [
+   {
+    "label": "1 dilim (300 g)",
+    "grams": 300
+   },
+   {
+    "label": "1 kase (150 g)",
+    "grams": 150
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Kavun",
+  "per100g": {
+   "calories": 37,
+   "protein": 0.8,
+   "carbs": 8,
+   "fat": 0.2,
+   "fiber": 0.9,
+   "sugar": 7.9,
+   "saturated_fat": 0.1,
+   "sodium_mg": 16
+  },
+  "portions": [
+   {
+    "label": "1 dilim (200 g)",
+    "grams": 200
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Çilek",
+  "per100g": {
+   "calories": 34,
+   "protein": 0.7,
+   "carbs": 7,
+   "fat": 0.3,
+   "fiber": 2,
+   "sugar": 4.9,
+   "saturated_fat": 0,
+   "sodium_mg": 1
+  },
+  "portions": [
+   {
+    "label": "1 kase (150 g)",
+    "grams": 150
+   },
+   {
+    "label": "1 adet (15 g)",
+    "grams": 15
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Kiraz",
+  "per100g": {
+   "calories": 65,
+   "protein": 1,
+   "carbs": 14.5,
+   "fat": 0.3,
+   "fiber": 2.1,
+   "sugar": 12.8,
+   "saturated_fat": 0.1,
+   "sodium_mg": 0
+  },
+  "portions": [
+   {
+    "label": "1 avuç (80 g)",
+    "grams": 80
+   },
+   {
+    "label": "1 adet (8 g)",
+    "grams": 8
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Şeftali",
+  "per100g": {
+   "calories": 44,
+   "protein": 0.9,
+   "carbs": 9.5,
+   "fat": 0.3,
+   "fiber": 1.5,
+   "sugar": 8.4,
+   "saturated_fat": 0,
+   "sodium_mg": 0
+  },
+  "portions": [
+   {
+    "label": "1 adet orta (150 g)",
+    "grams": 150
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Armut",
+  "per100g": {
+   "calories": 56,
+   "protein": 0.4,
+   "carbs": 13.5,
+   "fat": 0.1,
+   "fiber": 3.1,
+   "sugar": 9.8,
+   "saturated_fat": 0,
+   "sodium_mg": 1
+  },
+  "portions": [
+   {
+    "label": "1 adet orta (170 g)",
+    "grams": 170
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "İncir (Taze)",
+  "per100g": {
+   "calories": 74,
+   "protein": 0.8,
+   "carbs": 17,
+   "fat": 0.3,
+   "fiber": 2.9,
+   "sugar": 16,
+   "saturated_fat": 0,
+   "sodium_mg": 1
+  },
+  "portions": [
+   {
+    "label": "1 adet (50 g)",
+    "grams": 50
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Nar",
+  "per100g": {
+   "calories": 84,
+   "protein": 1.7,
+   "carbs": 16.5,
+   "fat": 1.2,
+   "fiber": 4,
+   "sugar": 13.7,
+   "saturated_fat": 0.1,
+   "sodium_mg": 3
+  },
+  "portions": [
+   {
+    "label": "1 adet (250 g)",
+    "grams": 250
+   },
+   {
+    "label": "1 kase taneleri (100 g)",
+    "grams": 100
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Ayva",
+  "per100g": {
+   "calories": 58,
+   "protein": 0.4,
+   "carbs": 14,
+   "fat": 0.1,
+   "fiber": 1.9,
+   "sugar": 9,
+   "saturated_fat": 0,
+   "sodium_mg": 4
+  },
+  "portions": [
+   {
+    "label": "1 adet (200 g)",
+    "grams": 200
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Kivi",
+  "per100g": {
+   "calories": 59,
+   "protein": 1.1,
+   "carbs": 12.5,
+   "fat": 0.5,
+   "fiber": 3,
+   "sugar": 9,
+   "saturated_fat": 0,
+   "sodium_mg": 3
+  },
+  "portions": [
+   {
+    "label": "1 adet (75 g)",
+    "grams": 75
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Avokado",
+  "per100g": {
+   "calories": 168,
+   "protein": 2,
+   "carbs": 7,
+   "fat": 14.7,
+   "fiber": 6.7,
+   "sugar": 0.7,
+   "saturated_fat": 2.1,
+   "sodium_mg": 7
+  },
+  "portions": [
+   {
+    "label": "1/2 adet (70 g)",
+    "grams": 70
+   },
+   {
+    "label": "1 adet (140 g)",
+    "grams": 140
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Hurma (Kuru)",
+  "per100g": {
+   "calories": 281,
+   "protein": 1.8,
+   "carbs": 68,
+   "fat": 0.2,
+   "fiber": 6.7,
+   "sugar": 63,
+   "saturated_fat": 0,
+   "sodium_mg": 1
+  },
+  "portions": [
+   {
+    "label": "1 adet (25 g)",
+    "grams": 25
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Kuru Kayısı",
+  "per100g": {
+   "calories": 242,
+   "protein": 3.4,
+   "carbs": 56,
+   "fat": 0.5,
+   "fiber": 7.3,
+   "sugar": 53,
+   "saturated_fat": 0,
+   "sodium_mg": 10
+  },
+  "portions": [
+   {
+    "label": "1 adet (8 g)",
+    "grams": 8
+   },
+   {
+    "label": "1 avuç (30 g)",
+    "grams": 30
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Kuru Üzüm",
+  "per100g": {
+   "calories": 305,
+   "protein": 3.1,
+   "carbs": 72,
+   "fat": 0.5,
+   "fiber": 3.7,
+   "sugar": 59,
+   "saturated_fat": 0.2,
+   "sodium_mg": 11
+  },
+  "portions": [
+   {
+    "label": "1 yemek kaşığı (10 g)",
+    "grams": 10
+   },
+   {
+    "label": "1 avuç (30 g)",
+    "grams": 30
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Kuru İncir",
+  "per100g": {
+   "calories": 253,
+   "protein": 3.3,
+   "carbs": 58,
+   "fat": 0.9,
+   "fiber": 9.8,
+   "sugar": 48,
+   "saturated_fat": 0.1,
+   "sodium_mg": 10
+  },
+  "portions": [
+   {
+    "label": "1 adet (20 g)",
+    "grams": 20
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Kuru Erik",
+  "per100g": {
+   "calories": 244,
+   "protein": 2.2,
+   "carbs": 58,
+   "fat": 0.4,
+   "fiber": 7.1,
+   "sugar": 38,
+   "saturated_fat": 0,
+   "sodium_mg": 2
+  },
+  "portions": [
+   {
+    "label": "1 adet (10 g)",
+    "grams": 10
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Kayısı (Taze)",
+  "per100g": {
+   "calories": 49,
+   "protein": 1.4,
+   "carbs": 10,
+   "fat": 0.4,
+   "fiber": 2,
+   "sugar": 9.2,
+   "saturated_fat": 0,
+   "sodium_mg": 1
+  },
+  "portions": [
+   {
+    "label": "1 adet (40 g)",
+    "grams": 40
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Erik (Taze)",
+  "per100g": {
+   "calories": 48,
+   "protein": 0.7,
+   "carbs": 10.5,
+   "fat": 0.3,
+   "fiber": 1.4,
+   "sugar": 9.9,
+   "saturated_fat": 0,
+   "sodium_mg": 0
+  },
+  "portions": [
+   {
+    "label": "1 adet (60 g)",
+    "grams": 60
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Ananas",
+  "per100g": {
+   "calories": 51,
+   "protein": 0.5,
+   "carbs": 12,
+   "fat": 0.1,
+   "fiber": 1.4,
+   "sugar": 9.9,
+   "saturated_fat": 0,
+   "sodium_mg": 1
+  },
+  "portions": [
+   {
+    "label": "1 dilim (80 g)",
+    "grams": 80
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Greyfurt",
+  "per100g": {
+   "calories": 40,
+   "protein": 0.8,
+   "carbs": 9,
+   "fat": 0.1,
+   "fiber": 1.6,
+   "sugar": 7,
+   "saturated_fat": 0,
+   "sodium_mg": 0
+  },
+  "portions": [
+   {
+    "label": "1/2 adet (130 g)",
+    "grams": 130
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Vişne",
+  "per100g": {
+   "calories": 51,
+   "protein": 1,
+   "carbs": 11,
+   "fat": 0.3,
+   "fiber": 1.6,
+   "sugar": 8.5,
+   "saturated_fat": 0.1,
+   "sodium_mg": 3
+  },
+  "portions": [
+   {
+    "label": "1 avuç (80 g)",
+    "grams": 80
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Badem",
+  "per100g": {
+   "calories": 610,
+   "protein": 21,
+   "carbs": 19,
+   "fat": 50,
+   "fiber": 12.5,
+   "sugar": 4,
+   "saturated_fat": 3.8,
+   "sodium_mg": 1
+  },
+  "portions": [
+   {
+    "label": "1 avuç (30 g)",
+    "grams": 30
+   },
+   {
+    "label": "1 adet (1.2 g)",
+    "grams": 1.2
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Ceviz",
+  "per100g": {
+   "calories": 694,
+   "protein": 15.2,
+   "carbs": 12,
+   "fat": 65,
+   "fiber": 6.7,
+   "sugar": 2.6,
+   "saturated_fat": 6.1,
+   "sodium_mg": 2
+  },
+  "portions": [
+   {
+    "label": "1 avuç (30 g)",
+    "grams": 30
+   },
+   {
+    "label": "1 adet (iç, 5 g)",
+    "grams": 5
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Fındık",
+  "per100g": {
+   "calories": 657,
+   "protein": 15,
+   "carbs": 12,
+   "fat": 61,
+   "fiber": 10,
+   "sugar": 4.3,
+   "saturated_fat": 4.5,
+   "sodium_mg": 0
+  },
+  "portions": [
+   {
+    "label": "1 avuç (30 g)",
+    "grams": 30
+   },
+   {
+    "label": "1 yemek kaşığı (10 g)",
+    "grams": 10
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Antep Fıstığı",
+  "per100g": {
+   "calories": 565,
+   "protein": 20,
+   "carbs": 20,
+   "fat": 45,
+   "fiber": 10,
+   "sugar": 8,
+   "saturated_fat": 5.5,
+   "sodium_mg": 1
+  },
+  "portions": [
+   {
+    "label": "1 avuç (30 g)",
+    "grams": 30
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Kaju",
+  "per100g": {
+   "calories": 576,
+   "protein": 18,
+   "carbs": 27,
+   "fat": 44,
+   "fiber": 3.3,
+   "sugar": 6,
+   "saturated_fat": 7.8,
+   "sodium_mg": 12
+  },
+  "portions": [
+   {
+    "label": "1 avuç (30 g)",
+    "grams": 30
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Yer Fıstığı (Kavrulmuş)",
+  "per100g": {
+   "calories": 606,
+   "protein": 26,
+   "carbs": 13,
+   "fat": 50,
+   "fiber": 8.5,
+   "sugar": 4,
+   "saturated_fat": 7,
+   "sodium_mg": 6
+  },
+  "portions": [
+   {
+    "label": "1 avuç (30 g)",
+    "grams": 30
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Ay Çekirdeği (Kavrulmuş)",
+  "per100g": {
+   "calories": 603,
+   "protein": 21,
+   "carbs": 15,
+   "fat": 51,
+   "fiber": 8.6,
+   "sugar": 2.6,
+   "saturated_fat": 4.5,
+   "sodium_mg": 9
+  },
+  "portions": [
+   {
+    "label": "1 avuç (30 g)",
+    "grams": 30
+   },
+   {
+    "label": "1 çay bardağı (35 g)",
+    "grams": 35
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Kabak Çekirdeği",
+  "per100g": {
+   "calories": 593,
+   "protein": 30,
+   "carbs": 8,
+   "fat": 49,
+   "fiber": 6,
+   "sugar": 1.4,
+   "saturated_fat": 8.7,
+   "sodium_mg": 7
+  },
+  "portions": [
+   {
+    "label": "1 avuç (30 g)",
+    "grams": 30
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Leblebi (Sade)",
+  "per100g": {
+   "calories": 345,
+   "protein": 20,
+   "carbs": 55,
+   "fat": 5,
+   "fiber": 15,
+   "sugar": 10,
+   "saturated_fat": 0.6,
+   "sodium_mg": 20
+  },
+  "portions": [
+   {
+    "label": "1 avuç (30 g)",
+    "grams": 30
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Karışık Kuruyemiş",
+  "per100g": {
+   "calories": 610,
+   "protein": 20,
+   "carbs": 20,
+   "fat": 50,
+   "fiber": 7,
+   "sugar": 5,
+   "saturated_fat": 7,
+   "sodium_mg": 150
+  },
+  "portions": [
+   {
+    "label": "1 avuç (30 g)",
+    "grams": 30
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Kestane (Kavrulmuş)",
+  "per100g": {
+   "calories": 245,
+   "protein": 3.2,
+   "carbs": 53,
+   "fat": 2.2,
+   "fiber": 5,
+   "sugar": 11,
+   "saturated_fat": 0.4,
+   "sodium_mg": 3
+  },
+  "portions": [
+   {
+    "label": "1 adet (15 g)",
+    "grams": 15
+   },
+   {
+    "label": "5 adet (75 g)",
+    "grams": 75
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Fıstıklı Baklava",
+  "per100g": {
+   "calories": 443,
+   "protein": 6.5,
+   "carbs": 48,
+   "fat": 25,
+   "fiber": 2,
+   "sugar": 30,
+   "saturated_fat": 8,
+   "sodium_mg": 130
+  },
+  "portions": [
+   {
+    "label": "1 dilim (50 g)",
+    "grams": 50
+   },
+   {
+    "label": "2 dilim (100 g)",
+    "grams": 100
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Künefe",
+  "per100g": {
+   "calories": 364,
+   "protein": 8,
+   "carbs": 38,
+   "fat": 20,
+   "fiber": 0.5,
+   "sugar": 25,
+   "saturated_fat": 11,
+   "sodium_mg": 300
+  },
+  "portions": [
+   {
+    "label": "1 porsiyon (150 g)",
+    "grams": 150
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Sütlaç",
+  "per100g": {
+   "calories": 128,
+   "protein": 3.2,
+   "carbs": 22,
+   "fat": 3,
+   "fiber": 0.2,
+   "sugar": 16,
+   "saturated_fat": 1.8,
+   "sodium_mg": 50
+  },
+  "portions": [
+   {
+    "label": "1 kase (150 g)",
+    "grams": 150
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Kazandibi",
+  "per100g": {
+   "calories": 142,
+   "protein": 3.5,
+   "carbs": 24,
+   "fat": 3.5,
+   "fiber": 0.1,
+   "sugar": 18,
+   "saturated_fat": 2.1,
+   "sodium_mg": 55
+  },
+  "portions": [
+   {
+    "label": "1 porsiyon (150 g)",
+    "grams": 150
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Revani",
+  "per100g": {
+   "calories": 309,
+   "protein": 5,
+   "carbs": 52,
+   "fat": 9,
+   "fiber": 1,
+   "sugar": 35,
+   "saturated_fat": 2.5,
+   "sodium_mg": 150
+  },
+  "portions": [
+   {
+    "label": "1 dilim (80 g)",
+    "grams": 80
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Şekerpare",
+  "per100g": {
+   "calories": 337,
+   "protein": 5,
+   "carbs": 50,
+   "fat": 13,
+   "fiber": 1,
+   "sugar": 35,
+   "saturated_fat": 5,
+   "sodium_mg": 150
+  },
+  "portions": [
+   {
+    "label": "1 adet (40 g)",
+    "grams": 40
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Tulumba Tatlısı",
+  "per100g": {
+   "calories": 351,
+   "protein": 4,
+   "carbs": 50,
+   "fat": 15,
+   "fiber": 1,
+   "sugar": 30,
+   "saturated_fat": 2,
+   "sodium_mg": 120
+  },
+  "portions": [
+   {
+    "label": "1 adet (30 g)",
+    "grams": 30
+   },
+   {
+    "label": "5 adet (150 g)",
+    "grams": 150
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Lokum",
+  "per100g": {
+   "calories": 322,
+   "protein": 0.2,
+   "carbs": 80,
+   "fat": 0.1,
+   "fiber": 0,
+   "sugar": 65,
+   "saturated_fat": 0,
+   "sodium_mg": 15
+  },
+  "portions": [
+   {
+    "label": "1 adet (15 g)",
+    "grams": 15
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Tahin Helvası",
+  "per100g": {
+   "calories": 518,
+   "protein": 12,
+   "carbs": 50,
+   "fat": 30,
+   "fiber": 3,
+   "sugar": 40,
+   "saturated_fat": 4.2,
+   "sodium_mg": 100
+  },
+  "portions": [
+   {
+    "label": "1 dilim (40 g)",
+    "grams": 40
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "İrmik Helvası",
+  "per100g": {
+   "calories": 304,
+   "protein": 4,
+   "carbs": 45,
+   "fat": 12,
+   "fiber": 0.8,
+   "sugar": 28,
+   "saturated_fat": 6,
+   "sodium_mg": 40
+  },
+  "portions": [
+   {
+    "label": "1 kepçe (80 g)",
+    "grams": 80
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Dondurma (Sütlü Vanilyalı)",
+  "per100g": {
+   "calories": 209,
+   "protein": 3.5,
+   "carbs": 24,
+   "fat": 11,
+   "fiber": 0.5,
+   "sugar": 21,
+   "saturated_fat": 6.8,
+   "sodium_mg": 80
+  },
+  "portions": [
+   {
+    "label": "1 top (50 g)",
+    "grams": 50
+   },
+   {
+    "label": "2 top (100 g)",
+    "grams": 100
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Sütlü Çikolata",
+  "per100g": {
+   "calories": 528,
+   "protein": 7.5,
+   "carbs": 57,
+   "fat": 30,
+   "fiber": 2,
+   "sugar": 54,
+   "saturated_fat": 18,
+   "sodium_mg": 80
+  },
+  "portions": [
+   {
+    "label": "1 kare (5 g)",
+    "grams": 5
+   },
+   {
+    "label": "1 küçük tablet (30 g)",
+    "grams": 30
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Bitter Çikolata (%70)",
+  "per100g": {
+   "calories": 599,
+   "protein": 11,
+   "carbs": 42,
+   "fat": 43,
+   "fiber": 11,
+   "sugar": 24,
+   "saturated_fat": 24,
+   "sodium_mg": 20
+  },
+  "portions": [
+   {
+    "label": "1 kare (10 g)",
+    "grams": 10
+   },
+   {
+    "label": "1 küçük tablet (30 g)",
+    "grams": 30
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Beyaz Çikolata",
+  "per100g": {
+   "calories": 548,
+   "protein": 6,
+   "carbs": 59,
+   "fat": 32,
+   "fiber": 0,
+   "sugar": 59,
+   "saturated_fat": 19,
+   "sodium_mg": 90
+  },
+  "portions": [
+   {
+    "label": "1 kare (5 g)",
+    "grams": 5
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Çikolatalı Gofret",
+  "per100g": {
+   "calories": 516,
+   "protein": 6,
+   "carbs": 60,
+   "fat": 28,
+   "fiber": 2,
+   "sugar": 40,
+   "saturated_fat": 13,
+   "sodium_mg": 100
+  },
+  "portions": [
+   {
+    "label": "1 adet (35 g)",
+    "grams": 35
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Bisküvi (Sade)",
+  "per100g": {
+   "calories": 427,
+   "protein": 7,
+   "carbs": 75,
+   "fat": 11,
+   "fiber": 2,
+   "sugar": 22,
+   "saturated_fat": 5,
+   "sodium_mg": 350
+  },
+  "portions": [
+   {
+    "label": "1 adet (7 g)",
+    "grams": 7
+   },
+   {
+    "label": "3 adet (21 g)",
+    "grams": 21
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Çikolatalı Bisküvi",
+  "per100g": {
+   "calories": 482,
+   "protein": 6,
+   "carbs": 65,
+   "fat": 22,
+   "fiber": 2,
+   "sugar": 30,
+   "saturated_fat": 11,
+   "sodium_mg": 200
+  },
+  "portions": [
+   {
+    "label": "1 adet (15 g)",
+    "grams": 15
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Patates Cipsi",
+  "per100g": {
+   "calories": 529,
+   "protein": 6,
+   "carbs": 52,
+   "fat": 33,
+   "fiber": 4.5,
+   "sugar": 0.5,
+   "saturated_fat": 10,
+   "sodium_mg": 550
+  },
+  "portions": [
+   {
+    "label": "1 küçük paket (30 g)",
+    "grams": 30
+   },
+   {
+    "label": "1 büyük paket (150 g)",
+    "grams": 150
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Sade Kek",
+  "per100g": {
+   "calories": 382,
+   "protein": 5,
+   "carbs": 50,
+   "fat": 18,
+   "fiber": 1,
+   "sugar": 25,
+   "saturated_fat": 6,
+   "sodium_mg": 300
+  },
+  "portions": [
+   {
+    "label": "1 dilim (50 g)",
+    "grams": 50
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Çikolatalı Kek",
+  "per100g": {
+   "calories": 383,
+   "protein": 5.5,
+   "carbs": 52,
+   "fat": 17,
+   "fiber": 2,
+   "sugar": 32,
+   "saturated_fat": 7,
+   "sodium_mg": 280
+  },
+  "portions": [
+   {
+    "label": "1 dilim (60 g)",
+    "grams": 60
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Un Kurabiyesi",
+  "per100g": {
+   "calories": 472,
+   "protein": 6,
+   "carbs": 58,
+   "fat": 24,
+   "fiber": 1,
+   "sugar": 22,
+   "saturated_fat": 14,
+   "sodium_mg": 200
+  },
+  "portions": [
+   {
+    "label": "1 adet (20 g)",
+    "grams": 20
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Çikolatalı Kurabiye",
+  "per100g": {
+   "calories": 474,
+   "protein": 5,
+   "carbs": 64,
+   "fat": 22,
+   "fiber": 2,
+   "sugar": 36,
+   "saturated_fat": 11,
+   "sodium_mg": 350
+  },
+  "portions": [
+   {
+    "label": "1 adet (30 g)",
+    "grams": 30
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Waffle",
+  "per100g": {
+   "calories": 329,
+   "protein": 6.5,
+   "carbs": 42,
+   "fat": 15,
+   "fiber": 1,
+   "sugar": 10,
+   "saturated_fat": 5,
+   "sodium_mg": 350
+  },
+  "portions": [
+   {
+    "label": "1 adet (75 g)",
+    "grams": 75
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Tiramisu",
+  "per100g": {
+   "calories": 294,
+   "protein": 5,
+   "carbs": 28,
+   "fat": 18,
+   "fiber": 0.5,
+   "sugar": 20,
+   "saturated_fat": 10,
+   "sodium_mg": 80
+  },
+  "portions": [
+   {
+    "label": "1 dilim (100 g)",
+    "grams": 100
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Cheesecake",
+  "per100g": {
+   "calories": 324,
+   "protein": 5.5,
+   "carbs": 26,
+   "fat": 22,
+   "fiber": 0.4,
+   "sugar": 18,
+   "saturated_fat": 13,
+   "sodium_mg": 300
+  },
+  "portions": [
+   {
+    "label": "1 dilim (110 g)",
+    "grams": 110
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Donut",
+  "per100g": {
+   "calories": 441,
+   "protein": 5,
+   "carbs": 49,
+   "fat": 25,
+   "fiber": 1.5,
+   "sugar": 25,
+   "saturated_fat": 10,
+   "sodium_mg": 300
+  },
+  "portions": [
+   {
+    "label": "1 adet (60 g)",
+    "grams": 60
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Profiterol",
+  "per100g": {
+   "calories": 276,
+   "protein": 5,
+   "carbs": 28,
+   "fat": 16,
+   "fiber": 0.8,
+   "sugar": 22,
+   "saturated_fat": 9,
+   "sodium_mg": 100
+  },
+  "portions": [
+   {
+    "label": "1 porsiyon (100 g)",
+    "grams": 100
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Aşure",
+  "per100g": {
+   "calories": 175,
+   "protein": 3,
+   "carbs": 34,
+   "fat": 3,
+   "fiber": 3,
+   "sugar": 18,
+   "saturated_fat": 0.5,
+   "sodium_mg": 20
+  },
+  "portions": [
+   {
+    "label": "1 kase (150 g)",
+    "grams": 150
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Muhallebi",
+  "per100g": {
+   "calories": 112,
+   "protein": 3.2,
+   "carbs": 18,
+   "fat": 3,
+   "fiber": 0,
+   "sugar": 14,
+   "saturated_fat": 1.8,
+   "sodium_mg": 50
+  },
+  "portions": [
+   {
+    "label": "1 kase (150 g)",
+    "grams": 150
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Trileçe",
+  "per100g": {
+   "calories": 227,
+   "protein": 4.5,
+   "carbs": 32,
+   "fat": 9,
+   "fiber": 0.2,
+   "sugar": 28,
+   "saturated_fat": 5.5,
+   "sodium_mg": 70
+  },
+  "portions": [
+   {
+    "label": "1 dilim (100 g)",
+    "grams": 100
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Granola Bar",
+  "per100g": {
+   "calories": 427,
+   "protein": 7,
+   "carbs": 66,
+   "fat": 15,
+   "fiber": 5,
+   "sugar": 28,
+   "saturated_fat": 3,
+   "sodium_mg": 150
+  },
+  "portions": [
+   {
+    "label": "1 adet (30 g)",
+    "grams": 30
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Patlamış Mısır (Tuzlu)",
+  "per100g": {
+   "calories": 336,
+   "protein": 12,
+   "carbs": 62,
+   "fat": 4.5,
+   "fiber": 10,
+   "sugar": 0.5,
+   "saturated_fat": 0.6,
+   "sodium_mg": 600
+  },
+  "portions": [
+   {
+    "label": "1 kase (20 g)",
+    "grams": 20
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Zeytinyağı",
+  "per100g": {
+   "calories": 900,
+   "protein": 0,
+   "carbs": 0,
+   "fat": 100,
+   "fiber": 0,
+   "sugar": 0,
+   "saturated_fat": 14,
+   "sodium_mg": 0
+  },
+  "portions": [
+   {
+    "label": "1 yemek kaşığı (14 g)",
+    "grams": 14
+   },
+   {
+    "label": "1 tatlı kaşığı (5 g)",
+    "grams": 5
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Ayçiçek Yağı",
+  "per100g": {
+   "calories": 900,
+   "protein": 0,
+   "carbs": 0,
+   "fat": 100,
+   "fiber": 0,
+   "sugar": 0,
+   "saturated_fat": 10.3,
+   "sodium_mg": 0
+  },
+  "portions": [
+   {
+    "label": "1 yemek kaşığı (14 g)",
+    "grams": 14
+   },
+   {
+    "label": "1 tatlı kaşığı (5 g)",
+    "grams": 5
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Mısır Özü Yağı",
+  "per100g": {
+   "calories": 900,
+   "protein": 0,
+   "carbs": 0,
+   "fat": 100,
+   "fiber": 0,
+   "sugar": 0,
+   "saturated_fat": 13,
+   "sodium_mg": 0
+  },
+  "portions": [
+   {
+    "label": "1 yemek kaşığı (14 g)",
+    "grams": 14
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Sade Yağ",
+  "per100g": {
+   "calories": 883,
+   "protein": 0.3,
+   "carbs": 0,
+   "fat": 98,
+   "fiber": 0,
+   "sugar": 0,
+   "saturated_fat": 62,
+   "sodium_mg": 2
+  },
+  "portions": [
+   {
+    "label": "1 yemek kaşığı (14 g)",
+    "grams": 14
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Margarin",
+  "per100g": {
+   "calories": 724,
+   "protein": 0.2,
+   "carbs": 0.7,
+   "fat": 80,
+   "fiber": 0,
+   "sugar": 0.1,
+   "saturated_fat": 18,
+   "sodium_mg": 750
+  },
+  "portions": [
+   {
+    "label": "1 tatlı kaşığı (5 g)",
+    "grams": 5
+   },
+   {
+    "label": "1 yemek kaşığı (14 g)",
+    "grams": 14
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Ketçap",
+  "per100g": {
+   "calories": 101,
+   "protein": 1,
+   "carbs": 24,
+   "fat": 0.1,
+   "fiber": 0.3,
+   "sugar": 22,
+   "saturated_fat": 0,
+   "sodium_mg": 900
+  },
+  "portions": [
+   {
+    "label": "1 yemek kaşığı (17 g)",
+    "grams": 17
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Mayonez",
+  "per100g": {
+   "calories": 691,
+   "protein": 1,
+   "carbs": 3,
+   "fat": 75,
+   "fiber": 0,
+   "sugar": 2,
+   "saturated_fat": 11,
+   "sodium_mg": 600
+  },
+  "portions": [
+   {
+    "label": "1 yemek kaşığı (15 g)",
+    "grams": 15
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Hardal",
+  "per100g": {
+   "calories": 76,
+   "protein": 4,
+   "carbs": 6,
+   "fat": 4,
+   "fiber": 3,
+   "sugar": 2,
+   "saturated_fat": 0.3,
+   "sodium_mg": 1200
+  },
+  "portions": [
+   {
+    "label": "1 tatlı kaşığı (5 g)",
+    "grams": 5
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Domates Salçası",
+  "per100g": {
+   "calories": 86,
+   "protein": 4.5,
+   "carbs": 16,
+   "fat": 0.5,
+   "fiber": 4,
+   "sugar": 12,
+   "saturated_fat": 0.1,
+   "sodium_mg": 600
+  },
+  "portions": [
+   {
+    "label": "1 yemek kaşığı (20 g)",
+    "grams": 20
+   },
+   {
+    "label": "1 tatlı kaşığı (8 g)",
+    "grams": 8
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Biber Salçası",
+  "per100g": {
+   "calories": 75,
+   "protein": 3.5,
+   "carbs": 13,
+   "fat": 1,
+   "fiber": 3.5,
+   "sugar": 9,
+   "saturated_fat": 0.2,
+   "sodium_mg": 1200
+  },
+  "portions": [
+   {
+    "label": "1 yemek kaşığı (20 g)",
+    "grams": 20
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Domates Sosu (Hazır)",
+  "per100g": {
+   "calories": 47,
+   "protein": 1.5,
+   "carbs": 8,
+   "fat": 1,
+   "fiber": 1.5,
+   "sugar": 6,
+   "saturated_fat": 0.2,
+   "sodium_mg": 400
+  },
+  "portions": [
+   {
+    "label": "1 kepçe (60 g)",
+    "grams": 60
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Sirke",
+  "per100g": {
+   "calories": 2,
+   "protein": 0,
+   "carbs": 0.5,
+   "fat": 0,
+   "fiber": 0,
+   "sugar": 0.4,
+   "saturated_fat": 0,
+   "sodium_mg": 2
+  },
+  "portions": [
+   {
+    "label": "1 yemek kaşığı (15 g)",
+    "grams": 15
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Limon Suyu (Taze)",
+  "per100g": {
+   "calories": 23,
+   "protein": 0.4,
+   "carbs": 5,
+   "fat": 0.2,
+   "fiber": 0.3,
+   "sugar": 2.5,
+   "saturated_fat": 0,
+   "sodium_mg": 1
+  },
+  "portions": [
+   {
+    "label": "1 yemek kaşığı (15 g)",
+    "grams": 15
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Nar Ekşisi",
+  "per100g": {
+   "calories": 195,
+   "protein": 0.5,
+   "carbs": 48,
+   "fat": 0.1,
+   "fiber": 0,
+   "sugar": 40,
+   "saturated_fat": 0,
+   "sodium_mg": 10
+  },
+  "portions": [
+   {
+    "label": "1 yemek kaşığı (20 g)",
+    "grams": 20
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Soya Sosu",
+  "per100g": {
+   "calories": 57,
+   "protein": 8,
+   "carbs": 5,
+   "fat": 0.6,
+   "fiber": 0.8,
+   "sugar": 0.4,
+   "saturated_fat": 0.1,
+   "sodium_mg": 5500
+  },
+  "portions": [
+   {
+    "label": "1 yemek kaşığı (15 g)",
+    "grams": 15
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Acı Sos",
+  "per100g": {
+   "calories": 13,
+   "protein": 1,
+   "carbs": 1.5,
+   "fat": 0.3,
+   "fiber": 0.5,
+   "sugar": 1,
+   "saturated_fat": 0,
+   "sodium_mg": 2600
+  },
+  "portions": [
+   {
+    "label": "1 tatlı kaşığı (5 g)",
+    "grams": 5
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Barbekü Sos",
+  "per100g": {
+   "calories": 140,
+   "protein": 0.8,
+   "carbs": 33,
+   "fat": 0.5,
+   "fiber": 0.5,
+   "sugar": 28,
+   "saturated_fat": 0,
+   "sodium_mg": 1000
+  },
+  "portions": [
+   {
+    "label": "1 yemek kaşığı (17 g)",
+    "grams": 17
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Krema (Sıvı)",
+  "per100g": {
+   "calories": 335,
+   "protein": 2.1,
+   "carbs": 3,
+   "fat": 35,
+   "fiber": 0,
+   "sugar": 3,
+   "saturated_fat": 22,
+   "sodium_mg": 35
+  },
+  "portions": [
+   {
+    "label": "1 yemek kaşığı (15 g)",
+    "grams": 15
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Toz Şeker",
+  "per100g": {
+   "calories": 400,
+   "protein": 0,
+   "carbs": 100,
+   "fat": 0,
+   "fiber": 0,
+   "sugar": 100,
+   "saturated_fat": 0,
+   "sodium_mg": 1
+  },
+  "portions": [
+   {
+    "label": "1 çay kaşığı (5 g)",
+    "grams": 5
+   },
+   {
+    "label": "1 küp şeker (4 g)",
+    "grams": 4
+   }
+  ],
+  "unit": "g"
+ },
+ {
+  "name": "Çay (Şekersiz)",
+  "per100g": {
+   "calories": 0,
+   "protein": 0,
+   "carbs": 0.1,
+   "fat": 0,
+   "fiber": 0,
+   "sugar": 0,
+   "saturated_fat": 0,
+   "sodium_mg": 3
+  },
+  "portions": [
+   {
+    "label": "1 ince belli bardak (100 ml)",
+    "grams": 100
+   },
+   {
+    "label": "1 büyük bardak (200 ml)",
+    "grams": 200
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Çay (1 Şekerli)",
+  "per100g": {
+   "calories": 16,
+   "protein": 0,
+   "carbs": 4,
+   "fat": 0,
+   "fiber": 0,
+   "sugar": 4,
+   "saturated_fat": 0,
+   "sodium_mg": 3
+  },
+  "portions": [
+   {
+    "label": "1 ince belli bardak (100 ml)",
+    "grams": 100
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Çay (2 Şekerli)",
+  "per100g": {
+   "calories": 32,
+   "protein": 0,
+   "carbs": 8,
+   "fat": 0,
+   "fiber": 0,
+   "sugar": 8,
+   "saturated_fat": 0,
+   "sodium_mg": 3
+  },
+  "portions": [
+   {
+    "label": "1 ince belli bardak (100 ml)",
+    "grams": 100
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Bitki Çayı (Şekersiz)",
+  "per100g": {
+   "calories": 0,
+   "protein": 0,
+   "carbs": 0,
+   "fat": 0,
+   "fiber": 0,
+   "sugar": 0,
+   "saturated_fat": 0,
+   "sodium_mg": 1
+  },
+  "portions": [
+   {
+    "label": "1 çay bardağı (100 ml)",
+    "grams": 100
+   },
+   {
+    "label": "1 fincan (200 ml)",
+    "grams": 200
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Türk Kahvesi (Şekersiz)",
+  "per100g": {
+   "calories": 3,
+   "protein": 0.2,
+   "carbs": 0.3,
+   "fat": 0.1,
+   "fiber": 0,
+   "sugar": 0,
+   "saturated_fat": 0,
+   "sodium_mg": 2
+  },
+  "portions": [
+   {
+    "label": "1 fincan (60 ml)",
+    "grams": 60
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Türk Kahvesi (Orta Şekerli)",
+  "per100g": {
+   "calories": 36,
+   "protein": 0.2,
+   "carbs": 8.5,
+   "fat": 0.1,
+   "fiber": 0,
+   "sugar": 8,
+   "saturated_fat": 0,
+   "sodium_mg": 2
+  },
+  "portions": [
+   {
+    "label": "1 fincan (60 ml)",
+    "grams": 60
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Filtre Kahve",
+  "per100g": {
+   "calories": 0,
+   "protein": 0.1,
+   "carbs": 0,
+   "fat": 0,
+   "fiber": 0,
+   "sugar": 0,
+   "saturated_fat": 0,
+   "sodium_mg": 2
+  },
+  "portions": [
+   {
+    "label": "1 fincan (150 ml)",
+    "grams": 150
+   },
+   {
+    "label": "1 kupa (240 ml)",
+    "grams": 240
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Espresso",
+  "per100g": {
+   "calories": 9,
+   "protein": 0.1,
+   "carbs": 1.7,
+   "fat": 0.2,
+   "fiber": 0,
+   "sugar": 0,
+   "saturated_fat": 0,
+   "sodium_mg": 14
+  },
+  "portions": [
+   {
+    "label": "1 shot (30 ml)",
+    "grams": 30
+   },
+   {
+    "label": "duble (60 ml)",
+    "grams": 60
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Americano",
+  "per100g": {
+   "calories": 0,
+   "protein": 0.1,
+   "carbs": 0,
+   "fat": 0,
+   "fiber": 0,
+   "sugar": 0,
+   "saturated_fat": 0,
+   "sodium_mg": 3
+  },
+  "portions": [
+   {
+    "label": "1 orta boy (355 ml)",
+    "grams": 355
+   },
+   {
+    "label": "1 küçük boy (240 ml)",
+    "grams": 240
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Latte",
+  "per100g": {
+   "calories": 52,
+   "protein": 3,
+   "carbs": 4.5,
+   "fat": 2.5,
+   "fiber": 0,
+   "sugar": 4.5,
+   "saturated_fat": 1.6,
+   "sodium_mg": 45
+  },
+  "portions": [
+   {
+    "label": "1 orta boy (355 ml)",
+    "grams": 355
+   },
+   {
+    "label": "1 küçük boy (240 ml)",
+    "grams": 240
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Cappuccino",
+  "per100g": {
+   "calories": 53,
+   "protein": 3.2,
+   "carbs": 4.5,
+   "fat": 2.5,
+   "fiber": 0,
+   "sugar": 4.5,
+   "saturated_fat": 1.6,
+   "sodium_mg": 45
+  },
+  "portions": [
+   {
+    "label": "1 orta boy (240 ml)",
+    "grams": 240
+   },
+   {
+    "label": "1 fincan (150 ml)",
+    "grams": 150
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Hazır Kahve 3'ü 1 Arada",
+  "per100g": {
+   "calories": 51,
+   "protein": 0.3,
+   "carbs": 9,
+   "fat": 1.5,
+   "fiber": 0,
+   "sugar": 7,
+   "saturated_fat": 1.2,
+   "sodium_mg": 25
+  },
+  "portions": [
+   {
+    "label": "1 bardak (150 ml)",
+    "grams": 150
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Ayran",
+  "per100g": {
+   "calories": 30,
+   "protein": 1.7,
+   "carbs": 2.5,
+   "fat": 1.5,
+   "fiber": 0,
+   "sugar": 2.5,
+   "saturated_fat": 1,
+   "sodium_mg": 170
+  },
+  "portions": [
+   {
+    "label": "1 su bardağı (200 ml)",
+    "grams": 200
+   },
+   {
+    "label": "1 küçük kutu (250 ml)",
+    "grams": 250
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Şalgam Suyu",
+  "per100g": {
+   "calories": 8,
+   "protein": 0.3,
+   "carbs": 1.5,
+   "fat": 0.1,
+   "fiber": 0.2,
+   "sugar": 1,
+   "saturated_fat": 0,
+   "sodium_mg": 350
+  },
+  "portions": [
+   {
+    "label": "1 su bardağı (200 ml)",
+    "grams": 200
+   },
+   {
+    "label": "1 meşrubat bardağı (150 ml)",
+    "grams": 150
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Kola",
+  "per100g": {
+   "calories": 42,
+   "protein": 0,
+   "carbs": 10.6,
+   "fat": 0,
+   "fiber": 0,
+   "sugar": 10.6,
+   "saturated_fat": 0,
+   "sodium_mg": 4
+  },
+  "portions": [
+   {
+    "label": "1 kutu (330 ml)",
+    "grams": 330
+   },
+   {
+    "label": "1 su bardağı (200 ml)",
+    "grams": 200
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Kola Zero",
+  "per100g": {
+   "calories": 0,
+   "protein": 0,
+   "carbs": 0,
+   "fat": 0,
+   "fiber": 0,
+   "sugar": 0,
+   "saturated_fat": 0,
+   "sodium_mg": 10
+  },
+  "portions": [
+   {
+    "label": "1 kutu (330 ml)",
+    "grams": 330
+   },
+   {
+    "label": "1 su bardağı (200 ml)",
+    "grams": 200
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Gazoz",
+  "per100g": {
+   "calories": 38,
+   "protein": 0,
+   "carbs": 9.5,
+   "fat": 0,
+   "fiber": 0,
+   "sugar": 9.5,
+   "saturated_fat": 0,
+   "sodium_mg": 10
+  },
+  "portions": [
+   {
+    "label": "1 şişe (250 ml)",
+    "grams": 250
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Meyve Suyu (Karışık, Hazır)",
+  "per100g": {
+   "calories": 48,
+   "protein": 0.3,
+   "carbs": 11.5,
+   "fat": 0.1,
+   "fiber": 0.2,
+   "sugar": 10.5,
+   "saturated_fat": 0,
+   "sodium_mg": 5
+  },
+  "portions": [
+   {
+    "label": "1 küçük kutu (200 ml)",
+    "grams": 200
+   },
+   {
+    "label": "1 su bardağı (200 ml)",
+    "grams": 200
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Portakal Suyu (Taze Sıkılmış)",
+  "per100g": {
+   "calories": 46,
+   "protein": 0.7,
+   "carbs": 10.4,
+   "fat": 0.2,
+   "fiber": 0.2,
+   "sugar": 8.4,
+   "saturated_fat": 0,
+   "sodium_mg": 1
+  },
+  "portions": [
+   {
+    "label": "1 su bardağı (200 ml)",
+    "grams": 200
+   },
+   {
+    "label": "1 meşrubat bardağı (150 ml)",
+    "grams": 150
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Portakal Suyu (Hazır)",
+  "per100g": {
+   "calories": 45,
+   "protein": 0.5,
+   "carbs": 10.5,
+   "fat": 0.1,
+   "fiber": 0.1,
+   "sugar": 9.5,
+   "saturated_fat": 0,
+   "sodium_mg": 3
+  },
+  "portions": [
+   {
+    "label": "1 küçük kutu (200 ml)",
+    "grams": 200
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Elma Suyu (Hazır)",
+  "per100g": {
+   "calories": 45,
+   "protein": 0.1,
+   "carbs": 11,
+   "fat": 0.1,
+   "fiber": 0.1,
+   "sugar": 10,
+   "saturated_fat": 0,
+   "sodium_mg": 4
+  },
+  "portions": [
+   {
+    "label": "1 küçük kutu (200 ml)",
+    "grams": 200
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Nar Suyu",
+  "per100g": {
+   "calories": 56,
+   "protein": 0.2,
+   "carbs": 13,
+   "fat": 0.3,
+   "fiber": 0.1,
+   "sugar": 12,
+   "saturated_fat": 0,
+   "sodium_mg": 10
+  },
+  "portions": [
+   {
+    "label": "1 su bardağı (200 ml)",
+    "grams": 200
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Vişne Suyu (Hazır)",
+  "per100g": {
+   "calories": 54,
+   "protein": 0.2,
+   "carbs": 13,
+   "fat": 0.1,
+   "fiber": 0.1,
+   "sugar": 12,
+   "saturated_fat": 0,
+   "sodium_mg": 5
+  },
+  "portions": [
+   {
+    "label": "1 küçük kutu (200 ml)",
+    "grams": 200
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Limonata (Ev Yapımı)",
+  "per100g": {
+   "calories": 36,
+   "protein": 0.1,
+   "carbs": 9,
+   "fat": 0,
+   "fiber": 0,
+   "sugar": 8.5,
+   "saturated_fat": 0,
+   "sodium_mg": 2
+  },
+  "portions": [
+   {
+    "label": "1 bardak (250 ml)",
+    "grams": 250
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Soğuk Çay (Şeftali)",
+  "per100g": {
+   "calories": 32,
+   "protein": 0,
+   "carbs": 8,
+   "fat": 0,
+   "fiber": 0,
+   "sugar": 8,
+   "saturated_fat": 0,
+   "sodium_mg": 5
+  },
+  "portions": [
+   {
+    "label": "1 kutu (330 ml)",
+    "grams": 330
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Maden Suyu",
+  "per100g": {
+   "calories": 0,
+   "protein": 0,
+   "carbs": 0,
+   "fat": 0,
+   "fiber": 0,
+   "sugar": 0,
+   "saturated_fat": 0,
+   "sodium_mg": 10
+  },
+  "portions": [
+   {
+    "label": "1 şişe (200 ml)",
+    "grams": 200
+   },
+   {
+    "label": "1 su bardağı (200 ml)",
+    "grams": 200
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Su",
+  "per100g": {
+   "calories": 0,
+   "protein": 0,
+   "carbs": 0,
+   "fat": 0,
+   "fiber": 0,
+   "sugar": 0,
+   "saturated_fat": 0,
+   "sodium_mg": 2
+  },
+  "portions": [
+   {
+    "label": "1 su bardağı (200 ml)",
+    "grams": 200
+   },
+   {
+    "label": "1 pet şişe (500 ml)",
+    "grams": 500
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Enerji İçeceği",
+  "per100g": {
+   "calories": 44,
+   "protein": 0,
+   "carbs": 11,
+   "fat": 0,
+   "fiber": 0,
+   "sugar": 11,
+   "saturated_fat": 0,
+   "sodium_mg": 40
+  },
+  "portions": [
+   {
+    "label": "1 kutu (250 ml)",
+    "grams": 250
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Enerji İçeceği (Şekersiz)",
+  "per100g": {
+   "calories": 1,
+   "protein": 0,
+   "carbs": 0.3,
+   "fat": 0,
+   "fiber": 0,
+   "sugar": 0,
+   "saturated_fat": 0,
+   "sodium_mg": 40
+  },
+  "portions": [
+   {
+    "label": "1 kutu (250 ml)",
+    "grams": 250
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Bira (%5)",
+  "per100g": {
+   "calories": 44,
+   "protein": 0.5,
+   "carbs": 3.6,
+   "fat": 0,
+   "fiber": 0,
+   "sugar": 0,
+   "saturated_fat": 0,
+   "sodium_mg": 4
+  },
+  "portions": [
+   {
+    "label": "1 küçük şişe (330 ml)",
+    "grams": 330
+   },
+   {
+    "label": "1 büyük şişe (500 ml)",
+    "grams": 500
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Kırmızı Şarap",
+  "per100g": {
+   "calories": 80,
+   "protein": 0.1,
+   "carbs": 2.6,
+   "fat": 0,
+   "fiber": 0,
+   "sugar": 0.6,
+   "saturated_fat": 0,
+   "sodium_mg": 5
+  },
+  "portions": [
+   {
+    "label": "1 kadeh (150 ml)",
+    "grams": 150
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Beyaz Şarap",
+  "per100g": {
+   "calories": 77,
+   "protein": 0.1,
+   "carbs": 2.6,
+   "fat": 0,
+   "fiber": 0,
+   "sugar": 1,
+   "saturated_fat": 0,
+   "sodium_mg": 5
+  },
+  "portions": [
+   {
+    "label": "1 kadeh (150 ml)",
+    "grams": 150
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Rakı",
+  "per100g": {
+   "calories": 250,
+   "protein": 0,
+   "carbs": 0.4,
+   "fat": 0,
+   "fiber": 0,
+   "sugar": 0.4,
+   "saturated_fat": 0,
+   "sodium_mg": 1
+  },
+  "portions": [
+   {
+    "label": "1 tek (50 ml)",
+    "grams": 50
+   },
+   {
+    "label": "1 duble (100 ml)",
+    "grams": 100
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Votka",
+  "per100g": {
+   "calories": 221,
+   "protein": 0,
+   "carbs": 0,
+   "fat": 0,
+   "fiber": 0,
+   "sugar": 0,
+   "saturated_fat": 0,
+   "sodium_mg": 1
+  },
+  "portions": [
+   {
+    "label": "1 shot (40 ml)",
+    "grams": 40
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Viski",
+  "per100g": {
+   "calories": 221,
+   "protein": 0,
+   "carbs": 0,
+   "fat": 0,
+   "fiber": 0,
+   "sugar": 0,
+   "saturated_fat": 0,
+   "sodium_mg": 1
+  },
+  "portions": [
+   {
+    "label": "1 shot (40 ml)",
+    "grams": 40
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Süt (Tam Yağlı)",
+  "per100g": {
+   "calories": 62,
+   "protein": 3.2,
+   "carbs": 4.8,
+   "fat": 3.3,
+   "fiber": 0,
+   "sugar": 4.8,
+   "saturated_fat": 2.1,
+   "sodium_mg": 44
+  },
+  "portions": [
+   {
+    "label": "1 su bardağı (200 ml)",
+    "grams": 200
+   },
+   {
+    "label": "1 çay bardağı (100 ml)",
+    "grams": 100
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Süt (Yarım Yağlı)",
+  "per100g": {
+   "calories": 48,
+   "protein": 3.4,
+   "carbs": 4.9,
+   "fat": 1.6,
+   "fiber": 0,
+   "sugar": 4.9,
+   "saturated_fat": 1,
+   "sodium_mg": 45
+  },
+  "portions": [
+   {
+    "label": "1 su bardağı (200 ml)",
+    "grams": 200
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Süt (Yağsız)",
+  "per100g": {
+   "calories": 34,
+   "protein": 3.4,
+   "carbs": 5,
+   "fat": 0.1,
+   "fiber": 0,
+   "sugar": 5,
+   "saturated_fat": 0.1,
+   "sodium_mg": 45
+  },
+  "portions": [
+   {
+    "label": "1 su bardağı (200 ml)",
+    "grams": 200
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Çikolatalı Süt",
+  "per100g": {
+   "calories": 68,
+   "protein": 3.2,
+   "carbs": 10.5,
+   "fat": 1.5,
+   "fiber": 0.3,
+   "sugar": 9.5,
+   "saturated_fat": 0.9,
+   "sodium_mg": 50
+  },
+  "portions": [
+   {
+    "label": "1 kutu (200 ml)",
+    "grams": 200
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Badem Sütü (Şekersiz)",
+  "per100g": {
+   "calories": 13,
+   "protein": 0.5,
+   "carbs": 0.3,
+   "fat": 1.1,
+   "fiber": 0.2,
+   "sugar": 0,
+   "saturated_fat": 0.1,
+   "sodium_mg": 70
+  },
+  "portions": [
+   {
+    "label": "1 su bardağı (200 ml)",
+    "grams": 200
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Soya Sütü",
+  "per100g": {
+   "calories": 34,
+   "protein": 3,
+   "carbs": 2,
+   "fat": 1.6,
+   "fiber": 0.5,
+   "sugar": 1,
+   "saturated_fat": 0.3,
+   "sodium_mg": 40
+  },
+  "portions": [
+   {
+    "label": "1 su bardağı (200 ml)",
+    "grams": 200
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Yulaf Sütü",
+  "per100g": {
+   "calories": 44,
+   "protein": 1,
+   "carbs": 6.5,
+   "fat": 1.5,
+   "fiber": 0.8,
+   "sugar": 3.5,
+   "saturated_fat": 0.2,
+   "sodium_mg": 40
+  },
+  "portions": [
+   {
+    "label": "1 su bardağı (200 ml)",
+    "grams": 200
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Kefir",
+  "per100g": {
+   "calories": 49,
+   "protein": 3.3,
+   "carbs": 4.5,
+   "fat": 2,
+   "fiber": 0,
+   "sugar": 4.5,
+   "saturated_fat": 1.2,
+   "sodium_mg": 45
+  },
+  "portions": [
+   {
+    "label": "1 su bardağı (200 ml)",
+    "grams": 200
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Boza",
+  "per100g": {
+   "calories": 85,
+   "protein": 0.8,
+   "carbs": 20,
+   "fat": 0.2,
+   "fiber": 0.8,
+   "sugar": 12,
+   "saturated_fat": 0,
+   "sodium_mg": 20
+  },
+  "portions": [
+   {
+    "label": "1 su bardağı (200 ml)",
+    "grams": 200
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Sahlep",
+  "per100g": {
+   "calories": 82,
+   "protein": 2.8,
+   "carbs": 12,
+   "fat": 2.5,
+   "fiber": 0.1,
+   "sugar": 10,
+   "saturated_fat": 1.5,
+   "sodium_mg": 45
+  },
+  "portions": [
+   {
+    "label": "1 fincan (150 ml)",
+    "grams": 150
+   },
+   {
+    "label": "1 su bardağı (200 ml)",
+    "grams": 200
+   }
+  ],
+  "unit": "ml"
+ },
+ {
+  "name": "Sıcak Çikolata",
+  "per100g": {
+   "calories": 97,
+   "protein": 3.5,
+   "carbs": 14,
+   "fat": 3,
+   "fiber": 0.8,
+   "sugar": 12,
+   "saturated_fat": 1.8,
+   "sodium_mg": 50
+  },
+  "portions": [
+   {
+    "label": "1 kupa (240 ml)",
+    "grams": 240
+   }
+  ],
+  "unit": "ml"
+ }
+]

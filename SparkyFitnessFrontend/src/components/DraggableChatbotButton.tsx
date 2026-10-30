@@ -386,7 +386,7 @@ const DraggableChatbotButton: React.FC = () => {
       )}
 
       <img
-        src="/images/chatbot.gif"
+        src="/images/pt-ai.svg"
         alt={t('draggableChatbotButton.aiChatbot', 'AI Chatbot')}
         className={`w-full h-full object-contain drop-shadow-lg pointer-events-none
           ${isDragging ? 'scale-110' : 'hover:scale-110'} transition-transform duration-200`}

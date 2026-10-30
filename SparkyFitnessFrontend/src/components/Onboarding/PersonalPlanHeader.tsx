@@ -49,7 +49,7 @@ export const PersonalPlanHeader = ({
               }
               setLocalEnergyUnit('kcal');
             }}
-            className={`px-4 py-2 rounded-md transition-all ${localEnergyUnit === 'kcal' ? 'bg-green-600 text-white shadow-md' : 'text-muted-foreground hover:text-foreground'}`}
+            className={`px-4 py-2 rounded-md transition-all ${localEnergyUnit === 'kcal' ? 'bg-primary text-white shadow-md' : 'text-muted-foreground hover:text-foreground'}`}
           >
             {t('settings.preferences.calories', 'Calories (kcal)')}
           </button>
@@ -69,7 +69,7 @@ export const PersonalPlanHeader = ({
               }
               setLocalEnergyUnit('kJ');
             }}
-            className={`px-4 py-2 rounded-md transition-all ${localEnergyUnit === 'kJ' ? 'bg-green-600 text-white shadow-md' : 'text-muted-foreground hover:text-foreground'}`}
+            className={`px-4 py-2 rounded-md transition-all ${localEnergyUnit === 'kJ' ? 'bg-primary text-white shadow-md' : 'text-muted-foreground hover:text-foreground'}`}
           >
             {t('settings.preferences.joules', 'Joules (kJ)')}
           </button>
@@ -78,7 +78,7 @@ export const PersonalPlanHeader = ({
         <p className="text-muted-foreground uppercase text-sm font-bold tracking-wider mb-2">
           {t('onboarding.plan.dailyCalorieBudget', 'Daily Calorie Budget')}
         </p>
-        <div className="text-6xl font-extrabold text-green-500 flex justify-center">
+        <div className="text-6xl font-extrabold text-primary flex justify-center">
           <Input
             type="number"
             step={1}
@@ -88,7 +88,7 @@ export const PersonalPlanHeader = ({
                 prev ? { ...prev, calories: Number(e.target.value) } : null
               )
             }
-            className="w-48 text-center bg-transparent border-none text-6xl text-green-500 font-extrabold focus-visible:ring-0 p-0 h-auto"
+            className="w-48 text-center bg-transparent border-none text-6xl text-primary font-extrabold focus-visible:ring-0 p-0 h-auto"
           />
         </div>
         <p className="text-xl text-foreground font-medium mt-1">
@@ -113,7 +113,7 @@ export const PersonalPlanHeader = ({
             <span
               className={
                 formData.addBurnedCalories
-                  ? 'text-green-500'
+                  ? 'text-primary'
                   : 'text-muted-foreground'
               }
             >

@@ -54,6 +54,10 @@ const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
+  const [username, setUsername] = useState('');
+  const [inviteCode, setInviteCode] = useState(
+    () => new URLSearchParams(window.location.search).get('invite') ?? ''
+  );
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const { isToggled: showPassword, toggleHandler: passwordToggleHandler } =
     useToggle();
@@ -353,6 +357,8 @@ const Auth = () => {
       email,
       password,
       fullName,
+      username: username.trim().toLowerCase(),
+      inviteCode: inviteCode.trim(),
     });
     info(loggingLevel, 'Auth: Sign up successful.');
     signIn(
@@ -515,7 +521,10 @@ const Auth = () => {
                 </Alert>
               )}
               {(loginSettings?.email?.enabled ?? true) ? (
-                <Tabs defaultValue="signin" className="w-full">
+                <Tabs
+                  defaultValue={inviteCode ? 'signup' : 'signin'}
+                  className="w-full"
+                >
                   {!loginSettings?.signup_disabled && (
                     <TabsList className="h-10 grid w-full grid-cols-2">
                       <TabsTrigger
@@ -701,6 +710,58 @@ const Auth = () => {
                               setFullName(e.target.value);
                             }}
                             autoComplete="name"
+                            required
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="signup-username">
+                            {t('auth.dgfit.username', 'Kullanıcı adı')}
+                          </Label>
+                          <Input
+                            id="signup-username"
+                            type="text"
+                            placeholder={t(
+                              'auth.dgfit.usernamePlaceholder',
+                              'ör. xpike'
+                            )}
+                            value={username}
+                            onChange={(e) =>
+                              setUsername(
+                                e.target.value
+                                  .toLowerCase()
+                                  .replace(/[^a-z0-9_.]/g, '')
+                              )
+                            }
+                            pattern="[a-z0-9_.]{3,20}"
+                            title={t(
+                              'auth.dgfit.usernameRule',
+                              '3-20 karakter: küçük harf, rakam, _ ve .'
+                            )}
+                            autoCapitalize="none"
+                            autoComplete="off"
+                            required
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            {t(
+                              'auth.dgfit.usernameHint',
+                              'Arkadaşların seni bu adla bulur.'
+                            )}
+                          </p>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="signup-invite">
+                            {t('auth.dgfit.inviteCode', 'Davet kodu')}
+                          </Label>
+                          <Input
+                            id="signup-invite"
+                            type="text"
+                            placeholder="DGFIT-XXXXXX"
+                            value={inviteCode}
+                            onChange={(e) =>
+                              setInviteCode(e.target.value.toUpperCase())
+                            }
+                            autoCapitalize="characters"
+                            autoComplete="off"
                             required
                           />
                         </div>

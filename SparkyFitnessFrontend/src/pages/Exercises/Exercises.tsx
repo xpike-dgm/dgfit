@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { categoryLabel, tagLabel } from '@/utils/dgfitLabels';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -271,7 +272,7 @@ const ExerciseDatabaseManager = () => {
                       >
                         {tag === 'public' && <Share2 className="w-2 w-2" />}
                         {tag === 'family' && <Users className="w-2 w-2" />}
-                        {tag}
+                        {tagLabel(tag)}
                       </span>
                     ))}
                 </div>
@@ -287,8 +288,8 @@ const ExerciseDatabaseManager = () => {
         // Disabled sorting for category since there is a dropdown above it
         enableSorting: false,
         cell: ({ row }) => (
-          <span className="text-xs font-medium text-blue-600 dark:text-blue-400 capitalize">
-            {row.original.category}
+          <span className="text-xs font-medium text-primary">
+            {categoryLabel(row.original.category)}
           </span>
         ),
       },

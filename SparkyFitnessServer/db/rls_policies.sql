@@ -62,6 +62,8 @@ BEGIN
     'openfoodfacts_product_read_rate_limit',
     'openfoodfacts_sync_queue',
     'profiles',
+    'dgfit_invite_codes',
+    'dgfit_invite_redemptions',
     'rate_limit',
     'sparky_chat_history',
     'food_assistant_preferences',

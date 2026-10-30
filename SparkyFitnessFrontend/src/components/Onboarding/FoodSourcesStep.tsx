@@ -123,7 +123,7 @@ export const FoodSourcesStep = ({ onContinue }: FoodSourcesStepProps) => {
               href="https://fdc.nal.usda.gov/api-key-signup.html"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-green-600 hover:text-green-700 inline-flex items-center gap-1"
+              className="text-sm text-primary hover:text-primary/80 inline-flex items-center gap-1"
             >
               {t('onboarding.foodSources.getUsdaKey', 'Get a free API key')}
               <ExternalLink className="h-3.5 w-3.5" />
@@ -146,7 +146,7 @@ export const FoodSourcesStep = ({ onContinue }: FoodSourcesStepProps) => {
               href="https://platform.fatsecret.com/my-account/dashboard"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-green-600 hover:text-green-700 inline-flex items-center gap-1"
+              className="text-sm text-primary hover:text-primary/80 inline-flex items-center gap-1"
             >
               {t(
                 'onboarding.foodSources.getFatsecretCredentials',

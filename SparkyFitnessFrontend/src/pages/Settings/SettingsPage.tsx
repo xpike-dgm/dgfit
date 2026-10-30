@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import {
   Settings as SettingsIcon,
   ListChecks,
-  Users,
   Tag,
   Cloud,
   Sparkles,
@@ -17,7 +16,8 @@ import {
   Heart,
 } from 'lucide-react';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
-import FamilyAccessManager from './FamilyAccessManager';
+import { DgfitSocialSettings } from './DgfitSocialSettings';
+import { useAuth } from '@/hooks/useAuth';
 import AIServiceSettings from './AIServiceSettings';
 import CustomCategoryManager from './CustomCategoryManager';
 import MealTypeManager from './MealTypeManager';
@@ -39,9 +39,7 @@ import { AccountSecurity } from './AccountSecurity';
 import { ApiSettings } from './ApiSettings';
 import { OAuthClientSettings } from './OAuthClientSettings';
 import { WaterTrackingSettings } from './WaterTrackingSettings';
-import { FastingSettings } from './FastingSettings';
 import { GuidedWorkoutSettings } from './GuidedWorkoutSettings';
-import CycleSettings from './CycleSettings';
 import { PreferenceSettings } from './PreferenceSettings';
 import { HeartRateZoneSettings } from './HeartRateZoneSettings';
 import { ProfileInformation } from './ProfileInformation';
@@ -57,7 +55,7 @@ const SECTION_TO_TAB_MAP: Record<string, string> = {
   'profile-information': 'profile-account',
   'user-preferences': 'profile-account',
   'account-security': 'profile-account',
-  'family-access': 'profile-account',
+  'dgfit-social': 'profile-account',
   'data-management': 'profile-account',
   'allergen-preferences': 'nutrition-diet',
   'custom-nutrients': 'nutrition-diet',
@@ -66,8 +64,6 @@ const SECTION_TO_TAB_MAP: Record<string, string> = {
   'custom-meals': 'nutrition-diet',
   'calculation-settings': 'nutrition-diet',
   'water-tracking': 'nutrition-diet',
-  'fasting-settings': 'nutrition-diet',
-  'cycle-settings': 'wellness',
   'guided-workouts': 'wellness',
   'custom-categories': 'wellness',
   'food-and-exercise-data-providers': 'developer-integrations',
@@ -81,6 +77,7 @@ const SECTION_TO_TAB_MAP: Record<string, string> = {
 const Settings = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -128,17 +125,22 @@ const Settings = () => {
             },
             {
               id: 'wellness',
-              label: t('settings.tabs.wellness', 'Wellness'),
+              label: 'Antrenman & Ölçümler',
               icon: Heart,
             },
-            {
-              id: 'developer-integrations',
-              label: t(
-                'settings.tabs.developerIntegrations',
-                'Developer & Integrations'
-              ),
-              icon: SettingsIcon,
-            },
+            // DG FIT: AI keys, providers and API access are admin business.
+            ...(user?.role === 'admin'
+              ? [
+                  {
+                    id: 'developer-integrations',
+                    label: t(
+                      'settings.tabs.developerIntegrations',
+                      'Developer & Integrations'
+                    ),
+                    icon: SettingsIcon,
+                  },
+                ]
+              : []),
           ].map((type) => {
             const Icon = type.icon;
             const isActive = activeTab === type.id;
@@ -186,22 +188,10 @@ const Settings = () => {
               <HeartRateZoneSettings />
             </AccordionItem>
             <AccordionItem
-              value="family-access"
+              value="dgfit-social"
               className="border rounded-lg mb-4"
             >
-              <AccordionTrigger
-                className="flex items-center gap-2 p-4 hover:no-underline"
-                description={t(
-                  'settings.familyAccess.description',
-                  'Manage access to your data for family members'
-                )}
-              >
-                <Users className="h-5 w-5" />
-                {t('settings.familyAccess.title', 'Family Access')}
-              </AccordionTrigger>
-              <AccordionContent className="p-4 pt-0">
-                <FamilyAccessManager />
-              </AccordionContent>
+              <DgfitSocialSettings />
             </AccordionItem>
             <AccordionItem
               value="data-management"
@@ -355,12 +345,6 @@ const Settings = () => {
             >
               <WaterTrackingSettings />
             </AccordionItem>
-            <AccordionItem
-              value="fasting-settings"
-              className="border rounded-lg mb-4"
-            >
-              <FastingSettings />
-            </AccordionItem>
           </Accordion>
         </TabsContent>
 
@@ -370,12 +354,6 @@ const Settings = () => {
             className="w-full"
             defaultValue={defaultExpanded}
           >
-            <AccordionItem
-              value="cycle-settings"
-              className="border rounded-lg mb-4"
-            >
-              <CycleSettings />
-            </AccordionItem>
             <AccordionItem
               value="guided-workouts"
               className="border rounded-lg mb-4"
@@ -403,69 +381,71 @@ const Settings = () => {
           </Accordion>
         </TabsContent>
 
-        <TabsContent value="developer-integrations" className="mt-0">
-          <Accordion
-            type="multiple"
-            className="w-full"
-            defaultValue={defaultExpanded}
-          >
-            <AccordionItem
-              value="food-and-exercise-data-providers"
-              className="border rounded-lg mb-4"
+        {user?.role === 'admin' && (
+          <TabsContent value="developer-integrations" className="mt-0">
+            <Accordion
+              type="multiple"
+              className="w-full"
+              defaultValue={defaultExpanded}
             >
-              <AccordionTrigger
-                className="flex items-center gap-2 p-4 hover:no-underline"
-                description={t(
-                  'settings.foodExerciseDataProviders.description',
-                  'Configure external food and exercise data sources and synchronize data with Garmin Connect'
-                )}
+              <AccordionItem
+                value="food-and-exercise-data-providers"
+                className="border rounded-lg mb-4"
               >
-                <Cloud className="h-5 w-5" />
-                {t(
-                  'settings.foodExerciseDataProviders.title',
-                  'Food & Exercise Data Providers'
-                )}
-              </AccordionTrigger>
-              <AccordionContent className="p-4 pt-0 space-y-4">
-                <TooltipWarning
-                  warningMsg={t(
-                    'settings.foodExerciseDataProviders.invalidKeyLengthWarning',
-                    'If you encounter an "Invalid key length" error, ensure your encryption key in the server\'s env variables are 64 hex.'
+                <AccordionTrigger
+                  className="flex items-center gap-2 p-4 hover:no-underline"
+                  description={t(
+                    'settings.foodExerciseDataProviders.description',
+                    'Configure external food and exercise data sources and synchronize data with Garmin Connect'
                   )}
-                />
-                <ExternalProviderSettings />
-                <Separator />
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem
-              value="ai-service"
-              className="border rounded-lg mb-4"
-            >
-              <AccordionTrigger
-                className="flex items-center gap-2 p-4 hover:no-underline"
-                description={t(
-                  'settings.aiService.description',
-                  'Manage settings for AI-powered features'
-                )}
+                >
+                  <Cloud className="h-5 w-5" />
+                  {t(
+                    'settings.foodExerciseDataProviders.title',
+                    'Food & Exercise Data Providers'
+                  )}
+                </AccordionTrigger>
+                <AccordionContent className="p-4 pt-0 space-y-4">
+                  <TooltipWarning
+                    warningMsg={t(
+                      'settings.foodExerciseDataProviders.invalidKeyLengthWarning',
+                      'If you encounter an "Invalid key length" error, ensure your encryption key in the server\'s env variables are 64 hex.'
+                    )}
+                  />
+                  <ExternalProviderSettings />
+                  <Separator />
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem
+                value="ai-service"
+                className="border rounded-lg mb-4"
               >
-                <Sparkles className="h-5 w-5" />
-                {t('settings.aiService.title', 'AI Service')}
-              </AccordionTrigger>
-              <AccordionContent className="p-4 pt-0">
-                <TooltipWarning
-                  warningMsg={t(
-                    'settings.aiService.invalidKeyLengthWarning',
-                    'If you encounter an "Invalid key length" error, ensure your encryption key in the server\'s env variables are 64 hex.'
+                <AccordionTrigger
+                  className="flex items-center gap-2 p-4 hover:no-underline"
+                  description={t(
+                    'settings.aiService.description',
+                    'Manage settings for AI-powered features'
                   )}
-                />
-                <AIServiceSettings />
-              </AccordionContent>
-            </AccordionItem>
-            <ApiSettings />
-            <OAuthClientSettings />
-            <DeveloperResources />
-          </Accordion>
-        </TabsContent>
+                >
+                  <Sparkles className="h-5 w-5" />
+                  {t('settings.aiService.title', 'AI Service')}
+                </AccordionTrigger>
+                <AccordionContent className="p-4 pt-0">
+                  <TooltipWarning
+                    warningMsg={t(
+                      'settings.aiService.invalidKeyLengthWarning',
+                      'If you encounter an "Invalid key length" error, ensure your encryption key in the server\'s env variables are 64 hex.'
+                    )}
+                  />
+                  <AIServiceSettings />
+                </AccordionContent>
+              </AccordionItem>
+              <ApiSettings />
+              <OAuthClientSettings />
+              <DeveloperResources />
+            </Accordion>
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );

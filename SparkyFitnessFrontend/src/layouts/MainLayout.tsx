@@ -129,11 +129,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         });
       }
       items.push(
-        {
-          value: 'medications',
-          label: t('nav.medications', 'Medications'),
-          icon: Pill,
-        },
         { value: 'foods', label: t('nav.foods', 'Foods'), icon: Utensils },
         {
           value: 'exercises',
@@ -243,11 +238,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         });
       }
       tabs.push(
-        {
-          value: '/medications',
-          label: t('nav.medications', 'Medications'),
-          icon: Pill,
-        },
         { value: '/reports', label: t('nav.reports'), icon: BarChart3 },
         { value: '/foods', label: t('nav.foods'), icon: Utensils },
         {

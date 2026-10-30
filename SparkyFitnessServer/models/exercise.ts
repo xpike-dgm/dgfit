@@ -18,6 +18,12 @@ import {
   parseJsonArrayField,
   normalizeToStringArray,
 } from '../utils/exerciseJsonFields.js';
+
+// DG FIT: the shared library carries Turkish names; free-exercise-db rows keep
+// their English id in source_id, so searching "bench press" or "squat" also
+// finds them.
+const EXERCISE_SEARCH_TEXT_SQL =
+  "(name || ' ' || CASE WHEN source = 'free-exercise-db' THEN replace(coalesce(source_id, ''), '_', ' ') ELSE '' END)";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function getExerciseById(id: any, userId: any) {
   const client = await getClient(userId);
@@ -151,7 +157,7 @@ async function getExercisesWithPagination(
       whereClauses: searchClauses,
       queryParams: searchParams,
       nextParamIndex,
-    } = buildSqlSearch('name', searchTerm, 1);
+    } = buildSqlSearch(EXERCISE_SEARCH_TEXT_SQL, searchTerm, 1);
     whereClauses.push(...searchClauses);
     const queryParams: any[] = [...searchParams];
     let paramIndex = nextParamIndex;
@@ -246,7 +252,7 @@ async function countExercises(
       whereClauses: searchClauses,
       queryParams: searchParams,
       nextParamIndex,
-    } = buildSqlSearch('name', searchTerm, 1);
+    } = buildSqlSearch(EXERCISE_SEARCH_TEXT_SQL, searchTerm, 1);
     whereClauses.push(...searchClauses);
     const queryParams: any[] = [...searchParams];
     let paramIndex = nextParamIndex;
@@ -384,7 +390,7 @@ async function searchExercises(
       whereClauses: searchClauses,
       queryParams: searchParams,
       nextParamIndex,
-    } = buildSqlSearch('name', name, 1);
+    } = buildSqlSearch(EXERCISE_SEARCH_TEXT_SQL, name, 1);
     whereClauses.push(...searchClauses);
     const queryParams: any[] = [...searchParams];
     let paramIndex = nextParamIndex;
@@ -477,7 +483,7 @@ async function searchExercisesPaginated(
       whereClauses: searchClauses,
       queryParams: searchParams,
       nextParamIndex,
-    } = buildSqlSearch('name', name, 1);
+    } = buildSqlSearch(EXERCISE_SEARCH_TEXT_SQL, name, 1);
     whereClauses.push(...searchClauses);
     const queryParams: any[] = [...searchParams];
     let paramIndex = nextParamIndex;

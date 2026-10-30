@@ -48,13 +48,19 @@ export const requestMagicLink = async (email: string): Promise<void> => {
 export const registerUser = async (
   email: string,
   password: string,
-  fullName: string
+  fullName: string,
+  username: string,
+  inviteCode: string
 ): Promise<AuthResponse> => {
+  // DG FIT: signup is invite-only and every account picks a username; the
+  // server checks both in its user.create hook.
   const { data, error } = await authClient.signUp.email({
     email,
     password,
     name: fullName,
-  });
+    username,
+    inviteCode,
+  } as Parameters<typeof authClient.signUp.email>[0]);
 
   if (error) {
     if (error.status === 409) {

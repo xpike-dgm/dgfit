@@ -20,15 +20,15 @@ export const OptionButton = ({
       flex flex-col justify-center bg-card
       ${
         isSelected
-          ? 'border-green-500'
-          : 'border-border hover:border-green-500/50 hover:shadow-sm'
+          ? 'border-primary'
+          : 'border-border hover:border-primary/50 hover:shadow-sm'
       }
     `}
   >
     <div className="flex justify-between items-center w-full">
       <span className="font-semibold text-lg text-foreground">{label}</span>
       {isSelected && (
-        <div className="bg-green-500 rounded-full p-1">
+        <div className="bg-primary rounded-full p-1">
           <Check className="h-4 w-4 text-white" />
         </div>
       )}

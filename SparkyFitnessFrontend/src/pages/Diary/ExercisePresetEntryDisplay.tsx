@@ -1,4 +1,5 @@
 import type React from 'react';
+import { categoryLabel } from '@/utils/dgfitLabels';
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent } from '@/components/ui/card';
@@ -256,7 +257,7 @@ const ExercisePresetEntryDisplay: React.FC<ExercisePresetEntryDisplayProps> = ({
                 </div>
                 {presetEntry.exercise_snapshot?.category && (
                   <p className="text-[10px] font-medium uppercase tracking-widest text-gray-400 dark:text-gray-500 mt-0.5">
-                    {presetEntry.exercise_snapshot.category}
+                    {categoryLabel(presetEntry.exercise_snapshot.category)}
                   </p>
                 )}
               </div>

@@ -64,11 +64,15 @@ export const useRegisterUserMutation = () => {
       email,
       password,
       fullName,
+      username,
+      inviteCode,
     }: {
       email: string;
       password: string;
       fullName: string;
-    }) => registerUser(email, password, fullName),
+      username: string;
+      inviteCode: string;
+    }) => registerUser(email, password, fullName, username, inviteCode),
     meta: {
       successMessage: t(
         'auth.registerSuccess',

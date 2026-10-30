@@ -49,7 +49,7 @@ export const DietApproach = ({
         className="w-full p-4 flex items-center justify-between hover:bg-muted transition-colors rounded-2xl"
       >
         <div className="flex items-center gap-2">
-          <Utensils className="h-5 w-5 text-green-500" />
+          <Utensils className="h-5 w-5 text-primary" />
           <span className="text-foreground font-semibold">
             {t('onboarding.diet.title', 'Diet Approach')}
           </span>
@@ -140,7 +140,7 @@ export const DietApproach = ({
                       Math.round(customPercentages.protein) +
                       Math.round(customPercentages.fat) ===
                     100
-                      ? 'text-green-500'
+                      ? 'text-primary'
                       : 'text-yellow-500'
                   }`}
                 >

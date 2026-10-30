@@ -15,6 +15,11 @@ import {
   sendEmailMfaCode,
 } from './services/emailService.js';
 import { createDefaultNutrientPreferencesForUser } from './services/nutrientDisplayPreferenceService.js';
+import {
+  SignupRejectedError,
+  assertSignupAllowed,
+  completeSignup,
+} from './services/dgfit/inviteService.js';
 import { isPrivateNetworkAddress } from './utils/corsHelper.js';
 import { apiKey } from '@better-auth/api-key';
 import { v4 } from 'uuid';
@@ -362,6 +367,13 @@ const mcpOAuthPlugins = installMcpOAuthPlugins
       ];
     })()
   : [];
+
+// DG FIT: invite code + username validated in user.create.before, recorded in
+// user.create.after once the user id exists. Keyed by lowercased email.
+const pendingDgfitSignups = new Map<
+  string,
+  { code: string; username: string }
+>();
 
 const auth = betterAuth({
   database: authPool,
@@ -768,9 +780,26 @@ const auth = betterAuth({
               log('error', '[AUTH] Error during auto_register check:', error);
             }
           }
+          // 3. DG FIT: self-service email signup needs an invite code and a
+          // username. Admin-created and SSO users are not affected.
+          if (ctx?.path === '/sign-up/email') {
+            try {
+              const signup = await assertSignupAllowed(
+                ctx.body?.inviteCode,
+                ctx.body?.username
+              );
+              pendingDgfitSignups.set(user.email.toLowerCase(), signup);
+            } catch (error) {
+              if (error instanceof SignupRejectedError) {
+                throw new APIError('BAD_REQUEST', { message: error.message });
+              }
+              throw error;
+            }
+          }
           return { data: user };
         },
         after: async (user) => {
+          const dgfitSignup = pendingDgfitSignups.get(user.email.toLowerCase());
           log(
             'info',
             `[AUTH] Hook: User created, initializing Sparky data for ${user.id}`
@@ -784,6 +813,14 @@ const auth = betterAuth({
             );
             // Also initialize default nutrient preferences
             await createDefaultNutrientPreferencesForUser(user.id);
+            if (dgfitSignup) {
+              pendingDgfitSignups.delete(user.email.toLowerCase());
+              await completeSignup(
+                user.id,
+                dgfitSignup.code,
+                dgfitSignup.username
+              );
+            }
             log('info', `[AUTH] Hook: Initialization complete for ${user.id}`);
           } catch (error) {
             log(

@@ -1,4 +1,5 @@
 import { Badge } from '@/components/ui/badge';
+import { categoryLabel } from '@/utils/dgfitLabels';
 import { Button } from '@/components/ui/button';
 import { EXERCISE_CATEGORY_META } from '@/constants/exercises';
 import { usePreferences } from '@/contexts/PreferencesContext';
@@ -170,9 +171,7 @@ export const ExerciseSearchListItem = ({
 
         {/* Category + calories row */}
         <div className="flex items-center gap-2 flex-wrap text-xs text-gray-500 dark:text-gray-400 mb-1">
-          {exercise.category && (
-            <span className="capitalize">{exercise.category}</span>
-          )}
+          {exercise.category && <span>{categoryLabel(exercise.category)}</span>}
           {exercise.calories_per_hour ? (
             <>
               <span className="text-gray-300 dark:text-gray-600">·</span>

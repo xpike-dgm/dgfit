@@ -132,19 +132,19 @@ export const OnboardingSteps = ({
           <div className="flex justify-center mb-6 bg-muted p-1 rounded-lg w-fit mx-auto">
             <button
               onClick={() => setLocalWeightUnit('kg')}
-              className={`px-4 py-2 rounded-md transition-all ${weightUnit === 'kg' ? 'bg-green-600 text-white shadow-md' : 'text-muted-foreground hover:text-foreground'}`}
+              className={`px-4 py-2 rounded-md transition-all ${weightUnit === 'kg' ? 'bg-primary text-white shadow-md' : 'text-muted-foreground hover:text-foreground'}`}
             >
               kg
             </button>
             <button
               onClick={() => setLocalWeightUnit('lbs')}
-              className={`px-4 py-2 rounded-md transition-all ${weightUnit === 'lbs' ? 'bg-green-600 text-white shadow-md' : 'text-muted-foreground hover:text-foreground'}`}
+              className={`px-4 py-2 rounded-md transition-all ${weightUnit === 'lbs' ? 'bg-primary text-white shadow-md' : 'text-muted-foreground hover:text-foreground'}`}
             >
               lbs
             </button>
             <button
               onClick={() => setLocalWeightUnit('st_lbs')}
-              className={`px-4 py-2 rounded-md transition-all ${weightUnit === 'st_lbs' ? 'bg-green-600 text-white shadow-md' : 'text-muted-foreground hover:text-foreground'}`}
+              className={`px-4 py-2 rounded-md transition-all ${weightUnit === 'st_lbs' ? 'bg-primary text-white shadow-md' : 'text-muted-foreground hover:text-foreground'}`}
             >
               st/lb
             </button>
@@ -189,19 +189,19 @@ export const OnboardingSteps = ({
           <div className="flex justify-center mb-6 bg-muted p-1 rounded-lg w-fit mx-auto">
             <button
               onClick={() => setLocalHeightUnit('cm')}
-              className={`px-4 py-2 rounded-md transition-all ${heightUnit === 'cm' ? 'bg-green-600 text-white shadow-md' : 'text-muted-foreground hover:text-foreground'}`}
+              className={`px-4 py-2 rounded-md transition-all ${heightUnit === 'cm' ? 'bg-primary text-white shadow-md' : 'text-muted-foreground hover:text-foreground'}`}
             >
               cm
             </button>
             <button
               onClick={() => setLocalHeightUnit('inches')}
-              className={`px-4 py-2 rounded-md transition-all ${heightUnit === 'inches' ? 'bg-green-600 text-white shadow-md' : 'text-muted-foreground hover:text-foreground'}`}
+              className={`px-4 py-2 rounded-md transition-all ${heightUnit === 'inches' ? 'bg-primary text-white shadow-md' : 'text-muted-foreground hover:text-foreground'}`}
             >
               in
             </button>
             <button
               onClick={() => setLocalHeightUnit('ft_in')}
-              className={`px-4 py-2 rounded-md transition-all ${heightUnit === 'ft_in' ? 'bg-green-600 text-white shadow-md' : 'text-muted-foreground hover:text-foreground'}`}
+              className={`px-4 py-2 rounded-md transition-all ${heightUnit === 'ft_in' ? 'bg-primary text-white shadow-md' : 'text-muted-foreground hover:text-foreground'}`}
             >
               ft/in
             </button>
@@ -353,8 +353,8 @@ export const OnboardingSteps = ({
                 className={`p-6 rounded-xl border-2 bg-card text-foreground font-semibold transition-all duration-200
                      ${
                        formData.bodyFatRange === range
-                         ? 'border-green-500'
-                         : 'border-border hover:border-green-500/50 hover:shadow-sm'
+                         ? 'border-primary'
+                         : 'border-border hover:border-primary/50 hover:shadow-sm'
                      }`}
               >
                 {t(`onboarding.${key}`, range)}
@@ -485,8 +485,8 @@ export const OnboardingSteps = ({
               className={`flex-1 p-6 rounded-full text-lg font-bold border-2 transition-all
                   ${
                     formData.addBurnedCalories === false
-                      ? 'bg-green-600 text-white border-green-600'
-                      : 'bg-card text-foreground border-border hover:border-green-500/50 hover:shadow-sm'
+                      ? 'bg-primary text-white border-primary'
+                      : 'bg-card text-foreground border-border hover:border-primary/50 hover:shadow-sm'
                   }
                 `}
             >
@@ -497,8 +497,8 @@ export const OnboardingSteps = ({
               className={`flex-1 p-6 rounded-full text-lg font-bold border-2 transition-all
                   ${
                     formData.addBurnedCalories === true
-                      ? 'bg-green-600 text-white border-green-600'
-                      : 'bg-card text-foreground border-border hover:border-green-500/50 hover:shadow-sm'
+                      ? 'bg-primary text-white border-primary'
+                      : 'bg-card text-foreground border-border hover:border-primary/50 hover:shadow-sm'
                   }
                 `}
             >
@@ -513,9 +513,9 @@ export const OnboardingSteps = ({
       return (
         <div className="flex flex-col items-center justify-center h-full animate-in fade-in duration-700">
           <div className="relative flex h-32 w-32 mb-8">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-20"></span>
-            <span className="relative inline-flex rounded-full h-32 w-32 bg-card items-center justify-center border-4 border-green-500">
-              <Utensils className="h-12 w-12 text-green-500" />
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-20"></span>
+            <span className="relative inline-flex rounded-full h-32 w-32 bg-card items-center justify-center border-4 border-primary">
+              <Utensils className="h-12 w-12 text-primary" />
             </span>
           </div>
           <h2 className="text-2xl font-bold text-foreground text-center">
