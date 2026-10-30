@@ -35,3 +35,20 @@ export const deleteInviteCode = (code: string): Promise<void> =>
   apiCall(`/dgfit/account/invites/${encodeURIComponent(code)}`, {
     method: 'DELETE',
   });
+
+export interface AiUsageReport {
+  totals: {
+    user_id: string;
+    name: string;
+    requests: number;
+    input_tokens: string;
+    output_tokens: string;
+    cache_read_tokens: string;
+    last_day: string;
+    models: string[];
+  }[];
+  daily: { day: string; requests: number; tokens: string }[];
+}
+
+export const getAiUsage = (days: number): Promise<AiUsageReport> =>
+  apiCall('/dgfit/account/ai-usage', { params: { days } });

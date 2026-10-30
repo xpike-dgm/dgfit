@@ -10,6 +10,7 @@ import {
   listInviteCodes,
   setUsername,
 } from '../../services/dgfit/inviteService.js';
+import { getAiUsageReport } from '../../services/dgfit/aiUsageService.js';
 
 const router = express.Router();
 router.use(authenticate);
@@ -72,6 +73,15 @@ router.delete('/invites/:code', isAdmin, async (req, res, next) => {
   try {
     const deleted = await deleteInviteCode(String(req.params.code));
     res.status(deleted ? 204 : 404).end();
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get('/ai-usage', isAdmin, async (req, res, next) => {
+  try {
+    const days = Math.min(365, Math.max(1, Number(req.query.days) || 30));
+    res.json(await getAiUsageReport(days));
   } catch (error) {
     next(error);
   }

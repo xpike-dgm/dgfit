@@ -7,6 +7,7 @@ import { deleteExpiredTickets } from './passkeyTicketService.js';
 import { scheduleDemoMidnightReset } from './demoSeedService.js';
 import { log } from '../config/logging.js';
 import { scheduledJobsDisabled } from '../utils/scheduledJobs.js';
+import { purgeOldChatPhotos } from './dgfit/photoRetentionService.js';
 
 // Backup scheduling is handled by services/backupScheduler.ts
 // Session cleanup scheduling
@@ -32,6 +33,17 @@ const scheduleSessionCleanup = async () => {
   });
 };
 
+// DG FIT: photos sent to PT AI are kept for 14 days.
+const scheduleChatPhotoRetention = () => {
+  cron.schedule('30 3 * * *', async () => {
+    try {
+      await purgeOldChatPhotos();
+    } catch (error) {
+      log('error', '[CRON] Chat photo retention failed:', error);
+    }
+  });
+};
+
 /** Registers every scheduled background job after the database is initialized. */
 export async function scheduleBackgroundJobs(): Promise<void> {
   if (scheduledJobsDisabled()) {
@@ -46,4 +58,5 @@ export async function scheduleBackgroundJobs(): Promise<void> {
   scheduleSessionCleanup();
   startProviderSyncSchedulers();
   scheduleDemoMidnightReset();
+  scheduleChatPhotoRetention();
 }

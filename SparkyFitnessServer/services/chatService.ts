@@ -93,6 +93,7 @@ import {
 import { CATEGORY_SUMMARIES } from '../ai/tools/metaTools.js';
 import { readFileSync, existsSync } from 'fs';
 import { fileURLToPath } from 'url';
+import { recordAiUsage } from './dgfit/aiUsageService.js';
 import {
   createFoodPhotoEstimateSink,
   FOOD_PHOTO_ESTIMATE_PART_TYPE,
@@ -831,6 +832,12 @@ export function getSystemPrompt(
         'The user has limited you to the categories above using the in-chat tool selector. You do NOT have tools for the following, and you cannot enable them yourself:\n' +
         dormantList +
         '\n\nIf the user asks for something in one of these areas, do NOT attempt it and do NOT claim you did it. Tell them to enable that category using the tool selector in the chat, then retry.';
+  }
+
+  // DG FIT persona and house rules go last so they take precedence.
+  const dgfitPath = path.join(__dirname, '../prompts', 'chatbot-dgfit.md');
+  if (existsSync(dgfitPath)) {
+    content += '\n\n' + readFileSync(dgfitPath, 'utf-8').trim();
   }
 
   // Replace placeholders dynamically
@@ -2324,6 +2331,7 @@ async function processChatMessage(
     );
 
     const usage = result.totalUsage ?? result.usage;
+    void recordAiUsage(authenticatedUserId, modelName, usage);
     log(
       'info',
       `[chat] provider=${aiService.service_type} model=${modelName} cacheReadTokens=${usage?.inputTokenDetails?.cacheReadTokens ?? 0} inputTokens=${usage?.inputTokens ?? 0} noCacheTokens=${usage?.inputTokenDetails?.noCacheTokens ?? 0} cacheWriteTokens=${usage?.inputTokenDetails?.cacheWriteTokens ?? 0} outputTokens=${usage?.outputTokens ?? 0} totalTokens=${usage?.totalTokens ?? 0}`
@@ -2864,6 +2872,7 @@ async function processChatMessageStream(
         sources,
       }) => {
         const observedUsage = totalUsage ?? usage;
+        void recordAiUsage(userId, modelName, observedUsage);
         log(
           'info',
           `[chat] provider=${aiService.service_type} model=${modelName} cacheReadTokens=${observedUsage?.inputTokenDetails?.cacheReadTokens ?? 0} inputTokens=${observedUsage?.inputTokens ?? 0} noCacheTokens=${observedUsage?.inputTokenDetails?.noCacheTokens ?? 0} cacheWriteTokens=${observedUsage?.inputTokenDetails?.cacheWriteTokens ?? 0} outputTokens=${observedUsage?.outputTokens ?? 0} totalTokens=${observedUsage?.totalTokens ?? 0}`

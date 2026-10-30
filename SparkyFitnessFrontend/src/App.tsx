@@ -65,6 +65,9 @@ const FriendsPage = lazyWithChunkRecovery(
 const FriendProfilePage = lazyWithChunkRecovery(
   () => import('@/pages/Friends/FriendProfilePage')
 );
+const RecipesPage = lazyWithChunkRecovery(
+  () => import('@/pages/Recipes/RecipesPage')
+);
 const WorkoutsHub = lazyWithChunkRecovery(
   () => import('@/pages/Workouts/WorkoutsHub')
 );
@@ -468,6 +471,11 @@ const router = createBrowserRouter([
           {
             path: 'arkadaslar/:userId',
             Component: FriendProfilePage,
+            ErrorBoundary: RouteErrorBoundary,
+          },
+          {
+            path: 'tarifler',
+            Component: RecipesPage,
             ErrorBoundary: RouteErrorBoundary,
           },
           {

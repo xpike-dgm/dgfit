@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   createInviteCode,
   deleteInviteCode,
+  getAiUsage,
   getMyUsername,
   listInviteCodes,
   updateMyUsername,
@@ -51,3 +52,9 @@ export const useDeleteInviteMutation = () => {
     meta: { errorMessage: (error: unknown) => getErrorMessage(error) },
   });
 };
+
+export const useAiUsage = (days: number) =>
+  useQuery({
+    queryKey: ['dgfit', 'ai-usage', days],
+    queryFn: () => getAiUsage(days),
+  });

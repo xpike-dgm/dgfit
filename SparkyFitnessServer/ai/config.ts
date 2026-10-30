@@ -4,7 +4,7 @@ function getDefaultModel(serviceType?: string | null): string {
     case 'openai_compatible':
       return 'gpt-4o-mini';
     case 'anthropic':
-      return 'claude-sonnet-4-6';
+      return 'claude-haiku-5-5';
     case 'google':
       return 'gemini-2.5-flash';
     case 'mistral':
@@ -32,7 +32,7 @@ function getDefaultVisionModel(serviceType?: string | null): string {
     case 'openai_compatible':
       return 'gpt-4.1-mini';
     case 'anthropic':
-      return 'claude-haiku-4-5';
+      return 'claude-haiku-5-5';
     case 'google':
       return 'gemini-2.5-flash';
     case 'mistral':

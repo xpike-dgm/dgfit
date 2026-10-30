@@ -38,6 +38,7 @@ import { buildReportTools } from './reportTools.js';
 import { buildVisionTools } from './visionTools.js';
 import type { FoodPhotoEstimateSink } from './foodPhotoEstimateSink.js';
 import { buildWizardTools } from './wizardTools.js';
+import { buildDgfitFriendTools } from './dgfitFriendTools.js';
 import { buildWorkoutPlanTools } from './workoutPlanTools.js';
 import { buildRunProgramTools } from './runProgramTools.js';
 
@@ -119,6 +120,7 @@ const CATEGORY_BUILDERS: Record<
     (u, tz) => buildCoachTools(u, tz),
     (u, tz) => buildEngagementTools(u, tz),
     (u) => buildWizardTools(u),
+    (u) => buildDgfitFriendTools(u),
   ],
   vision: [
     (u, _tz, ctx) => buildVisionTools(u, ctx?.foodPhotoEstimateSink, ctx),

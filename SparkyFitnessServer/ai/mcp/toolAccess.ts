@@ -35,6 +35,7 @@ export const MCP_TOOL_READ_ACCESS: Readonly<Record<string, ToolReadAccess>> = {
   sparky_get_exercise_usage: 'read',
   sparky_get_exercise_progress: 'read',
   sparky_get_exercise_stats: 'read',
+  dgfit_friends: 'read',
   sparky_manage_workout_plans: [
     'list_workout_plans',
     'get_workout_plan',

@@ -23,7 +23,7 @@ export const CATEGORY_SUMMARIES: Record<ChatToolCategorySlug, string> = {
   reports:
     'daily/weekly summaries, progress reports, trends, TDEE, the daily dashboard calorie-balance summary, and whether two tracked things go together or changed since a habit started',
   coaching:
-    'coaching plans, weekly calorie target review, nudges, patterns, and check-in wizard',
+    "coaching plans, weekly calorie target review, nudges, patterns, check-in wizard, and friends' shared progress and leaderboards",
   vision: 'analyze food photos and scan nutrition labels',
   profile:
     'profile details, preferences, units, timezone, habits, connected integrations, and synced-data listing',

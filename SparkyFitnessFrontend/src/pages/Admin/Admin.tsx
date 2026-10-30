@@ -3,6 +3,7 @@ import BackupSettings from './BackupSettings';
 import OidcSettings from './OidcSettings';
 import UserManagement from './UserManagement';
 import InviteCodes from './InviteCodes';
+import AiUsage from './AiUsage';
 import GlobalAISettings from './GlobalAISettings';
 import GlobalProviderSettings from './GlobalProviderSettings';
 
@@ -10,6 +11,7 @@ const AdminPage = () => {
   return (
     <div className="flex flex-col space-y-4">
       <InviteCodes />
+      <AiUsage />
       <AuthenticationSettings />
       <OidcSettings />
       <GlobalAISettings />
