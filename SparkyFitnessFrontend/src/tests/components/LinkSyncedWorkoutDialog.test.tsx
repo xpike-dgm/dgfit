@@ -12,6 +12,7 @@ const mockClearLink = jest.fn();
 let mockSuggestions: CalorieLinkSuggestionsResponse | undefined;
 
 jest.mock('@/hooks/Exercises/useExerciseEntries', () => ({
+  useExercisesStats: () => ({}),
   useCalorieLinkSuggestions: () => ({
     data: mockSuggestions,
     isLoading: false,

@@ -91,6 +91,33 @@ export default defineConfig(({ mode }) => {
             ],
           },
           workbox: {
+            // DG FIT push notification handlers (public/push-sw.js).
+            importScripts: ['push-sw.js'],
+            // DG FIT offline: show the last data seen when the gym has no
+            // signal (auth is never cached), and keep exercise images.
+            runtimeCaching: [
+              {
+                urlPattern: ({ url, request }) =>
+                  request.method === 'GET' &&
+                  url.pathname.startsWith('/api/') &&
+                  !url.pathname.startsWith('/api/auth'),
+                handler: 'NetworkFirst',
+                options: {
+                  cacheName: 'dgfit-api',
+                  networkTimeoutSeconds: 4,
+                  expiration: { maxEntries: 400, maxAgeSeconds: 7 * 86400 },
+                },
+              },
+              {
+                urlPattern: ({ url }) =>
+                  url.pathname.startsWith('/uploads/exercises/'),
+                handler: 'CacheFirst',
+                options: {
+                  cacheName: 'dgfit-exercise-images',
+                  expiration: { maxEntries: 600, maxAgeSeconds: 60 * 86400 },
+                },
+              },
+            ],
             maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
             navigateFallback: '/index.html',
             navigateFallbackDenylist: [/^\/api/, /^\/uploads/], // Don't serve index.html for API or Uploads

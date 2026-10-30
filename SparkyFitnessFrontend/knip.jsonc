@@ -13,5 +13,14 @@
     "duplicates": "off",
   },
   "ignoreExportsUsedInFile": true,
-  "ignore": ["src/components/ui/**"],
+  "ignore": [
+    "src/components/ui/**",
+    // DG FIT hides these upstream features; their hooks stay for later merges.
+    "src/hooks/useCycle.ts",
+    "src/hooks/Fasting/useFasting.ts",
+    "src/hooks/Settings/useFamilyAccess.ts",
+    "src/hooks/useGeneralQueries.ts",
+    "src/utils/languageUtils.ts",
+    "src/pages/Diary/CaffeineCard.tsx",
+  ],
 }

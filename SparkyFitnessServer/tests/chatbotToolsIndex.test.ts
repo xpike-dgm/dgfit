@@ -17,6 +17,7 @@ vi.mock('../config/logging', () => ({
 // (sparky_inspect_schema, sparky_get_user_info, sparky_get_db_stats),
 // which are intentionally not ported.
 const EXPECTED_TOOLS = [
+  'dgfit_friends',
   'sparky_food_assistant_state',
   'sparky_analyze_food_image',
   'sparky_analyze_trends',

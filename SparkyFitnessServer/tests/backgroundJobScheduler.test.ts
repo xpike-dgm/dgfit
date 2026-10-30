@@ -12,6 +12,10 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock('node-cron', () => ({ default: { schedule: mocks.schedule } }));
+vi.mock('../services/dgfit/photoRetentionService.js', () => ({
+  purgeOldChatPhotos: vi.fn(),
+}));
+vi.mock('../services/dgfit/pushService.js', () => ({ runReminders: vi.fn() }));
 vi.mock('../config/logging.js', () => ({ log: mocks.log }));
 vi.mock('../auth.js', () => ({ cleanupSessions: mocks.cleanupSessions }));
 vi.mock('../services/passkeyTicketService.js', () => ({
@@ -48,8 +52,19 @@ describe('scheduleBackgroundJobs', () => {
     expect(mocks.openFoodFacts).toHaveBeenCalledExactlyOnceWith();
     expect(mocks.providerSyncs).toHaveBeenCalledExactlyOnceWith();
     expect(mocks.demoReset).toHaveBeenCalledExactlyOnceWith();
-    expect(mocks.schedule).toHaveBeenCalledExactlyOnceWith(
+    // Session cleanup plus the two DG FIT jobs (chat photo retention,
+    // reminders).
+    expect(mocks.schedule).toHaveBeenCalledTimes(3);
+    expect(mocks.schedule).toHaveBeenCalledWith(
       '0 3 * * *',
+      expect.any(Function)
+    );
+    expect(mocks.schedule).toHaveBeenCalledWith(
+      '30 3 * * *',
+      expect.any(Function)
+    );
+    expect(mocks.schedule).toHaveBeenCalledWith(
+      '*/5 * * * *',
       expect.any(Function)
     );
   });

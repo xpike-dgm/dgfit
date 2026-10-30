@@ -275,21 +275,13 @@ export const isMealWidgetKey = (key: string) => key.startsWith(MEAL_KEY_PREFIX);
  * Build the ordered list of widget keys for the current user state:
  * fixed top widgets, then one per visible meal type, then exercise.
  */
-export function buildWidgetKeys(
-  visibleMealTypeIds: string[],
-  // Diary.tsx only renders the health-metrics widget when there is wearable
-  // data to show; reserving its key unconditionally left a hole in the grid
-  // for users with none.
-  hasDisplayableHealthMetrics = true
-): string[] {
+export function buildWidgetKeys(visibleMealTypeIds: string[]): string[] {
   return [
     'energy',
     'nutrition',
     'water',
-    ...(hasDisplayableHealthMetrics ? ['healthMetrics'] : []),
     ...visibleMealTypeIds.map(mealWidgetKey),
     'exercise',
-    'caffeine',
   ];
 }
 
@@ -310,7 +302,6 @@ export function generateDefaultLayouts(mealKeys: string[]): DashboardLayouts {
     { i: 'energy', x: 0, y: 0, w: 3, h: 10, minW: 2, minH: 6 },
     { i: 'nutrition', x: 3, y: 0, w: 6, h: 10, minW: 3, minH: 6 },
     { i: 'water', x: 9, y: 0, w: 3, h: 10, minW: 2, minH: 6 },
-    { i: 'healthMetrics', x: 0, y: 10, w: 12, h: 6, minW: 3, minH: 4 },
   ];
   let lgY = 16;
   for (const key of mealKeys) {
@@ -318,16 +309,12 @@ export function generateDefaultLayouts(mealKeys: string[]): DashboardLayouts {
     lgY += 4;
   }
   lg.push({ i: 'exercise', x: 0, y: lgY, w: 12, h: 4, minW: 3, minH: 3 });
-  // Full width and last: the caffeine card carries a curve, which is
-  // unreadable in a quarter-width tile.
-  lg.push({ i: 'caffeine', x: 0, y: lgY + 4, w: 12, h: 11, minW: 4, minH: 7 });
 
   // md (10 cols): energy + nutrition top row, water below, then meals.
   const md: WidgetLayout[] = [
     { i: 'energy', x: 0, y: 0, w: 4, h: 10, minW: 2, minH: 6 },
     { i: 'nutrition', x: 4, y: 0, w: 6, h: 10, minW: 3, minH: 6 },
     { i: 'water', x: 0, y: 10, w: 10, h: 6, minW: 2, minH: 4 },
-    { i: 'healthMetrics', x: 0, y: 16, w: 10, h: 6, minW: 3, minH: 4 },
   ];
   let mdY = 22;
   for (const key of mealKeys) {
@@ -335,7 +322,6 @@ export function generateDefaultLayouts(mealKeys: string[]): DashboardLayouts {
     mdY += 4;
   }
   md.push({ i: 'exercise', x: 0, y: mdY, w: 10, h: 4, minW: 3, minH: 3 });
-  md.push({ i: 'caffeine', x: 0, y: mdY + 4, w: 10, h: 11, minW: 4, minH: 7 });
 
   // sm / xs: single column, everything stacked.
   const stacked = (cols: number): WidgetLayout[] => {

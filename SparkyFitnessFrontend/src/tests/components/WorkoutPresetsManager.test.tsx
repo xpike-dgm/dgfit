@@ -55,6 +55,7 @@ jest.mock('@/hooks/useAuth', () => ({
 }));
 
 jest.mock('@/hooks/Exercises/useExerciseEntries', () => ({
+  useExercisesStats: () => ({}),
   useLogWorkoutPresetMutation: () => ({ mutateAsync: jest.fn() }),
 }));
 

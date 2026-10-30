@@ -32,6 +32,7 @@ jest.mock('@/contexts/PreferencesContext', () => ({
   }),
 }));
 jest.mock('@/hooks/Exercises/useExerciseEntries', () => ({
+  useExercisesStats: () => ({}),
   useCreatePresetSessionMutation: () => ({
     mutateAsync: jest.fn(),
     isPending: false,

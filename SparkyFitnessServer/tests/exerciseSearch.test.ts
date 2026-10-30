@@ -6,6 +6,12 @@ vi.mock('../db/poolManager', () => ({
   getClient: vi.fn(),
 }));
 
+// DG FIT searches the Turkish name plus the English free-exercise-db id, and
+// ranks exact Turkish/English names first.
+const SEARCH_TEXT = `(name || ' ' || CASE WHEN source = 'free-exercise-db' THEN replace(coalesce(source_id, ''), '_', ' ') ELSE '' END)`;
+const EXACT_FIRST =
+  "ORDER BY (CASE WHEN lower(name) = lower(trim(both '%' from $3::text))";
+
 describe('exercise model search query builder', () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let mockClient: any;
@@ -64,11 +70,10 @@ describe('exercise model search query builder', () => {
       // Exact match pattern should follow at the end before pagination
       expect(params[2]).toBe('%lunge barbell%');
 
-      expect(sql).toContain('name ILIKE $1');
-      expect(sql).toContain('name ILIKE $2');
-      expect(sql).toContain(
-        '(CASE WHEN name ILIKE $3::text THEN 0 ELSE 1 END), name ASC'
-      );
+      expect(sql).toContain(`${SEARCH_TEXT} ILIKE $1`);
+      expect(sql).toContain(`${SEARCH_TEXT} ILIKE $2`);
+      expect(sql).toContain(EXACT_FIRST);
+      expect(sql).toContain('length(name) ASC, name ASC');
     });
 
     it('cleans surrounding punctuation from search terms', async () => {
@@ -111,7 +116,9 @@ describe('exercise model search query builder', () => {
       // It should only have the split term patterns.
       expect(params).toEqual(['%lunge%', '%barbell%']);
       expect(sql).toContain('SELECT COUNT(*)');
-      expect(sql).toContain('name ILIKE $1 AND name ILIKE $2');
+      expect(sql).toContain(
+        `${SEARCH_TEXT} ILIKE $1 AND ${SEARCH_TEXT} ILIKE $2`
+      );
     });
   });
 
@@ -126,11 +133,9 @@ describe('exercise model search query builder', () => {
       expect(params[1]).toBe('%barbell%');
       expect(params[2]).toBe('%lunge barbell%');
       expect(sql).toContain(
-        'WHERE is_quick_exercise = FALSE AND name ILIKE $1 AND name ILIKE $2'
+        `WHERE is_quick_exercise = FALSE AND ${SEARCH_TEXT} ILIKE $1 AND ${SEARCH_TEXT} ILIKE $2`
       );
-      expect(sql).toContain(
-        'ORDER BY (CASE WHEN name ILIKE $3::text THEN 0 ELSE 1 END), name ASC'
-      );
+      expect(sql).toContain(EXACT_FIRST);
       expect(sql).toContain('LIMIT 50');
     });
   });
@@ -158,13 +163,13 @@ describe('exercise model search query builder', () => {
       expect(countSql).toContain('SELECT COUNT(*)::int AS count');
       // Count query should only receive split terms for the where clauses
       expect(countParams).toEqual(['%lunge%', '%barbell%']);
-      expect(countSql).toContain('name ILIKE $1 AND name ILIKE $2');
+      expect(countSql).toContain(
+        `${SEARCH_TEXT} ILIKE $1 AND ${SEARCH_TEXT} ILIKE $2`
+      );
 
       // Check SELECT query
       const [selectSql, selectParams] = mockClient.query.mock.calls[1];
-      expect(selectSql).toContain(
-        'ORDER BY (CASE WHEN name ILIKE $3::text THEN 0 ELSE 1 END), name ASC'
-      );
+      expect(selectSql).toContain(EXACT_FIRST);
       expect(selectSql).toContain('LIMIT $4 OFFSET $5');
       expect(selectParams).toEqual([
         '%lunge%', // $1

@@ -6959,6 +6959,13 @@
       "sending": "Sending...",
       "sendResetLink": "Send Reset Link",
       "backToSignIn": "Back to Sign In"
+    },
+    "dgfit": {
+      "username": "Username",
+      "usernamePlaceholder": "e.g. xpike",
+      "usernameRule": "3-20 characters: lowercase letters, digits, _ and .",
+      "usernameHint": "Friends find you by this name.",
+      "inviteCode": "Invite code"
     }
   },
   "copied": "Copied!",

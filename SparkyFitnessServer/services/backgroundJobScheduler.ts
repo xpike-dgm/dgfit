@@ -8,6 +8,7 @@ import { scheduleDemoMidnightReset } from './demoSeedService.js';
 import { log } from '../config/logging.js';
 import { scheduledJobsDisabled } from '../utils/scheduledJobs.js';
 import { purgeOldChatPhotos } from './dgfit/photoRetentionService.js';
+import { runReminders } from './dgfit/pushService.js';
 
 // Backup scheduling is handled by services/backupScheduler.ts
 // Session cleanup scheduling
@@ -44,6 +45,17 @@ const scheduleChatPhotoRetention = () => {
   });
 };
 
+// DG FIT: workout/food/water reminders, checked every 5 minutes.
+const scheduleReminders = () => {
+  cron.schedule('*/5 * * * *', async () => {
+    try {
+      await runReminders();
+    } catch (error) {
+      log('error', '[CRON] Reminder run failed:', error);
+    }
+  });
+};
+
 /** Registers every scheduled background job after the database is initialized. */
 export async function scheduleBackgroundJobs(): Promise<void> {
   if (scheduledJobsDisabled()) {
@@ -59,4 +71,5 @@ export async function scheduleBackgroundJobs(): Promise<void> {
   startProviderSyncSchedulers();
   scheduleDemoMidnightReset();
   scheduleChatPhotoRetention();
+  scheduleReminders();
 }

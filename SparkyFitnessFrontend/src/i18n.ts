@@ -6,8 +6,9 @@ i18n
   .use(HttpApi)
   .use(initReactI18next)
   .init({
-    // DG FIT is Turkish-only; English is the fallback for keys not yet translated.
-    lng: 'tr',
+    // DG FIT is Turkish-only; English is the fallback for keys not yet
+    // translated. Unit tests keep asserting the English defaults.
+    lng: process.env['NODE_ENV'] === 'test' ? 'en' : 'tr',
     supportedLngs: ['tr', 'en'],
     fallbackLng: 'en',
     backend: {

@@ -21,6 +21,7 @@ jest.mock('@/contexts/PreferencesContext', () => ({
 }));
 
 jest.mock('@/hooks/Exercises/useExerciseEntries', () => ({
+  useExercisesStats: () => ({}),
   useExerciseHistory: () => ({ data: mockHistory, isLoading: false }),
 }));
 

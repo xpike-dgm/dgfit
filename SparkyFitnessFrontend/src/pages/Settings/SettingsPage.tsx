@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { DgfitSocialSettings } from './DgfitSocialSettings';
+import { DgfitNotificationSettings } from './DgfitNotificationSettings';
 import { useAuth } from '@/hooks/useAuth';
 import AIServiceSettings from './AIServiceSettings';
 import CustomCategoryManager from './CustomCategoryManager';
@@ -56,6 +57,7 @@ const SECTION_TO_TAB_MAP: Record<string, string> = {
   'user-preferences': 'profile-account',
   'account-security': 'profile-account',
   'dgfit-social': 'profile-account',
+  'dgfit-notifications': 'profile-account',
   'data-management': 'profile-account',
   'allergen-preferences': 'nutrition-diet',
   'custom-nutrients': 'nutrition-diet',
@@ -192,6 +194,12 @@ const Settings = () => {
               className="border rounded-lg mb-4"
             >
               <DgfitSocialSettings />
+            </AccordionItem>
+            <AccordionItem
+              value="dgfit-notifications"
+              className="border rounded-lg mb-4"
+            >
+              <DgfitNotificationSettings />
             </AccordionItem>
             <AccordionItem
               value="data-management"

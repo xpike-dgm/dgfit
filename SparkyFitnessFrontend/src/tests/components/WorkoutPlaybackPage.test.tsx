@@ -43,6 +43,7 @@ jest.mock('@/contexts/PreferencesContext', () => ({
 }));
 
 jest.mock('@/hooks/Exercises/useExerciseEntries', () => ({
+  useExercisesStats: () => ({}),
   useCreatePresetSessionMutation: () => ({
     mutateAsync: (...args: unknown[]) => mockCreatePresetSession(...args),
     isPending: false,

@@ -1,7 +1,4 @@
-import {
-  getSupportedLanguages,
-  getLanguageDisplayName,
-} from '@/utils/languageUtils'; // Import language utilities
+// Import language utilities
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { TimeInput } from '@/components/ui/TimeInput';
@@ -54,7 +51,6 @@ export const PreferenceSettings = () => {
     setAutoScaleOpenFoodFactsImports, // Add auto-scale preference
     autoScaleOnlineImports,
     setAutoScaleOnlineImports,
-    setLanguage,
     language,
     loggingLevel,
     firstDayOfWeek,
@@ -589,23 +585,6 @@ export const PreferenceSettings = () => {
                     defaultValue: '{{count}} items',
                   })}
                 </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label htmlFor="language">
-              {t('settings.preferences.language', 'Language')}
-            </Label>
-            <Select value={language} onValueChange={setLanguage}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {getSupportedLanguages().map((langCode) => (
-                  <SelectItem key={langCode} value={langCode}>
-                    {getLanguageDisplayName(langCode)}
-                  </SelectItem>
-                ))}
               </SelectContent>
             </Select>
           </div>

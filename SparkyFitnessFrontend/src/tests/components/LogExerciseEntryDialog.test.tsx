@@ -38,6 +38,7 @@ jest.mock('@/utils/logging', () => ({
 }));
 
 jest.mock('@/hooks/Exercises/useExerciseEntries', () => ({
+  useExercisesStats: () => ({}),
   useCreateExerciseEntryMutation: () => ({
     mutateAsync: mockCreateExerciseEntry,
     isPending: false,

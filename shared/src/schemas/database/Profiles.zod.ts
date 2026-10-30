@@ -6,6 +6,7 @@ const userIdSchema = z.any();
 export const profilesSchema = z.object({
   id: userIdSchema,
   full_name: z.string().nullable(),
+  username: z.string().nullable(),
   avatar_url: z.string().nullable(),
   created_at: z.date().nullable(),
   updated_at: z.date().nullable(),
@@ -27,6 +28,7 @@ export const profilesSchema = z.object({
 export const profilesInitializerSchema = z.object({
   id: userIdSchema,
   full_name: z.string().optional().nullable(),
+  username: z.string().optional().nullable(),
   avatar_url: z.string().optional().nullable(),
   created_at: z.date().optional().nullable(),
   updated_at: z.date().optional().nullable(),
@@ -48,6 +50,7 @@ export const profilesInitializerSchema = z.object({
 export const profilesMutatorSchema = z.object({
   id: userIdSchema.optional(),
   full_name: z.string().optional().nullable(),
+  username: z.string().optional().nullable(),
   avatar_url: z.string().optional().nullable(),
   created_at: z.date().optional().nullable(),
   updated_at: z.date().optional().nullable(),

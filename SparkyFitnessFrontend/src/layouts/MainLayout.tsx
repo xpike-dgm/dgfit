@@ -32,6 +32,8 @@ import type { LucideIcon } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 import SparkyChat from '../pages/Chat/SparkyChat';
+import InstallAppBanner from '@/components/InstallAppBanner';
+import OfflineWorkoutSync from '@/components/OfflineWorkoutSync';
 import { useChatbotVisibility } from '@/contexts/ChatbotVisibilityContext';
 import AddComp from '@/layouts/AddComp';
 import ThemeToggle from '@/components/ThemeToggle';
@@ -568,6 +570,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         </nav>
 
         <div className="pb-16 sm:pb-0">
+          <InstallAppBanner />
+          <OfflineWorkoutSync />
           {/* Don't mount a disallowed page while the redirect effect runs, or it
               fires requests the active profile isn't permitted to make. */}
           {isCurrentPathAllowed ? <Outlet /> : null}

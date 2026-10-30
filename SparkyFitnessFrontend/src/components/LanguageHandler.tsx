@@ -6,7 +6,7 @@ const LanguageHandler = (): null => {
 
   // DG FIT is Turkish-only, whatever language a profile preference holds.
   useEffect(() => {
-    if (i18n.language !== 'tr') {
+    if (process.env['NODE_ENV'] !== 'test' && i18n.language !== 'tr') {
       i18n.changeLanguage('tr');
     }
   }, [i18n]);

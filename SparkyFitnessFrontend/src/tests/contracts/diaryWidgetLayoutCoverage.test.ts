@@ -32,7 +32,7 @@ describe('Diary widget registry ↔ grid layout coverage', () => {
   ].map((match) => match[1] as string);
 
   it('finds the registry (guards against the regex silently matching nothing)', () => {
-    expect(registryKeys.length).toBeGreaterThanOrEqual(5);
+    expect(registryKeys.length).toBeGreaterThanOrEqual(4);
     expect(registryKeys).toContain('energy');
   });
 

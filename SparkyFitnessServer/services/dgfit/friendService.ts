@@ -1,4 +1,5 @@
 import { getSystemClient } from '../../db/poolManager.js';
+import { notifyFriendEvent } from './pushService.js';
 
 // DG FIT friends. Everything here runs on the system client, so every read of
 // another person's data goes through assertFriends() and their privacy
@@ -232,6 +233,16 @@ export async function sendRequest(userId: string, username: string) {
       'INSERT INTO dgfit_friendships (requester_id, addressee_id) VALUES ($1, $2)',
       [userId, targetId]
     );
+    const me = await client.query(
+      'SELECT username FROM profiles WHERE id = $1',
+      [userId]
+    );
+    void notifyFriendEvent(targetId, {
+      title: 'Yeni arkadaşlık isteği 👋',
+      body: `@${me.rows[0]?.username ?? 'biri'} seni arkadaş olarak eklemek istiyor.`,
+      url: '/arkadaslar',
+      tag: 'friend-request',
+    });
     return { status: 'pending' as const };
   });
 }
@@ -240,10 +251,21 @@ export async function acceptRequest(userId: string, friendshipId: number) {
   return withClient(async (client) => {
     const result = await client.query(
       `UPDATE dgfit_friendships SET status = 'accepted', responded_at = now()
-        WHERE id = $1 AND addressee_id = $2 AND status = 'pending'`,
+        WHERE id = $1 AND addressee_id = $2 AND status = 'pending'
+        RETURNING requester_id`,
       [friendshipId, userId]
     );
     if (!result.rowCount) throw new FriendError('İstek bulunamadı.', 404);
+    const me = await client.query(
+      'SELECT username FROM profiles WHERE id = $1',
+      [userId]
+    );
+    void notifyFriendEvent(result.rows[0].requester_id, {
+      title: 'Arkadaşlık isteğin kabul edildi 🎉',
+      body: `@${me.rows[0]?.username ?? 'arkadaşın'} ile artık arkadaşsınız.`,
+      url: '/arkadaslar',
+      tag: 'friend-accepted',
+    });
   });
 }
 

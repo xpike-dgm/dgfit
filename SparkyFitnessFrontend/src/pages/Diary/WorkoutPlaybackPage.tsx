@@ -79,6 +79,8 @@ import { fetchExerciseProgressionStats } from '@/hooks/Exercises/useExerciseEntr
 import { playIntervalCue } from '@/utils/workoutSounds';
 import { useGuidedWorkoutPreferences } from '@/utils/guidedWorkoutPreferences';
 import { weightFromKg } from '@/utils/workoutPlayback';
+import { isOfflineError, queueWorkout } from '@/utils/offlineWorkoutQueue';
+import { toast } from '@/hooks/use-toast';
 
 function weightToKgLocal(weight: number, unit: string): number {
   if (!weight || weight <= 0) return 0;
@@ -1030,7 +1032,31 @@ const WorkoutPlaybackPage = () => {
       });
       setDraft(null);
       setSaveError(null);
-    } catch {
+    } catch (error) {
+      if (isOfflineError(error)) {
+        // DG FIT: no connection in the gym. Keep the workout on the phone and
+        // let OfflineWorkoutSync save it once the phone is back online.
+        queueWorkout(payload);
+        const finalStats = getWorkoutPlaybackStats(draft);
+        clearWorkoutPlaybackDraftFromStorage(draft.entry_date);
+        toast({
+          title: 'İnternet yok, antrenman telefonda saklandı',
+          description: 'Bağlantı gelince otomatik kaydedilecek.',
+        });
+        setFinishSummary({
+          name: draft.name,
+          durationSeconds: elapsedSeconds,
+          caloriesKcal: 0,
+          completedSets: finalStats.completedSets,
+          totalSets: finalStats.totalSets,
+          volume: totalVolume,
+          sessionId: undefined,
+          exercises: [],
+        });
+        setDraft(null);
+        setSaveError(null);
+        return;
+      }
       setSaveError(
         t(
           'exercise.workoutPlaybackDialog.finishError',

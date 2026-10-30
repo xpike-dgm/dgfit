@@ -6779,6 +6779,13 @@
       "sending": "Gönderiliyor...",
       "sendResetLink": "Sıfırlama Bağlantısı Gönder",
       "backToSignIn": "Girişe Dön"
+    },
+    "dgfit": {
+      "username": "Kullanıcı adı",
+      "usernamePlaceholder": "ör. xpike",
+      "usernameRule": "3-20 karakter: küçük harf, rakam, _ ve .",
+      "usernameHint": "Arkadaşların seni bu adla bulur.",
+      "inviteCode": "Davet kodu"
     }
   },
   "copied": "Kopyalandı!",
