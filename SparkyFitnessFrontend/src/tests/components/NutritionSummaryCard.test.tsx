@@ -108,7 +108,7 @@ describe('NutritionSummaryCard calorie budget', () => {
         convertEnergy={(value) => value}
       />
     );
-    expect(screen.getByText('of 2.481kcal')).toBeInTheDocument();
+    expect(screen.getByText('of 2.481 kcal')).toBeInTheDocument();
     const bar = container.querySelector<HTMLElement>(
       '.h-1\\.5.rounded-full[style]'
     );

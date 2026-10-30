@@ -15,6 +15,12 @@ import { useAuth } from '@/hooks/useAuth';
 import { useCallback, useMemo, useState } from 'react';
 import { ExpandedGoals } from '@/types/goals';
 import { WaterAndExerciseFields } from './WaterAndExerciseFields';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
+import { ChevronDown } from 'lucide-react';
 import { useCustomNutrients } from '@/hooks/Foods/useCustomNutrients';
 import { useMealTypes } from '@/hooks/Diary/useMealTypes';
 import { buildGoalsPayload, getMealPercentage } from '@/utils/goals';
@@ -342,71 +348,90 @@ export const DailyGoals = ({
           )}
 
           <Separator className="my-5" />
-
-          <AutoCalculateToolbar
-            eligibleCount={eligibleAutoCalcIds.length}
-            selectedCount={selectedForAutoCalc.size}
-            onSelectAll={selectAllForAutoCalc}
-            onSelectNone={selectNoneForAutoCalc}
-            onApplySelected={handleApplySelected}
-            disabled={!autoCalculateUserData}
-          />
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Loop directly over the ordered array from settings, excluding calories and macros */}
-            {visibleNutrients
-              .filter(
-                (key) => !['calories', 'protein', 'carbs', 'fat'].includes(key)
-              )
-              .map((key) => {
-                // Validate standard or custom nutrient
-                const isStandard =
-                  NUTRIENT_CONFIG.some((n) => n.id === key) &&
-                  !(NON_GOAL_NUTRIENT_KEYS as readonly string[]).includes(key);
-                const isCustom = customNutrients?.some((cn) => cn.name === key);
-
-                if (!isStandard && !isCustom) return null;
-
-                // Render nutrient input
-                const goalType = isCustom
-                  ? (goalTypePreferences[key]?.goalType ?? 'minimum')
-                  : undefined;
-                const customAliases = isCustom
-                  ? customNutrients?.find((cn) => cn.name === key)?.aliases
-                  : undefined;
-                return (
-                  <div key={key}>
-                    <NutrientInput
-                      nutrientId={key}
-                      state={goals}
-                      setState={setGoals}
-                      visibleNutrients={visibleNutrients}
-                      customNutrients={customNutrients}
-                    />
-                    <NutrientAutoCalculate
-                      nutrientId={key}
-                      customNutrientAliases={customAliases}
-                      userData={autoCalculateUserData}
-                      goalType={goalType}
-                      algorithms={algorithms}
-                      selected={selectedForAutoCalc.has(key)}
-                      onToggleSelected={(checked) =>
-                        toggleSelected(key, checked)
-                      }
-                      onApply={(value) =>
-                        setGoals((prev) => ({ ...prev, [key]: value }))
-                      }
-                    />
-                  </div>
-                );
-              })}
-          </div>
-
-          <Separator className="my-5" />
           <WaterAndExerciseFields
             state={goals}
             setState={(val) => setGoals(val)}
           />
+
+          <Separator className="my-5" />
+          <Collapsible>
+            <CollapsibleTrigger className="group flex w-full items-center justify-between py-1 text-left">
+              <span>
+                <span className="block text-base font-semibold text-foreground">
+                  Diğer besinler
+                </span>
+                <span className="block text-sm text-muted-foreground">
+                  Lif, şeker, vitamin ve mineral hedefleri
+                </span>
+              </span>
+              <ChevronDown className="h-5 w-5 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="pt-4">
+              <AutoCalculateToolbar
+                eligibleCount={eligibleAutoCalcIds.length}
+                selectedCount={selectedForAutoCalc.size}
+                onSelectAll={selectAllForAutoCalc}
+                onSelectNone={selectNoneForAutoCalc}
+                onApplySelected={handleApplySelected}
+                disabled={!autoCalculateUserData}
+              />
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* Loop directly over the ordered array from settings, excluding calories and macros */}
+                {visibleNutrients
+                  .filter(
+                    (key) =>
+                      !['calories', 'protein', 'carbs', 'fat'].includes(key)
+                  )
+                  .map((key) => {
+                    // Validate standard or custom nutrient
+                    const isStandard =
+                      NUTRIENT_CONFIG.some((n) => n.id === key) &&
+                      !(NON_GOAL_NUTRIENT_KEYS as readonly string[]).includes(
+                        key
+                      );
+                    const isCustom = customNutrients?.some(
+                      (cn) => cn.name === key
+                    );
+
+                    if (!isStandard && !isCustom) return null;
+
+                    // Render nutrient input
+                    const goalType = isCustom
+                      ? (goalTypePreferences[key]?.goalType ?? 'minimum')
+                      : undefined;
+                    const customAliases = isCustom
+                      ? customNutrients?.find((cn) => cn.name === key)?.aliases
+                      : undefined;
+                    return (
+                      <div key={key}>
+                        <NutrientInput
+                          nutrientId={key}
+                          state={goals}
+                          setState={setGoals}
+                          visibleNutrients={visibleNutrients}
+                          customNutrients={customNutrients}
+                        />
+                        <NutrientAutoCalculate
+                          nutrientId={key}
+                          customNutrientAliases={customAliases}
+                          userData={autoCalculateUserData}
+                          goalType={goalType}
+                          algorithms={algorithms}
+                          selected={selectedForAutoCalc.has(key)}
+                          onToggleSelected={(checked) =>
+                            toggleSelected(key, checked)
+                          }
+                          onApply={(value) =>
+                            setGoals((prev) => ({ ...prev, [key]: value }))
+                          }
+                        />
+                      </div>
+                    );
+                  })}
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
 
           {visibleMeals.length > 1 && (
             <>

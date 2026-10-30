@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { DailyGoals } from '@/pages/Goals/DailyGoals';
 import { DEFAULT_GOALS } from '@/constants/goals';
@@ -57,6 +57,9 @@ describe('DailyGoals - Water Goal Exclusivity (Gate 3)', () => {
         today="2026-09-05"
       />
     );
+
+    // Micronutrient goals sit in the collapsed "Diğer besinler" section.
+    fireEvent.click(screen.getByText('Diğer besinler'));
 
     // Standard nutrients in visible list should render
     expect(screen.getByText(/Sodium/i)).toBeInTheDocument();

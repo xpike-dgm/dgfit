@@ -14,7 +14,18 @@ import EditGoalsForToday from '@/pages/Goals/EditGoalsForToday';
 import { useMemo, useState } from 'react';
 import { DEFAULT_GOALS } from '@/constants/goals';
 import { Button } from '@/components/ui/button';
-import { ClipboardCopy, History, CheckCircle2 } from 'lucide-react';
+import {
+  ClipboardCopy,
+  History,
+  CheckCircle2,
+  MoreHorizontal,
+} from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import {
   useCopyAllFoodEntriesMutation,
   useCopyAllFoodEntriesFromYesterdayMutation,
@@ -114,20 +125,30 @@ const NutritionSummaryCard = ({
           <CardTitle className="text-lg">
             {t('diary.nutritionSummary', 'Nutrition Summary')}
           </CardTitle>
-          <div className="flex flex-wrap items-center gap-2">
-            <Button
-              onClick={() => setIsCopyDialogOpen(true)}
-              title={t('diary.copyAllToDate', 'Copy entire day to date')}
-            >
-              <ClipboardCopy className="h-4 w-4" />
-            </Button>
-            <Button
-              onClick={handleCopyAllFromYesterday}
-              title={t('diary.copyAllFromYesterday', 'Copy all from yesterday')}
-            >
-              <History className="h-4 w-4" />
-            </Button>
+          <div className="flex items-center gap-1">
             <EditGoalsForToday selectedDate={selectedDate} />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Diğer işlemler"
+                  className="text-muted-foreground"
+                >
+                  <MoreHorizontal className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuItem onSelect={handleCopyAllFromYesterday}>
+                  <History className="h-4 w-4 text-primary" />
+                  {t('diary.copyAllFromYesterday', 'Copy all from yesterday')}
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => setIsCopyDialogOpen(true)}>
+                  <ClipboardCopy className="h-4 w-4 text-primary" />
+                  {t('diary.copyAllToDate', 'Copy entire day to date')}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </CardHeader>
@@ -183,7 +204,7 @@ const NutritionSummaryCard = ({
 
             const unit =
               nutrient === 'calories'
-                ? getEnergyUnitString(energyUnit)
+                ? ` ${getEnergyUnitString(energyUnit)}`
                 : metadata.unit;
 
             const label =
