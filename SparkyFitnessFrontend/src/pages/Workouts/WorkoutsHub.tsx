@@ -171,7 +171,7 @@ const WorkoutsHub = () => {
                 {weeklyPlans.map((plan) => (
                   <SelectItem key={plan.id} value={String(plan.id)}>
                     {plan.plan_name}
-                    {plan.is_active ? ' · aktif' : ''}
+                    {plan.is_active ? ' · Aktif' : ''}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -275,7 +275,7 @@ const WorkoutsHub = () => {
                         </div>
                         <Button
                           variant="ghost"
-                          className="mt-2 w-full"
+                          className="mt-2 w-full text-primary"
                           onClick={() =>
                             startPlanSession(
                               activePlan,

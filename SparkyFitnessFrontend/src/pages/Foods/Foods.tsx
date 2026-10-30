@@ -363,9 +363,9 @@ const FoodDatabaseManager = () => {
         return {
           id: nutrient,
           header: () => (
-            <div className="flex flex-col text-center">
+            <div className="inline-flex gap-1 md:flex md:flex-col md:gap-0 md:text-center">
               <span>{t(meta.label, meta.defaultLabel)}</span>
-              <span className="text-[10px] font-normal text-muted-foreground">
+              <span className="font-normal text-muted-foreground md:text-[10px]">
                 ({meta.unit})
               </span>
             </div>
@@ -392,7 +392,11 @@ const FoodDatabaseManager = () => {
             </div>
           ),
           meta: {
-            hideOnMobile: false,
+            // Phone rows keep calories and the three macros; the rest is
+            // in the food's detail view.
+            hideOnMobile: !['calories', 'protein', 'carbs', 'fat'].includes(
+              nutrient
+            ),
           },
           // Sorting is disabled for dietary_fiber and custom nutrients as requested
           enableSorting: !isCustom && nutrient !== 'dietary_fiber',

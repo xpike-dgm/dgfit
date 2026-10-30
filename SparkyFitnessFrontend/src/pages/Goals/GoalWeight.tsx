@@ -89,7 +89,7 @@ export const GoalWeight = () => {
             'Your target weight. The weight trend chart uses it to project when you will reach it.'
           )}
         </p>
-        <div className="space-y-1.5 max-w-xs">
+        <div className="space-y-1.5">
           <Label htmlFor="goal-weight" className="text-xs">
             {t('goals.goalsSettings.goalWeightInputLabel', {
               unit: inputUnit,
@@ -120,6 +120,7 @@ export const GoalWeight = () => {
         </div>
         <div className="flex gap-2">
           <Button
+            className="flex-1"
             onClick={handleSave}
             disabled={saving || draft === null || !isValid}
           >

@@ -4149,7 +4149,7 @@
     "muscleMass": "Kas Kütlesi",
     "recentFasts": "Son Oruçlar",
     "recentFastsDescription": "En son oruç kayıtlarınız ve durumunuz.",
-    "recentMeasurementsDescription": "Ölçümler, tamamlanan oruçlar ve senkronize sağlık verileri dahil en son kayıtlarınız.",
+    "recentMeasurementsDescription": "Son kaydettiğin kilo ve vücut ölçüleri.",
     "stressLevel": "Stres Düzeyi",
     "tabs": {
       "fasting": "Oruç ve Ruh Hali",
@@ -4159,7 +4159,7 @@
       "sleep": "Uyku",
       "symptoms": "Belirtiler"
     },
-    "noRecentActivity": "Yakın zamanda aktivite bulunamadı.",
+    "noRecentActivity": "Henüz ölçüm yok. İlk kilonu yukarıdan kaydet.",
     "newCheckin": "Yeni ölçüm",
     "editCheckin": "Ölçümü düzenle",
     "addCheckin": "Ölçüm ekle",
