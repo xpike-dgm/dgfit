@@ -72,7 +72,7 @@ const ExerciseVarietyScore = ({ varietyData }: ExerciseVarietyScoreProps) => {
               />
               <Bar
                 dataKey="count"
-                fill="#ff7300"
+                fill="hsl(var(--primary))"
                 name={t('reports.uniqueExercises', 'Unique Exercises')}
                 isAnimationActive={false}
                 radius={[0, 4, 4, 0]}

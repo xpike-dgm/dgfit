@@ -44,11 +44,11 @@ describe('WorkoutHeatmap', () => {
 
     // A workout outside the filter (11 months ago) is still shown.
     const october = screen.getByTestId('heatmap-day-2025-10-03');
-    expect(october).toHaveClass('bg-green-500');
+    expect(october).toHaveClass('bg-primary/50');
     expect(october).not.toHaveAttribute('data-in-range');
 
     const inRange = screen.getByTestId('heatmap-day-2026-09-10');
-    expect(inRange).toHaveClass('bg-green-700');
+    expect(inRange).toHaveClass('bg-primary');
     expect(inRange).toHaveAttribute('data-in-range', 'true');
 
     expect(screen.getByTestId('heatmap-day-2026-09-09')).not.toHaveAttribute(

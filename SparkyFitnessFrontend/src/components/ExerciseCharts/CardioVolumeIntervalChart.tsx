@@ -31,10 +31,13 @@ export const CardioVolumeIntervalChart = ({
   if (
     !summaryData ||
     !summaryData.intervalsBreakdown ||
-    summaryData.intervalsBreakdown.length === 0
+    summaryData.intervalsBreakdown.length === 0 ||
+    summaryData.intervalsBreakdown.every(
+      (pt) => !pt.distanceFormatted && !pt.durationMinutes && !pt.caloriesBurned
+    )
   ) {
     return (
-      <Card className="shadow-sm border">
+      <Card>
         <CardHeader>
           <CardTitle className="text-lg font-semibold flex items-center justify-between">
             <span>
@@ -45,7 +48,7 @@ export const CardioVolumeIntervalChart = ({
             </span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="h-64 flex items-center justify-center text-muted-foreground text-sm">
+        <CardContent className="py-6 text-center text-muted-foreground text-sm">
           {t(
             'exerciseAnalytics.volume.noData',
             'No exercise distance or duration logged for this date range.'
@@ -93,7 +96,7 @@ export const CardioVolumeIntervalChart = ({
         : '#f59e0b';
 
   return (
-    <Card className="shadow-sm border">
+    <Card>
       <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-3 gap-2">
         <div>
           <CardTitle className="text-lg font-semibold">

@@ -7,9 +7,9 @@ import { usePreferences } from '@/contexts/PreferencesContext';
 import { dayString, heatmapMonthsEndingAt } from '@/utils/workoutHeatmap';
 
 function intensityClass(count: number): string {
-  if (count >= 3) return 'bg-green-700 text-white';
-  if (count === 2) return 'bg-green-600 text-white';
-  return 'bg-green-500 text-white';
+  if (count >= 3) return 'bg-primary text-primary-foreground';
+  if (count === 2) return 'bg-primary/75 text-primary-foreground';
+  return 'bg-primary/50 text-primary-foreground';
 }
 
 interface WorkoutHeatmapProps {
@@ -72,17 +72,16 @@ function MonthCalendar({
           </div>
         ))}
         {Array.from({ length: leadingEmpty }, (_, i) => (
-          <div
-            key={`empty-${i}`}
-            className={`${cellClassName} rounded-md bg-gray-100 dark:bg-gray-800`}
-          />
+          <div key={`empty-${i}`} className={`${cellClassName} rounded-md`} />
         ))}
         {Array.from({ length: daysInMonth }, (_, i) => {
           const day = dayString(year, month, i + 1);
           const count = countsByDay.get(day) ?? 0;
           const highlighted = inRange(day);
           const colour =
-            count > 0 ? intensityClass(count) : 'bg-gray-200 dark:bg-gray-700';
+            count > 0
+              ? intensityClass(count)
+              : 'bg-progress-track/60 text-caption';
           const status =
             count > 0
               ? t('exerciseReportsDashboard.workoutCount', {

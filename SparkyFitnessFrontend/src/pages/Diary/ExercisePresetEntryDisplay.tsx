@@ -255,7 +255,7 @@ const ExercisePresetEntryDisplay: React.FC<ExercisePresetEntryDisplayProps> = ({
                   })()}
                 </div>
                 {presetEntry.exercise_snapshot?.category && (
-                  <p className="text-[10px] font-medium uppercase tracking-widest text-gray-400 dark:text-gray-500 mt-0.5">
+                  <p className="mt-0.5 text-xs text-muted-foreground">
                     {categoryLabel(presetEntry.exercise_snapshot.category)}
                   </p>
                 )}
@@ -438,9 +438,7 @@ const StatCell: React.FC<{
         {value}
       </span>
     </span>
-    <span className="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wide font-medium">
-      {label}
-    </span>
+    <span className="text-xs text-muted-foreground">{label}</span>
   </div>
 );
 
