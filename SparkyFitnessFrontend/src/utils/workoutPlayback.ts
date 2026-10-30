@@ -23,7 +23,7 @@ import { generateClientId } from '@/utils/generateClientId';
 
 export const DEFAULT_REST_SECONDS = 90;
 export const WORKOUT_PLAYBACK_SET_GRID_CLASSES =
-  'grid w-full min-w-[48rem] grid-cols-4 gap-2 sm:grid-cols-[7rem_10rem_5rem_6rem_6rem_8rem] sm:gap-x-6 sm:gap-y-2';
+  'grid w-full grid-cols-6 gap-2 sm:min-w-[48rem] sm:grid-cols-[7rem_10rem_5rem_6rem_6rem_8rem] sm:gap-x-6 sm:gap-y-2';
 
 export type WorkoutPlaybackRestState = 'idle' | 'running' | 'paused';
 
@@ -1360,4 +1360,18 @@ export function buildPresetSessionCreateRequestFromDraft(
     workoutPlanAssignmentId: primaryPlanAssignmentId,
     activity_details: activityDetails.length > 0 ? activityDetails : undefined,
   };
+}
+
+/** Kilograms in the person's display unit (lbs rounded to 0.1). */
+export function weightFromKg(weightKg: number, unit: string): number {
+  if (!weightKg || weightKg <= 0) return 0;
+  return unit === 'lbs' || unit === 'st_lbs'
+    ? Math.round(weightKg * 2.20462262 * 10) / 10
+    : weightKg;
+}
+
+/** Epley estimated one-rep max. */
+export function estimateOneRepMax(weight: number, reps: number): number {
+  if (!weight || weight <= 0 || !reps || reps <= 0) return 0;
+  return reps === 1 ? weight : weight * (1 + reps / 30);
 }

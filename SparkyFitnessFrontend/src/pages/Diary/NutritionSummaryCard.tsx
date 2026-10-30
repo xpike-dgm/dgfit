@@ -262,7 +262,7 @@ const NutritionSummaryCard = ({
                 >
                   {label}
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-1.5 mt-1">
+                <div className="w-full bg-gray-200 dark:bg-muted rounded-full h-1.5 mt-1">
                   <div
                     className="h-1.5 rounded-full"
                     style={{

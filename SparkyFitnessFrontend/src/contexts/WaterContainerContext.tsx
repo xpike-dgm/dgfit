@@ -71,7 +71,7 @@ export const WaterContainerProvider: React.FC<{ children: ReactNode }> = ({
       return {
         id: -1,
         user_id: '',
-        name: 'Default Container',
+        name: 'Bardak',
         volume: 2000,
         unit: water_display_unit,
         is_primary: true,

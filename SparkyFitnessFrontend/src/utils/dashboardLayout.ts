@@ -346,13 +346,12 @@ export function generateDefaultLayouts(mealKeys: string[]): DashboardLayouts {
       out.push({ i, x: 0, y, w: cols, h, minW, minH });
       y += h;
     };
+    // DG FIT phone order: today's energy, today's workout, then food.
     push('energy', 10, 6);
-    push('nutrition', 10, 6);
-    push('water', 8, 5);
-    push('healthMetrics', 6, 4);
-    for (const key of mealKeys) push(key, 4, 3);
     push('exercise', 4, 3);
-    push('caffeine', 11, 7);
+    push('nutrition', 10, 6);
+    for (const key of mealKeys) push(key, 4, 3);
+    push('water', 8, 5);
     return out;
   };
 

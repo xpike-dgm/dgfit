@@ -289,7 +289,7 @@ const WaterIntake = ({ selectedDate }: WaterIntakeProps) => {
             <div className="w-7 h-5 bg-gray-100 dark:bg-slate-200 border-2 border-blue-400 rounded-sm mb-0.5"></div>
 
             {/* Main Bottle Body */}
-            <div className="relative w-16 h-32 border-3 dark:bg-slate-300 border-blue-400 rounded-xl bg-gray-50 overflow-hidden">
+            <div className="relative w-16 h-32 border-3 dark:bg-muted border-blue-400 rounded-xl bg-gray-50 overflow-hidden">
               {/* Water Fill */}
               <div
                 className="absolute bottom-0 w-full bg-gradient-to-t from-blue-500 via-blue-400 to-blue-300 transition-all duration-700 ease-out rounded-b-xl"

@@ -80,6 +80,8 @@ interface WorkoutPlaybackSetRowProps {
   weightUnit: WeightUnit;
   /** Show the plate calculator action (barbell exercises). */
   canCalculatePlates?: boolean;
+  /** What was done in this set last time, e.g. "60 kg × 10". */
+  previousLabel?: string | null;
   onOpenPlateCalculator?: (pointer: WorkoutSetPointer) => void;
 }
 
@@ -110,6 +112,7 @@ const WorkoutPlaybackSetRow = ({
   weightUnit,
   canCalculatePlates = false,
   onOpenPlateCalculator,
+  previousLabel = null,
 }: WorkoutPlaybackSetRowProps) => {
   const { t } = useTranslation();
   const pointer: WorkoutSetPointer = useMemo(
@@ -165,7 +168,7 @@ const WorkoutPlaybackSetRow = ({
         }`}
       >
         <div className={WORKOUT_PLAYBACK_SET_GRID_CLASSES}>
-          <div className="col-span-2 flex min-w-0 items-center justify-between gap-2 sm:col-start-1 sm:col-span-1 sm:justify-start">
+          <div className="col-span-4 flex min-w-0 items-center justify-between gap-2 sm:col-start-1 sm:col-span-1 sm:justify-start">
             <div className="flex min-w-0 items-center gap-2">
               <Checkbox
                 aria-label={t(
@@ -206,10 +209,22 @@ const WorkoutPlaybackSetRow = ({
                 )}
               </Button>
             </div>
+            {previousLabel && (
+              <span
+                className="truncate text-[11px] text-muted-foreground sm:hidden"
+                title="Önceki antrenman"
+              >
+                Önceki: {previousLabel}
+              </span>
+            )}
           </div>
 
           <Select
-            value={setType ?? 'Working Set'}
+            value={
+              excerciseWorkoutSetTypes.find(
+                (type) => type.toLowerCase() === (setType ?? '').toLowerCase()
+              ) ?? 'Working Set'
+            }
             onValueChange={(value) =>
               onSetFieldChange(pointer, 'set_type', value)
             }
@@ -235,7 +250,7 @@ const WorkoutPlaybackSetRow = ({
           </Select>
 
           {isTimedExercise ? (
-            <div className="col-span-2 flex items-center gap-1.5 sm:col-start-3 sm:col-span-2">
+            <div className="col-span-4 flex items-center gap-1.5 sm:col-start-3 sm:col-span-2">
               <Input
                 id={`set-duration-${exerciseIndex}-${setIndex}`}
                 type="number"
@@ -292,32 +307,34 @@ const WorkoutPlaybackSetRow = ({
             </div>
           ) : (
             <>
-              <Input
-                id={`set-reps-${exerciseIndex}-${setIndex}`}
-                type="number"
-                inputMode="numeric"
-                min={0}
-                step={1}
-                aria-label={t(
-                  'diary.workoutPlaybackSetRow.repsSet',
-                  'Reps set {{setNumber}}',
-                  { setNumber }
-                )}
-                value={reps ?? ''}
-                onClick={(event) => event.stopPropagation()}
-                onChange={(event) =>
-                  onSetFieldChange(
-                    pointer,
-                    'reps',
-                    parseNullableInteger(event.target.value)
-                  )
-                }
-                placeholder={t('common.reps', 'reps')}
-                className="col-span-1 w-full focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 sm:col-start-3"
-              />
+              <div className="col-span-2 w-full sm:col-span-1 sm:col-start-3">
+                <Input
+                  id={`set-reps-${exerciseIndex}-${setIndex}`}
+                  type="number"
+                  inputMode="numeric"
+                  min={0}
+                  step={1}
+                  aria-label={t(
+                    'diary.workoutPlaybackSetRow.repsSet',
+                    'Reps set {{setNumber}}',
+                    { setNumber }
+                  )}
+                  value={reps ?? ''}
+                  onClick={(event) => event.stopPropagation()}
+                  onChange={(event) =>
+                    onSetFieldChange(
+                      pointer,
+                      'reps',
+                      parseNullableInteger(event.target.value)
+                    )
+                  }
+                  placeholder={t('common.reps', 'reps')}
+                  className="w-full focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                />
+              </div>
 
               <div
-                className="col-span-1 w-full sm:col-start-4"
+                className="col-span-2 w-full sm:col-span-1 sm:col-start-4"
                 onClick={(event) => event.stopPropagation()}
               >
                 <UnitInput
@@ -364,7 +381,7 @@ const WorkoutPlaybackSetRow = ({
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="cursor-pointer"
+                className="hidden cursor-pointer sm:inline-flex"
                 aria-label={t(
                   'plates.openForSet',
                   'Plate calculator for set {{setNumber}}',
@@ -382,7 +399,7 @@ const WorkoutPlaybackSetRow = ({
               type="button"
               variant="ghost"
               size="icon"
-              className="cursor-pointer"
+              className="hidden cursor-pointer sm:inline-flex"
               aria-label={t(
                 'diary.workoutPlaybackSetRow.toggleNotesForSet',
                 'Toggle notes for set {{setNumber}}',
@@ -431,7 +448,7 @@ const WorkoutPlaybackSetRow = ({
                 'workout.notesPlaceholder',
                 'Add a note for this set...'
               )}
-              className="min-h-16 resize-none text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+              className="col-span-6 min-h-16 resize-none text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
             />
           )}
         </div>

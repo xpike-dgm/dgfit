@@ -346,7 +346,7 @@ router.get('/primary', authenticate, async (req, res, next) => {
       res.status(200).json({
         id: null,
         user_id: targetUserId,
-        name: 'Default Container',
+        name: 'Bardak',
         volume: 2000,
         unit: 'ml',
         is_primary: true,

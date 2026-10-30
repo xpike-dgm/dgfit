@@ -142,6 +142,9 @@ export const PreferenceSettings = () => {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="dd.MM.yyyy">
+                  dd.MM.yyyy (25.12.2024)
+                </SelectItem>
                 <SelectItem value="MM/dd/yyyy">
                   {t(
                     'settings.preferenceSettings.mmDdYyyy1225',

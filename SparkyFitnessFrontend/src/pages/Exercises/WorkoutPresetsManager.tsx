@@ -320,7 +320,7 @@ const WorkoutPresetsManager = () => {
           const count = row.original.exercises?.length || 0;
           return (
             <Badge variant="secondary" className="font-normal">
-              {count} {count === 1 ? 'exercise' : 'exercises'}
+              {count} hareket
             </Badge>
           );
         },

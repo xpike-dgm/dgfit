@@ -302,8 +302,8 @@ export const PreferencesProvider: React.FC<{ children: React.ReactNode }> = ({
   const [measurementUnit, setMeasurementUnitState] =
     useState<MeasurementUnit>('cm');
   const [distanceUnit, setDistanceUnitState] = useState<'km' | 'miles'>('km');
-  const [dateFormat, setDateFormatState] = useState<string>('MM/dd/yyyy');
-  const [timeFormat, setTimeFormatState] = useState<string>('h:mm A');
+  const [dateFormat, setDateFormatState] = useState<string>('dd.MM.yyyy');
+  const [timeFormat, setTimeFormatState] = useState<string>('HH:mm');
   const [autoClearHistory, setAutoClearHistoryState] =
     useState<string>('never');
   const [loggingLevel, setLoggingLevelState] = useState<
@@ -655,23 +655,23 @@ export const PreferencesProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       const defaultPrefs: Partial<DefaultPreferences> = {
         user_id: user.id,
-        date_format: 'MM/dd/yyyy',
-        time_format: 'h:mm A',
+        date_format: 'dd.MM.yyyy',
+        time_format: 'HH:mm',
         default_weight_unit: 'kg',
         default_measurement_unit: 'cm',
         default_distance_unit: 'km',
         auto_clear_history: 'never',
         logging_level: 'ERROR' as const,
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        timezone: 'Europe/Istanbul',
         item_display_limit: 10,
         water_display_unit: waterDisplayUnit,
-        language: 'en',
+        language: 'tr',
         calorie_goal_adjustment_mode: 'dynamic' as const,
         energy_unit: 'kcal' as const,
         auto_scale_open_food_facts_imports: false,
         auto_scale_online_imports: true,
         selected_diet: 'balanced',
-        first_day_of_week: 0,
+        first_day_of_week: 1,
         show_net_carbs: false,
         ai_assisted_conversions: true,
         calorie_safety_floor_mode: 'standard',
@@ -724,7 +724,7 @@ export const PreferencesProvider: React.FC<{ children: React.ReactNode }> = ({
         setDateFormatState(
           data.date_format.replace(/DD/g, 'dd').replace(/YYYY/g, 'yyyy')
         );
-        setTimeFormatState(data.time_format || 'h:mm A');
+        setTimeFormatState(data.time_format || 'HH:mm');
         setAutoClearHistoryState(data.auto_clear_history || 'never');
         setLoggingLevelState(data.logging_level || 'INFO');
         setDefaultFoodDataProviderIdState(

@@ -41,9 +41,7 @@ import { useAuth } from '@/hooks/useAuth';
 import type { ExerciseOwnershipFilter } from '@/types/exercises';
 import { localizeMuscle, localizeEquipment } from '@/utils/exerciseTaxonomy';
 import WorkoutPresetsManager from './WorkoutPresetsManager';
-import EquipmentManager from '@/pages/Exercises/EquipmentManager';
 import WorkoutPlansManager from '@/pages/Exercises/WorkoutPlansManager';
-import TrainingProgramsEntry from '@/pages/Exercises/TrainingPrograms/TrainingProgramsEntry';
 import {
   useExercises,
   useUpdateExerciseShareStatusMutation,
@@ -446,6 +444,10 @@ const ExerciseDatabaseManager = () => {
 
   return (
     <div className="space-y-6">
+      {/* DG FIT: saved workouts and weekly programs come before the library */}
+      <WorkoutPresetsManager />
+      <WorkoutPlansManager />
+
       {/* Exercises Section */}
       <Card>
         <CardHeader className="pb-2">
@@ -683,18 +685,6 @@ const ExerciseDatabaseManager = () => {
         })}
         onConfirm={handleBulkDeleteConfirm}
       />
-
-      {/* Workout Presets Section */}
-      <WorkoutPresetsManager />
-
-      {/* Workout Plans Section */}
-      <WorkoutPlansManager />
-
-      {/* Run and walk training programs */}
-      <TrainingProgramsEntry />
-
-      {/* Equipment Section (shoes and their mileage) */}
-      <EquipmentManager />
 
       <AddExerciseDialog
         open={isAddExerciseDialogOpen}

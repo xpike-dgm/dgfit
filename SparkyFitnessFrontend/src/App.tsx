@@ -58,6 +58,10 @@ const ResetPassword = lazyWithChunkRecovery(
 );
 const Index = lazyWithChunkRecovery(() => import('@/pages/Index'));
 const Diary = lazyWithChunkRecovery(() => import('@/pages/Diary/Diary'));
+const MenuPage = lazyWithChunkRecovery(() => import('@/pages/Menu/MenuPage'));
+const WorkoutsHub = lazyWithChunkRecovery(
+  () => import('@/pages/Workouts/WorkoutsHub')
+);
 const CheckIn = lazyWithChunkRecovery(() => import('./pages/CheckIn/CheckIn'));
 const FoodDatabaseManager = lazyWithChunkRecovery(
   () => import('./pages/Foods/Foods')
@@ -443,6 +447,16 @@ const router = createBrowserRouter([
           {
             path: 'exercises/training-programs',
             Component: TrainingPrograms,
+            ErrorBoundary: RouteErrorBoundary,
+          },
+          {
+            path: 'menu',
+            Component: MenuPage,
+            ErrorBoundary: RouteErrorBoundary,
+          },
+          {
+            path: 'antrenman',
+            Component: WorkoutsHub,
             ErrorBoundary: RouteErrorBoundary,
           },
           {

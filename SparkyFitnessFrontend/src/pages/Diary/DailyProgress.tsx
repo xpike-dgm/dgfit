@@ -124,7 +124,10 @@ const DailyProgress = ({ selectedDate }: { selectedDate: string }) => {
     return (
       <Card className="h-full">
         <CardContent className="pt-6 pb-4">
-          <Alert variant="destructive" className="bg-red-50 border-red-200">
+          <Alert
+            variant="destructive"
+            className="bg-red-50 border-red-200 dark:bg-red-950/40 dark:border-red-900"
+          >
             <AlertCircle className="h-4 w-4 text-red-600" />
             <AlertTitle className="text-red-800 font-bold mb-1">
               {t(
@@ -522,8 +525,8 @@ const DailyProgress = ({ selectedDate }: { selectedDate: string }) => {
 
           {/* Detailed Burned Breakdown (Visible if data present) */}
           {!!(exerciseSource !== 'none' || bmr) && (
-            <div className="text-center p-2 bg-blue-50 rounded-lg space-y-1">
-              <div className="text-sm font-medium text-blue-700">
+            <div className="text-center p-2 bg-blue-50 dark:bg-blue-950/40 rounded-lg space-y-1">
+              <div className="text-sm font-medium text-blue-700 dark:text-blue-300">
                 {t(
                   'exercise.dailyProgress.energyBurnedBreakdownTitle',
                   'Energy Burned Breakdown'
@@ -531,7 +534,7 @@ const DailyProgress = ({ selectedDate }: { selectedDate: string }) => {
               </div>
 
               {exerciseSource === 'logged' && (
-                <div className="text-xs text-blue-600">
+                <div className="text-xs text-blue-600 dark:text-blue-400">
                   {t(
                     'exercise.dailyProgress.otherExerciseCalories',
                     'Other Exercise: {{exerciseCalories}} {{energyUnit}}',
@@ -544,7 +547,7 @@ const DailyProgress = ({ selectedDate }: { selectedDate: string }) => {
               )}
 
               {exerciseSource === 'active' && (
-                <div className="text-xs text-blue-600">
+                <div className="text-xs text-blue-600 dark:text-blue-400">
                   {t(
                     'exercise.dailyProgress.activeCalories',
                     'Active Calories: {{activeCaloriesFromExercise}} {{energyUnit}}',
@@ -557,7 +560,7 @@ const DailyProgress = ({ selectedDate }: { selectedDate: string }) => {
               )}
 
               {exerciseSource === 'steps' && (
-                <div className="text-xs text-blue-600 flex items-center justify-center gap-1">
+                <div className="text-xs text-blue-600 dark:text-blue-400 flex items-center justify-center gap-1">
                   <Zap className="w-3 h-3" />
                   {t(
                     'exercise.dailyProgress.stepsCalories',
@@ -572,7 +575,7 @@ const DailyProgress = ({ selectedDate }: { selectedDate: string }) => {
               )}
 
               {!!bmr && (
-                <div className="text-xs text-blue-600">
+                <div className="text-xs text-blue-600 dark:text-blue-400">
                   {t(
                     bmrSource === 'measured'
                       ? 'exercise.dailyProgress.bmrMeasured'
@@ -592,7 +595,10 @@ const DailyProgress = ({ selectedDate }: { selectedDate: string }) => {
 
           {/* Profile Setup Warning Alert (Visible if BMR is 0) */}
           {bmr === 0 && (
-            <Alert variant="destructive" className="bg-red-50 border-red-200">
+            <Alert
+              variant="destructive"
+              className="bg-red-50 border-red-200 dark:bg-red-950/40 dark:border-red-900"
+            >
               <AlertCircle className="h-4 w-4 text-red-600" />
               <AlertTitle className="text-red-800 font-bold mb-1">
                 {t(
@@ -771,8 +777,8 @@ const DailyProgress = ({ selectedDate }: { selectedDate: string }) => {
             </div>
           ) : (
             /* Dynamic / Fixed / Percentage modes: original Net Energy box */
-            <div className="text-center p-2 dark:bg-slate-300 bg-gray-50 rounded-lg">
-              <div className="text-sm font-medium dark:text-black text-gray-700">
+            <div className="text-center p-2 dark:bg-muted bg-gray-50 rounded-lg">
+              <div className="text-sm font-medium dark:text-foreground text-gray-700">
                 {t(
                   'exercise.dailyProgress.netEnergy',
                   'Net Energy: {{netCalories}}',
@@ -782,7 +788,7 @@ const DailyProgress = ({ selectedDate }: { selectedDate: string }) => {
                   }
                 )}
               </div>
-              <div className="text-xs dark:text-black text-gray-600">
+              <div className="text-xs dark:text-foreground text-gray-600">
                 {t(
                   'exercise.dailyProgress.netEnergyBreakdown',
                   '{{dailyIntakeCalories}} eaten - {{finalTotalCaloriesBurned}} burned',

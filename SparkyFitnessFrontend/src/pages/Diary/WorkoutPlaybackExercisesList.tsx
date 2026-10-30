@@ -1,10 +1,11 @@
-import { useState, memo } from 'react';
+import { useCallback, useRef, useState, memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeftRight, ChevronDown } from 'lucide-react';
+import { ArrowLeftRight, ChevronDown, Trophy } from 'lucide-react';
 import {
   DEFAULT_DROP_SET_COUNT,
   DEFAULT_DROP_SET_PERCENT,
   findDropSetBaseIndex,
+  isWarmupSetType,
   usesBarbell,
 } from '@workspace/shared';
 import type { WeightUnit } from '@/contexts/PreferencesContext';
@@ -14,8 +15,15 @@ import {
   type WorkoutPlaybackExerciseDraft,
   type WorkoutSetEditableField,
   type WorkoutSetPointer,
+  estimateOneRepMax,
+  weightFromKg,
 } from '@/utils/workoutPlayback';
 import WorkoutPlaybackSetRow from './WorkoutPlaybackSetRow';
+import { toast } from '@/hooks/use-toast';
+import {
+  useExercisesStats,
+  type ExerciseStatsSet,
+} from '@/hooks/Exercises/useExerciseEntries';
 import AdaptiveSuggestionNotice from './AdaptiveSuggestionNotice';
 import ImageLightbox from '@/components/ImageLightbox';
 import { PlateCalculatorDialog } from '@/components/PlateCalculator/PlateCalculatorDialog';
@@ -78,6 +86,48 @@ const WorkoutPlaybackExercisesList = ({
   );
   const plateExercise =
     plateTarget != null ? exercises[plateTarget.exerciseIndex] : undefined;
+
+  // DG FIT: last session per set ("Önceki") and a live personal-record toast.
+  const statsById = useExercisesStats(
+    [...new Set(exercises.map((e) => e.exercise_id))].filter(Boolean)
+  );
+  const unitLabel = weightUnit === 'kg' ? 'kg' : 'lb';
+  const formatSet = (set: ExerciseStatsSet) => {
+    const weight = weightFromKg(Number(set.weight) || 0, weightUnit);
+    return weight > 0
+      ? `${weight} ${unitLabel} × ${set.reps ?? 0}`
+      : `${set.reps ?? 0} tekrar`;
+  };
+  const previousWorkingSets = (exerciseId: string) =>
+    (statsById[exerciseId]?.recentSessions?.[0]?.sets ?? []).filter(
+      (set) => !isWarmupSetType(set.setType)
+    );
+  const celebrated = useRef(new Set<string>());
+  const handleCompleteSet = useCallback(
+    (pointer: WorkoutSetPointer) => {
+      onCompleteSet(pointer);
+      const exercise = exercises[pointer.exerciseIndex];
+      const set = exercise?.sets[pointer.setIndex];
+      const best = exercise ? statsById[exercise.exercise_id]?.bestSet : null;
+      if (!exercise || !set || !best || isWarmupSetType(set.set_type)) return;
+      const weight = Number(set.weight) || 0;
+      const reps = Number(set.reps) || 0;
+      const bestWeight = weightFromKg(Number(best.weight) || 0, weightUnit);
+      const oneRm = estimateOneRepMax(weight, reps);
+      const bestOneRm = estimateOneRepMax(bestWeight, Number(best.reps) || 0);
+      const isRecord =
+        weight > 0 &&
+        reps > 0 &&
+        (weight > bestWeight || oneRm > bestOneRm + 0.01);
+      if (!isRecord || celebrated.current.has(exercise.exercise_id)) return;
+      celebrated.current.add(exercise.exercise_id);
+      toast({
+        title: '🏆 Yeni kişisel rekor!',
+        description: `${exercise.exercise_name}: ${weight} ${unitLabel} × ${reps} (tahmini 1RM ${Math.round(oneRm)} ${unitLabel})`,
+      });
+    },
+    [exercises, onCompleteSet, statsById, unitLabel, weightUnit]
+  );
 
   return (
     <div className="space-y-2">
@@ -145,6 +195,23 @@ const WorkoutPlaybackExercisesList = ({
                       { completedSets, totalSets }
                     )}
                   </p>
+                  {statsById[exercise.exercise_id]?.bestSet && (
+                    <p className="flex items-center gap-1 truncate text-[11px] text-muted-foreground">
+                      <Trophy className="h-3 w-3 text-amber-500" />
+                      En iyi:{' '}
+                      {formatSet(statsById[exercise.exercise_id]!.bestSet!)}
+                      {(() => {
+                        const best = statsById[exercise.exercise_id]!.bestSet!;
+                        const oneRm = estimateOneRepMax(
+                          weightFromKg(Number(best.weight) || 0, weightUnit),
+                          Number(best.reps) || 0
+                        );
+                        return oneRm > 0
+                          ? ` · 1RM ≈ ${Math.round(oneRm)} ${unitLabel}`
+                          : '';
+                      })()}
+                    </p>
+                  )}
                 </div>
                 {onReplaceExercise && (
                   <button
@@ -277,7 +344,7 @@ const WorkoutPlaybackExercisesList = ({
                         }
                         onToggleNotesVisibility={onToggleSetNotesVisibility}
                         onSelectSet={onSelectSet}
-                        onCompleteSet={onCompleteSet}
+                        onCompleteSet={handleCompleteSet}
                         onUncompleteSet={onUncompleteSet}
                         onSetFieldChange={onSetFieldChange}
                         onOpenRestEditor={onOpenRestEditor}
@@ -286,6 +353,18 @@ const WorkoutPlaybackExercisesList = ({
                         weightUnit={weightUnit}
                         canCalculatePlates={usesBarbell(exercise.equipment)}
                         onOpenPlateCalculator={setPlateTarget}
+                        previousLabel={(() => {
+                          const previous = previousWorkingSets(
+                            exercise.exercise_id
+                          );
+                          const workingIndex = exercise.sets
+                            .slice(0, setIndex)
+                            .filter((s) => !isWarmupSetType(s.set_type)).length;
+                          const match = isWarmupSetType(set.set_type)
+                            ? undefined
+                            : previous[workingIndex];
+                          return match ? formatSet(match) : null;
+                        })()}
                       />
                     );
                   })}

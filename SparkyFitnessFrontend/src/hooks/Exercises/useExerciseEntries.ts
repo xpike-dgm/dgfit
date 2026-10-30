@@ -1,4 +1,9 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  useQuery,
+  useQueries,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import {
   fetchExerciseEntries,
@@ -34,6 +39,52 @@ export const useExerciseEntries = (date: string, userId?: string) => {
     staleTime: 0, // Always consider data stale so it refetches when needed
     refetchOnWindowFocus: true, // Refetch when user returns to the tab after a sync
   });
+};
+
+/** Logged sessions for several days at once (future days are not fetched). */
+export const useExerciseEntriesForDates = (
+  dates: string[],
+  userId: string | undefined,
+  today: string
+) =>
+  useQueries({
+    queries: dates.map((date) => ({
+      queryKey: exerciseEntryKeys.byDate(date, userId),
+      queryFn: () => fetchExerciseEntries(date, userId),
+      enabled: !!userId && date <= today,
+      staleTime: 60_000,
+    })),
+  });
+
+export interface ExerciseStatsSet {
+  setNumber?: number;
+  setType?: string | null;
+  weight: number | null;
+  reps: number | null;
+}
+
+export interface ExerciseStats {
+  bestSet: ExerciseStatsSet | null;
+  lastSet: ExerciseStatsSet | null;
+  recentSessions: { entryDate: string; sets: ExerciseStatsSet[] }[];
+}
+
+/** Best set and recent sessions for each exercise id (weights in kg). */
+export const useExercisesStats = (exerciseIds: string[]) => {
+  const results = useQueries({
+    queries: exerciseIds.map((id) => ({
+      queryKey: ['exerciseStats', id],
+      queryFn: () =>
+        fetchExerciseProgressionStats(id) as Promise<ExerciseStats | null>,
+      enabled: !!id,
+      staleTime: 5 * 60_000,
+    })),
+  });
+  const byId: Record<string, ExerciseStats | null | undefined> = {};
+  exerciseIds.forEach((id, i) => {
+    byId[id] = results[i]?.data;
+  });
+  return byId;
 };
 
 /** Previously logged gym / location names, most recent first. */

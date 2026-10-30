@@ -78,13 +78,7 @@ import { buildExerciseReplaceContext } from '@/utils/exerciseAlternatives';
 import { fetchExerciseProgressionStats } from '@/hooks/Exercises/useExerciseEntries';
 import { playIntervalCue } from '@/utils/workoutSounds';
 import { useGuidedWorkoutPreferences } from '@/utils/guidedWorkoutPreferences';
-
-function weightFromKg(weightKg: number, unit: string): number {
-  if (!weightKg || weightKg <= 0) return 0;
-  return unit === 'lbs' || unit === 'st_lbs'
-    ? Math.round(weightKg * 2.20462262 * 10) / 10
-    : weightKg;
-}
+import { weightFromKg } from '@/utils/workoutPlayback';
 
 function weightToKgLocal(weight: number, unit: string): number {
   if (!weight || weight <= 0) return 0;

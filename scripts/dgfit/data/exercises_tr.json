@@ -389,7 +389,7 @@
   ]
  },
  "Dumbbell_Raise": {
-  "name": "Lateral Raise (Dambıl)",
+  "name": "Yana ve Öne Raise (Dambıl)",
   "instructions": [
    "Her elinize bir dambıl alın ve kollarınız yanlarınızda uzanmış, dirsekler hafif bükülü ve sırtınız dik şekilde ayakta durun. Bu sizin başlangıç pozisyonunuzdur. İpucu: Dambıllar uyluklarınızın yanında, avuç içleriniz arkaya bakacak şekilde olmalıdır.",
    "Nefes verirken dambılları kaldırmak için yan omuz kaslarınızı kullanın. Dambıllar yukarı kalkarken vücudun yanında olmalıdır. Dambıllar neredeyse çenenizle aynı hizaya gelene kadar kaldırmaya devam edin. İpucu: Hareketi dirsekleriniz yönlendirmelidir. Dambılı kaldırırken dirseğiniz her zaman ön kolunuzdan daha yukarıda olmalıdır. Ayrıca gövdenizi sabit tutun ve hareketin en üstünde bir saniye bekleyin.",
@@ -3073,7 +3073,7 @@
   ]
  },
  "Dumbbell_Lying_Rear_Lateral_Raise": {
-  "name": "Yüzüstü Arka Omuz Raise (Dambıl)",
+  "name": "Yüzüstü Arka Omuz Lateral Raise (Dambıl)",
   "instructions": [
    "Her elinizde bir dambıl tutarken, hafif eğimli (yerden ölçüldüğünde yaklaşık 15 derece) ayarlanabilir bir sehpaya göğsünüz aşağıda olacak şekilde uzanın.",
    "Kollarınız uzanmış ve dirsekler hafif bükülü haldeyken avuç içlerinizi nötr konumda (avuç içleri gövdenize bakacak şekilde) tutun. Bu sizin başlangıç pozisyonunuzdur.",
@@ -3842,7 +3842,7 @@
   ]
  },
  "Smith_Machine_Decline_Press": {
-  "name": "Decline Press (Smith Makinesi) – Smith Machine Decline Press",
+  "name": "Decline Press (Smith Makinesi)",
   "instructions": [
    "Bir decline sehpayı rafın içine, bar göğsünüzün üzerinde olacak şekilde yerleştirin. Uygun ağırlığı yükleyin ve sehpaya yerleşin.",
    "Barı kancadan çıkarmak için döndürün ve kollarınızı tamamen uzatın. Sırtınız hafif kavisli, kürek kemikleriniz geriye çekilmiş olmalıdır. Bu sizin başlangıç pozisyonunuzdur.",
@@ -5478,7 +5478,7 @@
   ]
  },
  "Barbell_Bench_Press_-_Medium_Grip": {
-  "name": "Bench Press (Halter, Orta Tutuş)",
+  "name": "Bench Press (Halter)",
   "instructions": [
    "Düz bir bench üzerine sırtüstü uzanın. Orta genişlikte bir tutuşla (hareketin ortasında ön kol ile üst kol arasında 90 derecelik açı oluşturan tutuş) barı raftan kaldırın ve kollarınız kilitli şekilde tam üzerinizde tutun. Bu sizin başlangıç pozisyonunuz olacaktır.",
    "Başlangıç pozisyonundan nefes alın ve bar göğsünüzün ortasına değene kadar yavaşça inin.",
@@ -5721,7 +5721,7 @@
   ]
  },
  "Decline_Smith_Press": {
-  "name": "Decline Press (Smith Makinesi)",
+  "name": "Decline Bench Press (Smith Makinesi)",
   "instructions": [
    "Smith makinesinin altına bir decline bench yerleştirin. Şimdi barı, uzandığınızda kollarınız neredeyse tamamen açıkken ulaşabileceğiniz bir yüksekliğe ayarlayın. Omuz genişliğinden geniş, pronasyon (avuç içleri öne/aşağı) tutuşla barı kilitten çıkarın ve kollarınız uzamış halde tam üzerinizde tutun. Bu sizin başlangıç pozisyonunuz olacaktır.",
    "Nefes alırken dirseklerinizin bükülmesine izin vererek barı kontrollü bir şekilde indirin ve gövdenize hafifçe değdirin.",
@@ -6109,7 +6109,7 @@
   ]
  },
  "Lying_Rear_Delt_Raise": {
-  "name": "Yüzüstü Arka Omuz Raise (Dambıl) – Lying Rear Delt Raise",
+  "name": "Yüzüstü Arka Omuz Raise (Dambıl)",
   "instructions": [
    "Her elinizde bir dambıl tutarken göğsünüz aşağı bakacak şekilde düz bir bench üzerine uzanın.",
    "Avuç içlerinizi nötr pozisyonda (avuç içleri gövdenize bakacak şekilde) konumlandırın ve kollarınızı dirsekler hafifçe bükülü şekilde uzatılmış halde tutun. Bu sizin başlangıç pozisyonunuz olacaktır.",
@@ -7790,7 +7790,7 @@
   ]
  },
  "Side_Lateral_Raise": {
-  "name": "Lateral Raise (Dambıl) – Side Lateral Raise",
+  "name": "Lateral Raise (Dambıl)",
   "instructions": [
    "Birer dambıl alın ve gövdeniz düz şekilde, dambıllar yanınızda kol boyu ve avuç içleriniz size bakacak şekilde ayakta durun. Bu sizin başlangıç pozisyonunuzdur.",
    "Gövdenizi sabit tutarken (sallanmadan), dirsek hafif bükülü ve eller bir bardağa su döker gibi hafifçe öne eğik olacak şekilde dambılları yanlara doğru kaldırın. Kollarınız yere paralel olana kadar yukarı çıkmaya devam edin. Bu hareketi yaparken nefes verin ve üstte bir saniye bekleyin.",

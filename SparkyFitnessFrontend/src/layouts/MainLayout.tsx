@@ -5,8 +5,7 @@ import { useLocation, Outlet, useNavigate } from 'react-router-dom';
 import { debug, info, error } from '@/utils/logging';
 import {
   Home,
-  Activity, // Used for Check-In
-  CalendarHeart,
+  Activity,
   BarChart3,
   Utensils, // Used for Foods
   Settings as SettingsIcon,
@@ -23,11 +22,17 @@ import {
   UtensilsCrossed, // Used for Dinner
   Salad, // Used for Food Log
   HeartPulse, // Used for the delegate-only Symptoms page
+  Users,
+  Menu,
+  Scale,
+  Sparkles,
+  ChefHat,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 import SparkyChat from '../pages/Chat/SparkyChat';
+import { useChatbotVisibility } from '@/contexts/ChatbotVisibilityContext';
 import AddComp from '@/layouts/AddComp';
 import ThemeToggle from '@/components/ThemeToggle';
 import GlobalSyncButton from '@/components/GlobalSyncButton';
@@ -40,7 +45,6 @@ import { usePreferences } from '@/contexts/PreferencesContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useMealTypes } from '@/hooks/Diary/useMealTypes';
 import { useCurrentVersionQuery } from '@/hooks/useGeneralQueries';
-import { useCycleSettings } from '@/hooks/useCycle';
 import { cn } from '@/lib/utils';
 import { getGridClassNormal } from '@/utils/layout';
 
@@ -69,6 +73,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const { openChat } = useChatbotVisibility();
   const {
     isActingOnBehalf,
     hasPermission,
@@ -84,9 +89,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({
 
   // Fetch meal types for quick log menu
   const { data: mealTypes } = useMealTypes();
-
-  // Fetch cycle settings to determine tab visibility
-  const { data: cycleSettings } = useCycleSettings();
 
   const handleSignOut = async () => {
     info(loggingLevel, 'MainLayout: Attempting to sign out.');
@@ -110,38 +112,18 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   const addCompItems: AddCompItem[] = useMemo(() => {
     const items: AddCompItem[] = [];
     if (!isActingOnBehalf) {
-      // Keep this order consistent with the desktop tab order in availableTabs:
-      // Check-In, Cycle, Medications, Foods, Exercises, Goals.
-      items.push({
-        value: 'checkin',
-        label: t('nav.checkin', 'Check-In'),
-        icon: Activity,
-      });
-      if (cycleSettings?.enabled) {
-        items.push({
-          value: 'cycle',
-          label: cycleSettings.discreet_mode
-            ? t('nav.wellness', 'Wellness')
-            : cycleSettings.mode === 'pregnant'
-              ? t('nav.pregnancy', 'Pregnancy')
-              : t('nav.cycle', 'Cycle'),
-          icon: cycleSettings.discreet_mode ? Activity : CalendarHeart,
-        });
-      }
+      // DG FIT quick actions.
       items.push(
-        { value: 'foods', label: t('nav.foods', 'Foods'), icon: Utensils },
-        {
-          value: 'exercises',
-          label: t('exercise.title', 'Exercises'),
-          icon: Dumbbell,
-        },
-        { value: 'goals', label: t('nav.goals', 'Goals'), icon: Target },
         {
           value: 'foodlog',
-          label: t('nav.foodLog', 'Food Log'),
+          label: 'Yemek ekle',
           icon: Salad,
           fullWidth: true,
-        }
+        },
+        { value: '/antrenman', label: 'Antrenman başlat', icon: Dumbbell },
+        { value: 'checkin', label: 'Kilo & ölçüm', icon: Scale },
+        { value: 'ptai', label: 'PT AI', icon: Sparkles },
+        { value: '/tarifler', label: 'Tarif oluştur', icon: ChefHat }
       );
     } else {
       if (hasWritePermission('checkin')) {
@@ -161,7 +143,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
       }
     }
     return items;
-  }, [isActingOnBehalf, hasWritePermission, cycleSettings, t]);
+  }, [isActingOnBehalf, hasWritePermission, t]);
 
   // Map meal type names to icons
   const getMealTypeIcon = useCallback((name: string): LucideIcon => {
@@ -223,30 +205,15 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     const tabs = [];
     if (!isActingOnBehalf) {
       tabs.push(
-        { value: '/', label: t('nav.diary'), icon: Home },
-        { value: '/checkin', label: t('nav.checkin'), icon: Activity }
-      );
-      if (cycleSettings?.enabled) {
-        tabs.push({
-          value: '/cycle',
-          label: cycleSettings.discreet_mode
-            ? t('nav.wellness', 'Wellness')
-            : cycleSettings.mode === 'pregnant'
-              ? t('nav.pregnancy', 'Pregnancy')
-              : t('nav.cycle', 'Cycle'),
-          icon: cycleSettings.discreet_mode ? Activity : CalendarHeart,
-        });
-      }
-      tabs.push(
-        { value: '/reports', label: t('nav.reports'), icon: BarChart3 },
-        { value: '/foods', label: t('nav.foods'), icon: Utensils },
-        {
-          value: '/exercises',
-          label: t('exercise.title', 'Exercises'),
-          icon: Dumbbell,
-        },
-        { value: '/goals', label: t('nav.goals'), icon: Target },
-        { value: '/settings', label: t('nav.settings'), icon: SettingsIcon }
+        { value: '/', label: 'Bugün', icon: Home },
+        { value: '/antrenman', label: 'Antrenman', icon: Dumbbell },
+        { value: '/arkadaslar', label: 'Arkadaşlar', icon: Users },
+        { value: '/reports', label: 'Gelişim', icon: BarChart3 },
+        { value: '/foods', label: 'Yiyecekler', icon: Utensils },
+        { value: '/tarifler', label: 'Tarifler', icon: ChefHat },
+        { value: '/checkin', label: 'Ölçümler', icon: Scale },
+        { value: '/goals', label: 'Hedefler', icon: Target },
+        { value: '/settings', label: 'Ayarlar', icon: SettingsIcon }
       );
     } else {
       if (hasWritePermission('diary')) {
@@ -297,7 +264,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     loggingLevel,
     user?.role,
     t,
-    cycleSettings,
   ]);
 
   const availableMobileTabs = useMemo(() => {
@@ -312,14 +278,15 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     // (see addCompItems), not the bottom bar, to keep the bar uncluttered.
     if (!isActingOnBehalf) {
       mobileTabs.push(
-        { value: '/', label: t('nav.diary'), icon: Home },
-        { value: '/reports', label: t('nav.reports'), icon: BarChart3 },
+        { value: '/', label: 'Bugün', icon: Home },
+        { value: '/antrenman', label: 'Antrenman', icon: Dumbbell },
         {
           value: 'Add',
-          label: t('common.add', 'Add'),
+          label: 'Ekle',
           icon: isAddCompOpen ? X : Plus,
         },
-        { value: '/settings', label: t('nav.settings'), icon: SettingsIcon }
+        { value: '/arkadaslar', label: 'Arkadaşlar', icon: Users },
+        { value: '/menu', label: 'Menü', icon: Menu }
       );
     } else {
       if (hasWritePermission('diary')) {
@@ -358,16 +325,12 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         });
       }
     }
-    if (user?.role === 'admin' && !isActingOnBehalf) {
-      mobileTabs.push({ value: '/admin', label: t('nav.admin'), icon: Shield });
-    }
     return mobileTabs;
   }, [
     isActingOnBehalf,
     hasPermission,
     hasWritePermission,
     loggingLevel,
-    user?.role,
     isAddCompOpen,
     t,
   ]);
@@ -375,15 +338,25 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   const handleNavigateFromAddComp = useCallback(
     (value: string) => {
       info(loggingLevel, `MainLayout: Navigating to ${value} from AddComp.`);
-      if (value === 'foodlog') {
+      if (value === 'ptai') {
         setIsAddCompOpen(false);
-        setIsMealTypeSelectOpen(true);
+        openChat();
+      } else if (value === 'foodlog') {
+        setIsAddCompOpen(false);
+        // DG FIT keeps a single food list, so skip the meal picker then.
+        if (mealTypeItems.length === 1) {
+          navigate('/', {
+            state: { openFoodSearchForMeal: mealTypeItems[0]?.value },
+          });
+        } else {
+          setIsMealTypeSelectOpen(true);
+        }
       } else {
         navigate(value);
         setIsAddCompOpen(false);
       }
     },
-    [loggingLevel, navigate]
+    [loggingLevel, navigate, mealTypeItems, openChat]
   );
 
   const handleMealTypeSelect = useCallback(
@@ -565,11 +538,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({
           <div
             className={`relative h-14 grid ${mobileGridClass} items-center justify-items-center`}
           >
-            {availableMobileTabs.map(({ value, icon: Icon }) => (
+            {availableMobileTabs.map(({ value, label, icon: Icon }) => (
               <Button
                 key={value}
                 variant="ghost"
-                className={`flex flex-col items-center gap-1 py-2 ${
+                className={`flex h-full flex-col items-center gap-0.5 py-1 ${
                   value === 'Add' || isTabActive(location.pathname, value)
                     ? 'text-primary'
                     : ''
@@ -583,7 +556,12 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                   }
                 }}
               >
-                <Icon className="h-8 w-8" />
+                <Icon className={value === 'Add' ? 'h-8 w-8' : 'h-6 w-6'} />
+                {value !== 'Add' && (
+                  <span className="text-[10px] font-medium leading-none">
+                    {label}
+                  </span>
+                )}
               </Button>
             ))}
           </div>

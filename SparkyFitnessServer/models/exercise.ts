@@ -24,6 +24,20 @@ import {
 // finds them.
 const EXERCISE_SEARCH_TEXT_SQL =
   "(name || ' ' || CASE WHEN source = 'free-exercise-db' THEN replace(coalesce(source_id, ''), '_', ' ') ELSE '' END)";
+// Gym staples, listed first among equally good matches.
+const POPULAR_EXERCISE_SOURCE_IDS_SQL = `ARRAY['Barbell_Bench_Press_-_Medium_Grip', 'Barbell_Squat', 'Barbell_Deadlift', 'Pushups', 'Pullups', 'Chin-Up', 'Dips_-_Triceps_Version', 'Wide-Grip_Lat_Pulldown', 'Seated_Cable_Rows', 'Bent_Over_Barbell_Row', 'Barbell_Curl', 'Dumbbell_Bicep_Curl', 'Hammer_Curls', 'Triceps_Pushdown', 'Standing_Military_Press', 'Dumbbell_Shoulder_Press', 'Side_Lateral_Raise', 'Incline_Dumbbell_Press', 'Dumbbell_Bench_Press', 'Leg_Press', 'Leg_Extensions', 'Lying_Leg_Curls', 'Romanian_Deadlift', 'Barbell_Hip_Thrust', 'Dumbbell_Lunges', 'Standing_Calf_Raises', 'Face_Pull', 'Plank', 'Crunches', 'Hanging_Leg_Raise', 'Cable_Crossover', 'Butterfly', 'Close-Grip_Barbell_Bench_Press', 'One-Arm_Dumbbell_Row', 'Barbell_Shrug', 'Front_Barbell_Squat', 'Goblet_Squat', 'Walking_Treadmill', 'Running_Treadmill', 'Bicycling_Stationary', 'Rowing_Stationary', 'Elliptical_Trainer', 'Smith_Machine_Squat', 'Arnold_Dumbbell_Press', 'Preacher_Curl', 'EZ-Bar_Skullcrusher', 'Cable_Rear_Delt_Fly', 'Reverse_Flyes']`;
+
+// Exact Turkish or English name first (free-exercise-db rows keep the English
+// name in description), then names containing the phrase, shorter first.
+function exerciseSearchOrder(phraseParamIndex: number): string {
+  const phrase = `lower(trim(both '%' from $${phraseParamIndex}::text))`;
+  return `(CASE WHEN lower(name) = ${phrase} OR (source = 'free-exercise-db' AND lower(coalesce(description, '')) = ${phrase}) THEN 0
+            WHEN ${buildSqlExactMatchOrder(EXERCISE_SEARCH_TEXT_SQL, phraseParamIndex)} = 0 OR (source = 'free-exercise-db' AND description ILIKE $${phraseParamIndex}::text) THEN 1
+            ELSE 2 END),
+            (CASE WHEN source = 'free-exercise-db' AND source_id = ANY(${POPULAR_EXERCISE_SOURCE_IDS_SQL}) THEN 0 ELSE 1 END),
+            length(name) ASC, name ASC`;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function getExerciseById(id: any, userId: any) {
   const client = await getClient(userId);
@@ -207,7 +221,7 @@ async function getExercisesWithPagination(
       const exactMatchParamIndex = selectParamIndex;
       selectQueryParams.push(`%${searchTerm}%`);
       selectParamIndex++;
-      orderClause = `${buildSqlExactMatchOrder('name', exactMatchParamIndex)}, name ASC`;
+      orderClause = exerciseSearchOrder(exactMatchParamIndex);
     }
     const query = `
       SELECT id, source, source_id, name, force, level, mechanic, equipment,
@@ -428,7 +442,7 @@ async function searchExercises(
       const exactMatchParamIndex = selectParamIndex;
       selectQueryParams.push(`%${name}%`);
       selectParamIndex++;
-      orderClause = `${buildSqlExactMatchOrder('name', exactMatchParamIndex)}, name ASC`;
+      orderClause = exerciseSearchOrder(exactMatchParamIndex);
     }
     const finalQuery = `
       SELECT id, source, source_id, name, force, level, mechanic, equipment,
@@ -526,7 +540,7 @@ async function searchExercisesPaginated(
       const exactMatchParamIndex = selectParamIndex;
       selectQueryParams.push(`%${name}%`);
       selectParamIndex++;
-      orderClause = `${buildSqlExactMatchOrder('name', exactMatchParamIndex)}, name ASC`;
+      orderClause = exerciseSearchOrder(exactMatchParamIndex);
     }
     const limitParamIndex = selectParamIndex;
     const offsetParamIndex = selectParamIndex + 1;

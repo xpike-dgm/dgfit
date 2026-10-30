@@ -307,7 +307,17 @@ async function createFoodEntry(
          source, source_id, entry_time, images, notes, caffeine_mg, water_ml, alcohol_g
        ) VALUES (
          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21,
-         $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41::jsonb, $42, $43, $44, $45
+         $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39,
+         -- DG FIT: entries are not grouped by meal, so a food logged for today
+         -- without a time gets the current time in the user's timezone.
+         COALESCE($40::time, (
+           SELECT CASE WHEN $7::date = (now() AT TIME ZONE tz.zone)::date
+                       THEN date_trunc('minute', now() AT TIME ZONE tz.zone)::time END
+             FROM (SELECT COALESCE(
+                     (SELECT NULLIF(timezone, '') FROM user_preferences WHERE user_id = $1),
+                     'Europe/Istanbul') AS zone) tz
+         )),
+         $41::jsonb, $42, $43, $44, $45
        )
        -- Idempotent re-sync for provider-sourced entries (e.g. Health Connect):
        -- re-ingesting the same record updates it in place. Manual/web entries
