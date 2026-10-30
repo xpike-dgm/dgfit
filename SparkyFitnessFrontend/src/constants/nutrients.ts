@@ -50,7 +50,7 @@ export const CENTRAL_NUTRIENT_CONFIG: Record<string, NutrientMetadata> = {
     defaultLabel: 'Calories',
     unit: 'kcal',
     color: 'text-gray-900 dark:text-gray-100',
-    chartColor: '#22c55e', // green-500
+    chartColor: '#506cf7',
     decimals: 0,
     group: 'macros',
   },
@@ -59,8 +59,8 @@ export const CENTRAL_NUTRIENT_CONFIG: Record<string, NutrientMetadata> = {
     label: 'nutrition.protein',
     defaultLabel: 'Protein',
     unit: 'g',
-    color: 'text-blue-600',
-    chartColor: '#3b82f6', // blue-600
+    color: 'text-protein',
+    chartColor: '#f6b151',
     decimals: 1,
     group: 'macros',
   },
@@ -69,8 +69,8 @@ export const CENTRAL_NUTRIENT_CONFIG: Record<string, NutrientMetadata> = {
     label: 'nutrition.carbohydrates',
     defaultLabel: 'Carbohydrates',
     unit: 'g',
-    color: 'text-orange-600',
-    chartColor: '#f97316', // orange-600
+    color: 'text-carbs',
+    chartColor: '#7ad680',
     decimals: 1,
     group: 'macros',
   },
@@ -79,8 +79,8 @@ export const CENTRAL_NUTRIENT_CONFIG: Record<string, NutrientMetadata> = {
     label: 'nutrition.fat',
     defaultLabel: 'Fat',
     unit: 'g',
-    color: 'text-yellow-600',
-    chartColor: '#eab308', // yellow-600
+    color: 'text-fat',
+    chartColor: '#6dcae9',
     decimals: 1,
     group: 'macros',
   },
@@ -159,8 +159,8 @@ export const CENTRAL_NUTRIENT_CONFIG: Record<string, NutrientMetadata> = {
     label: 'nutrition.dietaryFiber',
     defaultLabel: 'Dietary Fiber',
     unit: 'g',
-    color: 'text-green-600',
-    chartColor: '#16a34a', // green-600
+    color: 'text-fiber',
+    chartColor: '#47944f',
     decimals: 1,
     group: 'minerals',
   },

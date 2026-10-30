@@ -27,71 +27,75 @@ export const KeyStatsWidget = ({ data, weightUnit }: KeyStatsWidgetProps) => {
           )}
         </CardTitle>
       </CardHeader>
-      <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="flex flex-col items-center justify-center p-4 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg h-full">
-          <span className="text-3xl font-bold">
+      <CardContent className="grid grid-cols-2 gap-2 md:grid-cols-4">
+        <div className="flex flex-col justify-center rounded-xl bg-raised px-3.5 py-3">
+          <span className="text-xl font-bold text-foreground">
             {formatNumber(data.keyStats.totalWorkouts)}
           </span>
-          <span className="text-sm text-center">
+          <span className="mt-0.5 text-xs text-muted-foreground">
             {t('exerciseReportsDashboard.totalWorkouts', 'Total Workouts')}
           </span>
         </div>
-        <div className="flex flex-col items-center justify-center p-4 rounded-lg bg-gradient-to-br from-yellow-500 to-orange-600 text-white shadow-lg h-full">
-          <span className="text-3xl font-bold">
+        <div className="flex flex-col justify-center rounded-xl bg-raised px-3.5 py-3">
+          <span className="text-xl font-bold text-foreground">
             {formatWholeWeight(data.keyStats.totalVolume, weightUnit)}
           </span>
-          <span className="text-sm text-center">
+          <span className="mt-0.5 text-xs text-muted-foreground">
             {t('exerciseReportsDashboard.totalVolume', 'Total Volume')}
           </span>
         </div>
-        <div className="flex flex-col items-center justify-center p-4 rounded-lg bg-gradient-to-br from-red-500 to-pink-600 text-white shadow-lg h-full">
-          <span className="text-3xl font-bold">
+        <div className="flex flex-col justify-center rounded-xl bg-raised px-3.5 py-3">
+          <span className="text-xl font-bold text-foreground">
             {formatNumber(data.keyStats.totalReps)}
           </span>
-          <span className="text-sm text-center">
+          <span className="mt-0.5 text-xs text-muted-foreground">
             {t('exerciseReportsDashboard.totalReps', 'Total Reps')}
           </span>
         </div>
         {data.consistencyData && (
           <>
-            <div className="flex flex-col items-center justify-center p-4 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 text-white shadow-lg h-full">
-              <span className="text-3xl font-bold">
+            <div className="flex flex-col justify-center rounded-xl bg-raised px-3.5 py-3">
+              <span className="text-xl font-bold text-foreground">
                 {data.consistencyData.currentStreak}
               </span>
-              <span className="text-sm text-center">
+              <span className="mt-0.5 text-xs text-muted-foreground">
                 {t(
                   'exerciseReportsDashboard.currentStreakDays',
                   'Current Streak (days)'
                 )}
               </span>
             </div>
-            <div className="flex flex-col items-center justify-center p-4 rounded-lg bg-gradient-to-br from-cyan-500 to-sky-600 text-white shadow-lg h-full">
-              <span className="text-3xl font-bold">
+            <div className="flex flex-col justify-center rounded-xl bg-raised px-3.5 py-3">
+              <span className="text-xl font-bold text-foreground">
                 {data.consistencyData.longestStreak}
               </span>
-              <span className="text-sm text-center">
+              <span className="mt-0.5 text-xs text-muted-foreground">
                 {t(
                   'exerciseReportsDashboard.longestStreakDays',
                   'Longest Streak (days)'
                 )}
               </span>
             </div>
-            <div className="flex flex-col items-center justify-center p-4 rounded-lg bg-gradient-to-br from-emerald-500 to-lime-600 text-white shadow-lg h-full">
-              <span className="text-3xl font-bold">
-                {data.consistencyData.weeklyFrequency.toFixed(1)}
+            <div className="flex flex-col justify-center rounded-xl bg-raised px-3.5 py-3">
+              <span className="text-xl font-bold text-foreground">
+                {data.consistencyData.weeklyFrequency.toLocaleString('tr-TR', {
+                  maximumFractionDigits: 1,
+                })}
               </span>
-              <span className="text-sm text-center">
+              <span className="mt-0.5 text-xs text-muted-foreground">
                 {t(
                   'exerciseReportsDashboard.weeklyFrequency',
                   'Weekly Frequency'
                 )}
               </span>
             </div>
-            <div className="flex flex-col items-center justify-center p-4 rounded-lg bg-gradient-to-br from-rose-500 to-fuchsia-600 text-white shadow-lg h-full">
-              <span className="text-3xl font-bold">
-                {data.consistencyData.monthlyFrequency.toFixed(1)}
+            <div className="flex flex-col justify-center rounded-xl bg-raised px-3.5 py-3">
+              <span className="text-xl font-bold text-foreground">
+                {data.consistencyData.monthlyFrequency.toLocaleString('tr-TR', {
+                  maximumFractionDigits: 1,
+                })}
               </span>
-              <span className="text-sm text-center">
+              <span className="mt-0.5 text-xs text-muted-foreground">
                 {t(
                   'exerciseReportsDashboard.monthlyFrequency',
                   'Monthly Frequency'

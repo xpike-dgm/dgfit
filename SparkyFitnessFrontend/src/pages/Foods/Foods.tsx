@@ -309,7 +309,7 @@ const FoodDatabaseManager = () => {
                   {food.shared_with_public && (
                     <Badge
                       variant="outline"
-                      className="text-[10px] bg-green-50 text-green-700 h-5 px-1.5 font-bold"
+                      className="text-[10px] bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-300 h-5 px-1.5 font-bold"
                     >
                       <Share2 className="h-2.5 w-2.5 mr-1" />
                       {t('foodDatabaseManager.public', 'Public')}

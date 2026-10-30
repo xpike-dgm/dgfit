@@ -28,9 +28,9 @@ export const EnergyCircle = ({
     targetBand !== undefined && targetBand.eaten > targetBand.max;
   const ringColorClass =
     targetBand === undefined
-      ? 'text-green-500'
+      ? 'text-calories'
       : inRange
-        ? 'text-green-500'
+        ? 'text-calories'
         : isOverLimit
           ? 'text-red-500'
           : 'text-amber-500';
@@ -40,7 +40,7 @@ export const EnergyCircle = ({
       <div className="relative w-32 h-32">
         <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 36 36">
           <path
-            className="text-gray-200 dark:text-slate-400"
+            className="text-progress-track"
             stroke="currentColor"
             strokeWidth="3"
             fill="transparent"
@@ -50,19 +50,20 @@ export const EnergyCircle = ({
             className={ringColorClass}
             stroke="currentColor"
             strokeWidth="3"
+            strokeLinecap="round"
             fill="transparent"
             strokeDasharray={`${Math.min(progress, 100)}, 100`}
             d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <div className="text-xl font-bold text-gray-900 dark:text-gray-50 flex items-center gap-1">
-            {remaining}
+          <div className="text-xl font-bold text-foreground flex items-center gap-1">
+            {Math.round(remaining).toLocaleString('tr-TR')}
             {targetBand !== undefined && inRange && (
               <CheckCircle2 className="h-4 w-4 text-green-600" />
             )}
           </div>
-          <div className="text-xs text-gray-500 dark:text-gray-400">
+          <div className="text-xs text-muted-foreground">
             {t(
               'exercise.dailyProgress.remaining2',
               'remaining {{energyUnitString}}',
