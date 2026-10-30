@@ -40,6 +40,13 @@ const FitnessFatigueCard = ({ data }: FitnessFatigueCardProps) => {
   if (!data) return null;
 
   const { readiness, fitnessFatigue } = data;
+  // Nothing to read yet: a card of zeros and a flat line only adds noise.
+  if (
+    readiness.score === null &&
+    (fitnessFatigue.status === 'noData' || fitnessFatigue.status === 'learning')
+  ) {
+    return null;
+  }
   const today = fitnessFatigue.today;
   const recent = fitnessFatigue.points.slice(-FORM_DAYS);
   const peak = Math.max(1, ...recent.map((point) => Math.abs(point.form)));

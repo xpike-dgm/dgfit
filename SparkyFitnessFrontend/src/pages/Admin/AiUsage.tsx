@@ -33,12 +33,17 @@ const AiUsage = () => {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex gap-2">
+        <div className="flex rounded-xl bg-raised p-1">
           {[7, 30, 90].map((value) => (
             <Button
               key={value}
               size="sm"
-              variant={days === value ? 'default' : 'outline'}
+              variant="ghost"
+              className={`flex-1 rounded-lg ${
+                days === value
+                  ? 'bg-card text-foreground shadow-sm hover:bg-card'
+                  : 'text-caption'
+              }`}
               onClick={() => setDays(value)}
             >
               Son {value} gün

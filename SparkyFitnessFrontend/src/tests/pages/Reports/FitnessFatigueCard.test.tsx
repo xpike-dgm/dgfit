@@ -69,8 +69,8 @@ describe('FitnessFatigueCard', () => {
     expect(screen.getByText(/Tired:/)).toBeInTheDocument();
   });
 
-  it('explains there is nothing to go on yet', () => {
-    render(
+  it('stays hidden while there is nothing to go on yet', () => {
+    const { container } = render(
       <FitnessFatigueCard
         data={response(
           { score: null, level: 'noData', factors: {} },
@@ -78,9 +78,7 @@ describe('FitnessFatigueCard', () => {
         )}
       />
     );
-    expect(screen.getByText('–')).toBeInTheDocument();
-    expect(screen.getByText(/Not enough to go on yet/)).toBeInTheDocument();
-    expect(screen.queryAllByTestId('form-bar')).toHaveLength(0);
+    expect(container).toBeEmptyDOMElement();
   });
 
   it('renders nothing before the data loads', () => {

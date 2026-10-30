@@ -770,13 +770,13 @@ const ExerciseReportsDashboard = ({
       {/* Tier 1: View Mode Tabs & Global Interval Selector */}
       <div className="sticky top-0 z-20 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 p-3 rounded-xl border bg-card shadow-sm">
         {/* Domain View Selector */}
-        <div className="self-start inline-flex items-center gap-1 bg-muted p-1 rounded-md">
+        <div className="self-start inline-flex items-center gap-1 bg-raised p-1 rounded-xl">
           <button
             type="button"
             title={t('exerciseAnalytics.views.all', 'All Workouts')}
-            className={`inline-flex items-center px-2.5 py-1 rounded font-medium text-xs whitespace-nowrap transition-all ${
+            className={`inline-flex items-center px-2.5 py-1 rounded-lg font-medium text-xs whitespace-nowrap transition-all ${
               viewMode === 'all'
-                ? 'bg-primary text-primary-foreground shadow-sm'
+                ? 'bg-card text-foreground shadow-sm'
                 : 'text-muted-foreground hover:text-foreground'
             }`}
             onClick={() => setViewMode('all')}
@@ -795,9 +795,9 @@ const ExerciseReportsDashboard = ({
               'exerciseAnalytics.views.strength',
               'Strength & Resistance'
             )}
-            className={`inline-flex items-center px-2.5 py-1 rounded font-medium text-xs whitespace-nowrap transition-all ${
+            className={`inline-flex items-center px-2.5 py-1 rounded-lg font-medium text-xs whitespace-nowrap transition-all ${
               viewMode === 'strength'
-                ? 'bg-primary text-primary-foreground shadow-sm'
+                ? 'bg-card text-foreground shadow-sm'
                 : 'text-muted-foreground hover:text-foreground'
             }`}
             onClick={() => setViewMode('strength')}
@@ -813,9 +813,9 @@ const ExerciseReportsDashboard = ({
           <button
             type="button"
             title={t('exerciseAnalytics.views.cardio', 'Cardio & GPS')}
-            className={`inline-flex items-center px-2.5 py-1 rounded font-medium text-xs whitespace-nowrap transition-all ${
+            className={`inline-flex items-center px-2.5 py-1 rounded-lg font-medium text-xs whitespace-nowrap transition-all ${
               viewMode === 'cardio'
-                ? 'bg-primary text-primary-foreground shadow-sm'
+                ? 'bg-card text-foreground shadow-sm'
                 : 'text-muted-foreground hover:text-foreground'
             }`}
             onClick={() => setViewMode('cardio')}
@@ -835,7 +835,7 @@ const ExerciseReportsDashboard = ({
           <span className="text-xs font-medium text-muted-foreground">
             {t('exerciseAnalytics.interval', 'Group by:')}
           </span>
-          <div className="flex items-center bg-muted p-1 rounded-md text-xs">
+          <div className="flex items-center bg-raised p-1 rounded-xl text-xs">
             {(['day', 'week', 'month', 'year'] as const).map((int) => (
               <button
                 key={int}
@@ -853,7 +853,7 @@ const ExerciseReportsDashboard = ({
                 }}
                 className={`px-2.5 py-1 rounded font-medium capitalize text-xs transition-all ${
                   statsInterval === int
-                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    ? 'bg-card text-foreground shadow-sm'
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >

@@ -7712,7 +7712,7 @@
     "volume": {
       "emptyTitle": "Egzersiz Hacmi ve Süre Toplamları",
       "noData": "Bu tarih aralığında kaydedilmiş egzersiz mesafesi veya süresi yok.",
-      "title": "Antrenman Hacmi",
+      "title": "Kardiyo Hacmi",
       "summary_one": "{{interval}} bazında gruplandı • {{count}} antrenmanda toplam {{distance}} {{unit}}",
       "summary_other": "{{interval}} bazında gruplandı • {{count}} antrenmanda toplam {{distance}} {{unit}}",
       "distance": "Mesafe",

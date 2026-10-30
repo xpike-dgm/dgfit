@@ -3,19 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-import {
-  Dumbbell,
-  Play,
-  Repeat,
-  ChevronDown,
-  CalendarDays,
-} from 'lucide-react';
+import { Plus, Play, Repeat, ChevronDown, CalendarDays } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -563,38 +551,27 @@ const ExerciseCard = ({
     <Card>
       <CardHeader>
         <div className="flex justify-between items-center">
-          <CardTitle className="dark:text-slate-300">
-            {t('exerciseCard.title', 'Exercise')}
-          </CardTitle>
-          <div className="flex items-center gap-2">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    size="default"
-                    variant="outline"
-                    onClick={handleStartWorkoutPlayback}
-                  >
-                    <Play className="w-4 h-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{t('exerciseCard.startWorkout', 'Start Workout')}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button size="default" onClick={handleOpenAddDialog}>
-                    <Dumbbell className="w-4 h-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{t('exerciseCard.addExercise', 'Add Exercise')}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+          <CardTitle>{t('exerciseCard.title', 'Exercise')}</CardTitle>
+          <div className="flex items-center gap-1">
+            <Button
+              size="sm"
+              variant="ghost"
+              className="rounded-full px-3 text-primary"
+              onClick={handleStartWorkoutPlayback}
+              title={t('exerciseCard.startWorkout', 'Start Workout')}
+            >
+              <Play className="h-4 w-4" />
+              Başlat
+            </Button>
+            <Button
+              size="sm"
+              className="rounded-full px-4"
+              onClick={handleOpenAddDialog}
+              title={t('exerciseCard.addExercise', 'Add Exercise')}
+            >
+              <Plus className="h-4 w-4" />
+              Ekle
+            </Button>
           </div>
           {/* Render the AddExerciseDialog directly. It manages its own Dialog/Content and headers. */}
           <AddExerciseDialog

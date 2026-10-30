@@ -111,7 +111,7 @@ export const CardioVolumeIntervalChart = ({
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {/* Metric Selector */}
-          <div className="flex items-center bg-muted p-1 rounded-md text-xs">
+          <div className="flex items-center bg-raised p-1 rounded-xl text-xs">
             {(
               [
                 [
@@ -131,9 +131,9 @@ export const CardioVolumeIntervalChart = ({
               <button
                 key={key}
                 type="button"
-                className={`h-7 px-2.5 rounded text-xs font-medium ${
+                className={`h-7 px-2.5 rounded-lg text-xs font-medium ${
                   metric === key
-                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    ? 'bg-card text-foreground shadow-sm'
                     : 'text-muted-foreground'
                 }`}
                 onClick={() => setMetric(key)}
@@ -145,27 +145,27 @@ export const CardioVolumeIntervalChart = ({
 
           {/* Interval Selector */}
           {onIntervalChange && (
-            <div className="flex items-center bg-muted p-1 rounded-md text-xs">
+            <div className="flex items-center bg-raised p-1 rounded-xl text-xs">
               <Button
-                variant={summaryData.interval === 'week' ? 'default' : 'ghost'}
+                variant="ghost"
                 size="sm"
-                className="h-7 px-2 text-xs"
+                className={`h-7 rounded-lg px-2 text-xs ${summaryData.interval === 'week' ? 'bg-card text-foreground shadow-sm hover:bg-card' : 'text-caption'}`}
                 onClick={() => onIntervalChange('week')}
               >
                 {t('exerciseAnalytics.intervals.week', 'Week')}
               </Button>
               <Button
-                variant={summaryData.interval === 'month' ? 'default' : 'ghost'}
+                variant="ghost"
                 size="sm"
-                className="h-7 px-2 text-xs"
+                className={`h-7 rounded-lg px-2 text-xs ${summaryData.interval === 'month' ? 'bg-card text-foreground shadow-sm hover:bg-card' : 'text-caption'}`}
                 onClick={() => onIntervalChange('month')}
               >
                 {t('exerciseAnalytics.intervals.month', 'Month')}
               </Button>
               <Button
-                variant={summaryData.interval === 'year' ? 'default' : 'ghost'}
+                variant="ghost"
                 size="sm"
-                className="h-7 px-2 text-xs"
+                className={`h-7 rounded-lg px-2 text-xs ${summaryData.interval === 'year' ? 'bg-card text-foreground shadow-sm hover:bg-card' : 'text-caption'}`}
                 onClick={() => onIntervalChange('year')}
               >
                 {t('exerciseAnalytics.intervals.year', 'Year')}
