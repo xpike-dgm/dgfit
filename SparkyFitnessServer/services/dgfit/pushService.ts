@@ -336,7 +336,7 @@ export async function runReminders(): Promise<void> {
             await sendToUser(userId, {
               title: 'Bugün yemek girmedin 🍽️',
               body: "Yediklerini yaz ya da fotoğrafını PT AI'a at, kalorini hesaplasın.",
-              url: '/',
+              url: '/gunluk',
               tag: 'food-reminder',
             });
           }

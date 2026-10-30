@@ -11,7 +11,6 @@ import {
   Settings as SettingsIcon,
   LogOut,
   Dumbbell, // Used for Exercises
-  Target, // Used for Goals
   Pill, // Used for Medications
   Shield,
   Plus,
@@ -25,6 +24,8 @@ import {
   Users,
   Menu,
   Scale,
+  LayoutGrid,
+  BookOpen,
   Sparkles,
   ChefHat,
 } from 'lucide-react';
@@ -44,7 +45,6 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { useActiveUser } from '@/contexts/ActiveUserContext';
 import { usePreferences } from '@/contexts/PreferencesContext';
-import { useIsMobile } from '@/hooks/use-mobile';
 import { useMealTypes } from '@/hooks/Diary/useMealTypes';
 import { useCurrentVersionQuery } from '@/hooks/useGeneralQueries';
 import { cn } from '@/lib/utils';
@@ -55,6 +55,7 @@ interface AddCompItem {
   label: string;
   icon: LucideIcon;
   fullWidth?: boolean;
+  tint?: string;
 }
 
 /** A tab stays highlighted on its own sub-pages (e.g. /exercises/training-programs). */
@@ -74,7 +75,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   const { t } = useTranslation();
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const isMobile = useIsMobile();
   const { openChat } = useChatbotVisibility();
   const {
     isActingOnBehalf,
@@ -116,16 +116,31 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     if (!isActingOnBehalf) {
       // DG FIT quick actions.
       items.push(
-        {
-          value: 'foodlog',
-          label: 'Yemek ekle',
-          icon: Salad,
-          fullWidth: true,
-        },
-        { value: '/antrenman', label: 'Antrenman başlat', icon: Dumbbell },
-        { value: 'checkin', label: 'Kilo & ölçüm', icon: Scale },
+        { value: 'foodlog', label: 'Yemek', icon: Salad },
+        { value: '/antrenman', label: 'Antrenman', icon: Dumbbell },
+        { value: '/checkin', label: 'Ölçüm', icon: Scale },
         { value: 'ptai', label: 'PT AI', icon: Sparkles },
-        { value: '/tarifler', label: 'Tarif oluştur', icon: ChefHat }
+        {
+          value: '/tarifler',
+          label: 'Tarif oluştur',
+          icon: ChefHat,
+          fullWidth: true,
+          tint: 'text-cat-amber',
+        },
+        {
+          value: '/arkadaslar',
+          label: 'Arkadaşlar',
+          icon: Users,
+          fullWidth: true,
+          tint: 'text-cat-violet',
+        },
+        {
+          value: '/reports',
+          label: 'Gelişim',
+          icon: BarChart3,
+          fullWidth: true,
+          tint: 'text-cat-green',
+        }
       );
     } else {
       if (hasWritePermission('checkin')) {
@@ -207,19 +222,19 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     const tabs = [];
     if (!isActingOnBehalf) {
       tabs.push(
-        { value: '/', label: 'Bugün', icon: Home },
+        { value: '/', label: 'Özet', icon: LayoutGrid },
+        { value: '/gunluk', label: 'Günlük', icon: BookOpen },
         { value: '/antrenman', label: 'Antrenman', icon: Dumbbell },
         { value: '/arkadaslar', label: 'Arkadaşlar', icon: Users },
         { value: '/reports', label: 'Gelişim', icon: BarChart3 },
         { value: '/foods', label: 'Yiyecekler', icon: Utensils },
         { value: '/tarifler', label: 'Tarifler', icon: ChefHat },
         { value: '/checkin', label: 'Ölçümler', icon: Scale },
-        { value: '/goals', label: 'Hedefler', icon: Target },
         { value: '/settings', label: 'Ayarlar', icon: SettingsIcon }
       );
     } else {
       if (hasWritePermission('diary')) {
-        tabs.push({ value: '/', label: t('nav.diary'), icon: Home });
+        tabs.push({ value: '/gunluk', label: t('nav.diary'), icon: Home });
       }
       if (hasWritePermission('checkin')) {
         tabs.push({
@@ -280,19 +295,23 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     // (see addCompItems), not the bottom bar, to keep the bar uncluttered.
     if (!isActingOnBehalf) {
       mobileTabs.push(
-        { value: '/', label: 'Bugün', icon: Home },
-        { value: '/antrenman', label: 'Antrenman', icon: Dumbbell },
+        { value: '/', label: 'Özet', icon: LayoutGrid },
+        { value: '/gunluk', label: 'Günlük', icon: BookOpen },
         {
           value: 'Add',
           label: 'Ekle',
           icon: isAddCompOpen ? X : Plus,
         },
-        { value: '/arkadaslar', label: 'Arkadaşlar', icon: Users },
+        { value: '/antrenman', label: 'Antrenman', icon: Dumbbell },
         { value: '/menu', label: 'Menü', icon: Menu }
       );
     } else {
       if (hasWritePermission('diary')) {
-        mobileTabs.push({ value: '/', label: t('nav.diary'), icon: Home });
+        mobileTabs.push({
+          value: '/gunluk',
+          label: t('nav.diary'),
+          icon: Home,
+        });
       }
       if (hasWritePermission('checkin')) {
         mobileTabs.push({
@@ -347,7 +366,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         setIsAddCompOpen(false);
         // DG FIT keeps a single food list, so skip the meal picker then.
         if (mealTypeItems.length === 1) {
-          navigate('/', {
+          navigate('/gunluk', {
             state: { openFoodSearchForMeal: mealTypeItems[0]?.value },
           });
         } else {
@@ -372,13 +391,12 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         `[MainLayout] Navigating to diary with meal type: ${mealType}`
       );
       setIsMealTypeSelectOpen(false);
-      navigate('/', { state: { openFoodSearchForMeal: mealType } });
+      navigate('/gunluk', { state: { openFoodSearchForMeal: mealType } });
     },
     [loggingLevel, navigate]
   );
 
   const gridClass = getGridClassNormal(availableTabs.length);
-  const mobileGridClass = getGridClassNormal(availableMobileTabs.length);
 
   const location = useLocation();
 
@@ -393,9 +411,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     const currentPath = location.pathname;
     // Match exactly or as prefix (e.g. /medications/log should match /medications)
     return availableTabs.some((tab) => {
-      if (tab.value === '/') {
+      if (tab.value === '/gunluk') {
         return (
-          currentPath === '/' ||
+          currentPath === '/gunluk' ||
           currentPath === '/workout-playback' ||
           currentPath.startsWith('/workout-playback/')
         );
@@ -432,8 +450,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
-        <div className="flex justify-between items-center mb-6">
+      <div className="container mx-auto px-4 pt-[max(env(safe-area-inset-top),12px)] sm:py-8">
+        <div className="mb-6 hidden items-center justify-between sm:flex">
           <div className="flex items-center gap-1">
             <img
               src="/images/dgfit-logo.png"
@@ -461,57 +479,50 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                 className="flex items-center gap-2"
                 title={t('onboarding.completeSetup', 'Complete your setup')}
               >
-                <span className="hidden sm:inline">
-                  {t('onboarding.completeSetup', 'Complete Setup')}
-                </span>
-                <span className="sm:hidden">
-                  {t('onboarding.setupShort', 'Setup')}
-                </span>
+                {t('onboarding.completeSetup', 'Complete Setup')}
               </Button>
             )}
             <GlobalNotificationIcon />
             <GlobalSyncButton />
             <ThemeToggle />
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={handleSignOut}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 text-muted-foreground"
             >
               <LogOut className="h-4 w-4" />
-              <span className="hidden sm:inline dark:text-slate-300">
-                {t('auth.signOut', 'Sign Out')}
-              </span>
+              {t('auth.signOut', 'Sign Out')}
             </Button>
           </div>
         </div>
+        {onStartOnboarding && (
+          <Button
+            variant="secondary"
+            onClick={onStartOnboarding}
+            className="mb-3 w-full sm:hidden"
+          >
+            {t('onboarding.completeSetup', 'Complete Setup')}
+          </Button>
+        )}
         <nav
           className={cn(
-            'relative hidden sm:grid w-full gap-1 mb-6 bg-slate-200/60 dark:bg-muted/50 p-1 rounded-lg border transition-colors overflow-hidden',
+            'relative hidden sm:grid w-full gap-1 mb-6 bg-raised p-1 rounded-xl border border-border/60 transition-colors overflow-hidden',
             gridClass,
-            selectedDateRelation === 'today' && 'border-transparent',
             selectedDateRelation === 'past' && 'border-date-past/40',
             selectedDateRelation === 'future' && 'border-date-future/40'
           )}
         >
-          {selectedDateRelation !== 'today' && (
-            <div
-              className={cn(
-                'absolute inset-0 pointer-events-none z-10',
-                selectedDateRelation === 'past' && 'bg-date-past/10',
-                selectedDateRelation === 'future' && 'bg-date-future/10'
-              )}
-            />
-          )}
           {availableTabs.map(({ value, label, icon: Icon }) => (
             <Button
               key={value}
               variant="ghost"
-              className={`relative flex items-center gap-2 hover:bg-background/50 transition-all ${
+              className={cn(
+                'relative flex items-center gap-2 rounded-lg transition-all',
                 isTabActive(location.pathname, value)
-                  ? 'bg-background shadow-sm text-foreground'
-                  : 'text-muted-foreground'
-              }`}
+                  ? 'bg-card text-primary shadow-sm'
+                  : 'text-tab-inactive'
+              )}
               onClick={() => navigate(value)}
             >
               <Icon className="h-4 w-4" />
@@ -520,56 +531,59 @@ const MainLayout: React.FC<MainLayoutProps> = ({
           ))}
         </nav>
 
-        {/* Mobile Navigation */}
-        <nav
-          className={cn(
-            'apple-safe-area sm:hidden fixed bottom-0 left-0 right-0 z-50 w-full bg-background border-t transition-colors overflow-hidden',
-            selectedDateRelation === 'past' && 'border-date-past/80',
-            selectedDateRelation === 'future' && 'border-date-future/50'
-          )}
-        >
-          {selectedDateRelation !== 'today' && (
-            <div
-              className={cn(
-                'absolute inset-0 pointer-events-none z-10',
-                selectedDateRelation === 'past' && 'bg-date-past/10',
-                selectedDateRelation === 'future' && 'bg-date-future/10'
-              )}
-            />
-          )}
-          <div
-            className={`relative h-14 grid ${mobileGridClass} items-center justify-items-center`}
-          >
-            {availableMobileTabs.map(({ value, label, icon: Icon }) => (
-              <Button
-                key={value}
-                variant="ghost"
-                className={`flex h-full flex-col items-center gap-0.5 py-1 ${
-                  value === 'Add' || isTabActive(location.pathname, value)
-                    ? 'text-primary'
-                    : ''
-                }`}
-                onClick={() => {
-                  if (value === 'Add') {
-                    setIsAddCompOpen((prev) => !prev);
-                  } else {
+        {/* Mobile tab bar, as in the SparkyFitness app: chrome bar with a
+            hairline top edge, labelled tabs and a raised round Add button. */}
+        <nav className="apple-safe-area sm:hidden fixed bottom-0 left-0 right-0 z-50 w-full border-t border-chrome-border bg-chrome">
+          <div className="flex items-end">
+            {availableMobileTabs.map(({ value, label, icon: Icon }) => {
+              if (value === 'Add') {
+                return (
+                  <div
+                    key={value}
+                    className="flex flex-1 items-end justify-center pb-1"
+                  >
+                    <button
+                      type="button"
+                      aria-label={label}
+                      onClick={() => setIsAddCompOpen((prev) => !prev)}
+                      className="-mt-5 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-white shadow-[2px_4px_6px_rgba(0,0,0,0.25)] transition-transform active:scale-95"
+                    >
+                      <Icon className="h-7 w-7" strokeWidth={2.75} />
+                    </button>
+                  </div>
+                );
+              }
+              const active = isTabActive(location.pathname, value);
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  aria-current={active ? 'page' : undefined}
+                  onClick={() => {
                     setIsAddCompOpen(false);
                     navigate(value);
-                  }
-                }}
-              >
-                <Icon className={value === 'Add' ? 'h-8 w-8' : 'h-6 w-6'} />
-                {value !== 'Add' && (
-                  <span className="text-[10px] font-medium leading-none">
+                  }}
+                  className={cn(
+                    'flex flex-1 flex-col items-center justify-center gap-0.5 pt-2 pb-1',
+                    active ? 'text-primary' : 'text-tab-inactive'
+                  )}
+                >
+                  <Icon className="h-6 w-6" strokeWidth={active ? 2.4 : 1.9} />
+                  <span
+                    className={cn(
+                      'text-xs leading-4',
+                      active ? 'font-semibold' : 'font-medium'
+                    )}
+                  >
                     {label}
                   </span>
-                )}
-              </Button>
-            ))}
+                </button>
+              );
+            })}
           </div>
         </nav>
 
-        <div className="pb-16 sm:pb-0">
+        <div className="pb-24 sm:pb-0">
           <InstallAppBanner />
           <OfflineWorkoutSync />
           {/* Don't mount a disallowed page while the redirect effect runs, or it
@@ -595,20 +609,16 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         title={t('foodDiary.selectMealType', 'Select Meal Type')}
       />
 
-      <footer className="text-center text-muted-foreground text-sm py-4">
-        <div
-          className={`flex justify-center items-center gap-2 ${isMobile ? 'mb-14' : ''}`}
+      <footer className="hidden text-center text-muted-foreground text-sm py-4 sm:block">
+        <button
+          type="button"
+          className="cursor-pointer underline bg-transparent border-0 p-0 text-inherit font-normal text-sm"
+          onClick={onShowAboutDialog}
         >
-          <button
-            type="button"
-            className="cursor-pointer underline bg-transparent border-0 p-0 text-inherit font-normal text-sm"
-            onClick={onShowAboutDialog}
-          >
-            {t('nav.sparkyFitnessV', 'DG FIT v{{version}}', {
-              version: appVersion?.version ?? '',
-            })}
-          </button>
-        </div>
+          {t('nav.sparkyFitnessV', 'DG FIT v{{version}}', {
+            version: appVersion?.version ?? '',
+          })}
+        </button>
       </footer>
     </div>
   );

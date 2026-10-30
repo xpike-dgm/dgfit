@@ -3,7 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useActiveUser } from '@/contexts/ActiveUserContext';
 import { usePreferences } from '@/contexts/PreferencesContext';
-import DayNavigator from '@/components/DayNavigator';
+import DatePill from '@/components/DatePill';
+import DiaryCalorieBar from './DiaryCalorieBar';
 import NutritionSummaryCard, { DayTotals } from './NutritionSummaryCard';
 import DailyProgress from './DailyProgress';
 import WaterIntake from './WaterIntake';
@@ -479,24 +480,40 @@ const Diary = () => {
 
   if (loading) return <div>{t('common.loading', 'Loading...')}</div>;
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b">
-        <div />
-        <div className="flex min-w-0 flex-wrap items-center gap-2 sm:ml-auto">
+    <div className="space-y-4">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center justify-between gap-2">
+          <h1 className="text-2xl font-bold text-foreground">Günlük</h1>
+          <div className="sm:hidden">
+            <DatePill
+              date={selectedDate}
+              onChange={(dateString) => {
+                setSelectedDate(dateString);
+                setSearchParams({ date: dateString });
+              }}
+            />
+          </div>
+        </div>
+        <div className="flex min-w-0 flex-wrap items-center justify-end gap-2 sm:ml-auto">
           <div
             ref={setToolbarContainer}
             className="flex min-w-0 flex-wrap items-center gap-2"
           />
-          <DayNavigator
-            selectedDate={selectedDate}
-            onDateChange={(dateString) => {
-              setSelectedDate(dateString);
-              setSearchParams({ date: dateString });
-            }}
-            className="grid-cols-none flex mb-0 items-center gap-2"
-          />
+          <div className="hidden sm:block">
+            <DatePill
+              date={selectedDate}
+              onChange={(dateString) => {
+                setSelectedDate(dateString);
+                setSearchParams({ date: dateString });
+              }}
+            />
+          </div>
         </div>
       </div>
+
+      {summaryData?.calorieBalance && (
+        <DiaryCalorieBar balance={summaryData.calorieBalance} />
+      )}
 
       {effectiveGoals && (
         <DiaryWidgetGrid

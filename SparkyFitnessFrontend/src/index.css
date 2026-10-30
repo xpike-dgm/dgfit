@@ -35,6 +35,25 @@
   --color-date-past: hsl(var(--date-past));
   --color-date-future: hsl(var(--date-future));
 
+  --color-raised: hsl(var(--raised));
+  --color-chrome: hsl(var(--chrome));
+  --color-chrome-border: hsl(var(--chrome-border));
+  --color-caption: hsl(var(--caption));
+  --color-tab-inactive: hsl(var(--tab-inactive));
+  --color-progress-track: hsl(var(--progress-track));
+  --color-calories: hsl(var(--calories));
+  --color-protein: hsl(var(--protein));
+  --color-carbs: hsl(var(--carbs));
+  --color-fat: hsl(var(--fat));
+  --color-fiber: hsl(var(--fiber));
+  --color-hydration: hsl(var(--hydration));
+  --color-exercise: hsl(var(--exercise));
+  --color-pr: hsl(var(--pr));
+  --color-cat-amber: hsl(var(--cat-amber));
+  --color-cat-violet: hsl(var(--cat-violet));
+  --color-cat-green: hsl(var(--cat-green));
+  --color-cat-pink: hsl(var(--cat-pink));
+
   --color-sidebar: hsl(var(--sidebar-background));
   --color-sidebar-foreground: hsl(var(--sidebar-foreground));
   --color-sidebar-primary: hsl(var(--sidebar-primary));
@@ -89,93 +108,133 @@
 }
 
 @layer base {
+  /* DG FIT follows the SparkyFitness mobile app palette
+     (SparkyFitnessMobile/global.css): Cool Mist canvas, Porcelain cards and
+     Sparky Blue accent in light; the matching slate set in dark. */
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 220 25% 96%;
+    --foreground: 222 47% 11%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 220 20% 98%;
+    --card-foreground: 222 47% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 222 47% 11%;
 
-    --primary: 14 100% 50%;
+    --primary: 220 91% 64%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 218 29% 92%;
+    --secondary-foreground: 222 47% 11%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 218 29% 93%;
+    --muted-foreground: 215 19% 40%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 220 91% 95%;
+    --accent-foreground: 222 47% 11%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
-    --date-today: 160 84% 39%;
-    --date-past: 20 90% 50%;
-    --date-future: 40 90% 50%;
-
-    --radius: 0.5rem;
-
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-
-  /* DG FIT dark palette: near-black slate with the orange-red brand accent. */
-  .dark {
-    --background: 216 28% 6%;
-    --foreground: 210 20% 96%;
-
-    --card: 216 24% 9%;
-    --card-foreground: 210 20% 96%;
-
-    --popover: 216 24% 10%;
-    --popover-foreground: 210 20% 96%;
-
-    --primary: 14 100% 55%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 216 18% 15%;
-    --secondary-foreground: 210 20% 96%;
-
-    --muted: 216 18% 14%;
-    --muted-foreground: 215 14% 64%;
-
-    --accent: 216 18% 16%;
-    --accent-foreground: 210 20% 96%;
-
-    --destructive: 0 72% 51%;
+    --destructive: 358 61% 44%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 216 16% 17%;
-    --input: 216 16% 19%;
-    --ring: 14 100% 55%;
+    --border: 213 16% 90%;
+    --input: 213 16% 87%;
+    --ring: 220 91% 64%;
 
-    --date-today: 14 100% 55%;
-    --date-past: 20 90% 30%;
-    --date-future: 40 90% 30%;
+    --date-today: 220 91% 64%;
+    --date-past: 20 90% 50%;
+    --date-future: 200 90% 50%;
 
-    --sidebar-background: 216 26% 8%;
-    --sidebar-foreground: 210 20% 92%;
-    --sidebar-primary: 14 100% 55%;
+    --raised: 0 0% 100%;
+    --chrome: 0 0% 100%;
+    --chrome-border: 220 20% 88%;
+    --caption: 215 20% 65%;
+    --tab-inactive: 220 16% 47%;
+    --progress-track: 218 29% 92%;
+    --calories: 230 91% 64%;
+    --protein: 35 90% 64%;
+    --carbs: 124 53% 66%;
+    --fat: 195 74% 67%;
+    --fiber: 126 35% 43%;
+    --hydration: 200 40% 60%;
+    --exercise: 146 68% 66%;
+    --pr: 36 92% 44%;
+    --cat-amber: 40 88% 43%;
+    --cat-violet: 265 70% 60%;
+    --cat-green: 124 54% 38%;
+    --cat-pink: 340 75% 55%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 220 20% 98%;
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-primary: 220 91% 64%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 216 18% 14%;
-    --sidebar-accent-foreground: 210 20% 96%;
-    --sidebar-border: 216 16% 15%;
-    --sidebar-ring: 14 100% 55%;
+    --sidebar-accent: 218 29% 93%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 213 16% 90%;
+    --sidebar-ring: 220 91% 64%;
+  }
+
+  .dark {
+    --background: 220 20% 6%;
+    --foreground: 220 15% 92%;
+
+    --card: 220 18% 9%;
+    --card-foreground: 220 15% 92%;
+
+    --popover: 220 16% 13%;
+    --popover-foreground: 220 15% 92%;
+
+    --primary: 220 85% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 16% 13%;
+    --secondary-foreground: 220 15% 92%;
+
+    --muted: 220 16% 13%;
+    --muted-foreground: 220 10% 68%;
+
+    --accent: 220 30% 17%;
+    --accent-foreground: 220 15% 92%;
+
+    --destructive: 358 46% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 15% 15%;
+    --input: 220 15% 19%;
+    --ring: 220 85% 60%;
+
+    --date-today: 220 85% 60%;
+    --date-past: 20 85% 60%;
+    --date-future: 200 80% 65%;
+
+    --raised: 220 16% 13%;
+    --chrome: 220 22% 7%;
+    --chrome-border: 220 18% 16%;
+    --caption: 220 10% 50%;
+    --tab-inactive: 215 15% 55%;
+    --progress-track: 218 41% 23%;
+    --calories: 233 62% 71%;
+    --protein: 35 70% 64%;
+    --carbs: 124 36% 66%;
+    --fat: 195 60% 67%;
+    --fiber: 126 25% 45%;
+    --hydration: 200 50% 52%;
+    --exercise: 158 49% 48%;
+    --pr: 42 88% 64%;
+    --cat-amber: 40 60% 58%;
+    --cat-violet: 265 50% 60%;
+    --cat-green: 125 24% 53%;
+    --cat-pink: 340 50% 60%;
+
+    --sidebar-background: 220 18% 9%;
+    --sidebar-foreground: 220 15% 92%;
+    --sidebar-primary: 220 85% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 16% 13%;
+    --sidebar-accent-foreground: 220 15% 92%;
+    --sidebar-border: 220 15% 15%;
+    --sidebar-ring: 220 85% 60%;
   }
 
   * {

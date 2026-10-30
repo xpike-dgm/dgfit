@@ -133,10 +133,10 @@ function getReturnPath(
   }
 
   if (requestedDate) {
-    return `/?date=${requestedDate}`;
+    return `/gunluk?date=${requestedDate}`;
   }
 
-  return '/';
+  return '/gunluk';
 }
 
 function startRestTimer(

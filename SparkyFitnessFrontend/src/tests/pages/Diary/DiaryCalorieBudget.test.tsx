@@ -74,7 +74,7 @@ jest.mock('@/pages/Diary/CopyFamilyEntryDialog', () => () => null);
 jest.mock('@/pages/Diary/ConvertToMealDialog', () => () => null);
 jest.mock('@/pages/Diary/LogMealDialog', () => () => null);
 jest.mock('@/components/FoodUnitSelector', () => () => null);
-jest.mock('@/components/DayNavigator', () => () => null);
+jest.mock('@/components/DatePill', () => () => null);
 jest.mock('@/components/Health/DailyHealthMetricsCard', () => ({
   DailyHealthMetricsCard: () => null,
 }));

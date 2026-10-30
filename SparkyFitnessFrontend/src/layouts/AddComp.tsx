@@ -1,13 +1,16 @@
 import type React from 'react';
-import { useTranslation } from 'react-i18next';
 import type { LucideIcon } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { ChevronRight } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface AddCompItem {
   value: string;
   label: string;
   icon: LucideIcon;
+  /** Shown as a list row under the tiles instead of as a tile. */
   fullWidth?: boolean;
+  /** Text color class for the row's icon tile; Sparky Blue by default. */
+  tint?: string;
 }
 
 interface AddCompProps {
@@ -18,6 +21,31 @@ interface AddCompProps {
   title?: string;
 }
 
+/** An icon on a softly tinted rounded square, as in the mobile AddSheet. */
+const IconTile = ({
+  icon: Icon,
+  tint,
+  size,
+}: {
+  icon: LucideIcon;
+  tint?: string;
+  size: 'card' | 'row';
+}) => (
+  <span
+    className={cn(
+      'relative flex shrink-0 items-center justify-center overflow-hidden',
+      size === 'card'
+        ? 'h-[52px] w-[52px] rounded-[18px]'
+        : 'h-10 w-10 rounded-xl',
+      tint ?? 'text-primary'
+    )}
+  >
+    <span className="absolute inset-0 bg-current opacity-[0.14]" />
+    <Icon className={size === 'card' ? 'h-[26px] w-[26px]' : 'h-5 w-5'} />
+  </span>
+);
+
+/** Quick Actions sheet opened by the center Add button. */
 const AddComp: React.FC<AddCompProps> = ({
   isVisible,
   onClose,
@@ -25,8 +53,6 @@ const AddComp: React.FC<AddCompProps> = ({
   onNavigate,
   title,
 }) => {
-  const { t } = useTranslation();
-
   if (!isVisible) {
     return null;
   }
@@ -36,61 +62,73 @@ const AddComp: React.FC<AddCompProps> = ({
     onClose();
   };
 
-  //full width support
-  const regularItems = items.filter((item) => !item.fullWidth);
-  const fullWidthItems = items.filter((item) => item.fullWidth);
+  const tiles = items.filter((item) => !item.fullWidth);
+  const rows = items.filter((item) => item.fullWidth);
 
   return (
     <div
-      className="fixed inset-0 z-40 bg-black bg-opacity-30 flex items-end justify-center animate-fade-in"
+      className="fixed inset-0 z-[60] flex items-end justify-center bg-black/50 animate-in fade-in duration-150 sm:items-center"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-lg bg-background rounded-t-3xl max-h-[70vh] sm:max-h-[500px] overflow-y-auto shadow-2xl border-t-4 border-primary/50 dark:border-primary/70 backdrop-filter backdrop-blur-lg bg-opacity-70 dark:bg-opacity-70 pointer-events-auto p-6 pb-20 sm:pb-6"
+        className="relative max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-t-3xl bg-card px-4 pt-2 pb-[max(env(safe-area-inset-bottom),20px)] shadow-2xl animate-in slide-in-from-bottom-8 duration-200 sm:rounded-3xl sm:pb-5"
         onClick={(e) => e.stopPropagation()}
       >
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-foreground/70 hover:text-foreground text-xl font-bold p-2 rounded-full hover:bg-muted-foreground/10 transition-colors"
-          aria-label={t('common.close', 'Close')}
-        >
-          &times;
-        </button>
+        <div className="mx-auto mb-2 h-1 w-9 rounded-full bg-caption/60 sm:hidden" />
+        <div className="mb-4 flex items-center justify-between px-1 pt-1">
+          <h2 className="text-lg font-semibold text-foreground">
+            {title || 'Hızlı işlemler'}
+          </h2>
+          <button
+            type="button"
+            onClick={onClose}
+            className="text-base font-semibold text-primary"
+          >
+            Bitti
+          </button>
+        </div>
 
-        <h2 className="text-2xl font-bold text-foreground mb-4 text-center mt-2">
-          {title || t('addComp.addNew', 'Add New')}
-        </h2>
-
-        {/* Regular grid items */}
-        {regularItems.length > 0 && (
-          <div className="grid grid-cols-2 gap-4 mt-4">
-            {regularItems.map((item) => (
-              <Button
+        {tiles.length > 0 && (
+          <div
+            className={cn(
+              'mb-3 grid gap-2 rounded-2xl bg-raised p-3',
+              tiles.length >= 4 ? 'grid-cols-4' : 'grid-cols-2'
+            )}
+          >
+            {tiles.map((item) => (
+              <button
                 key={item.value}
-                variant="outline"
-                className="flex flex-col items-center justify-center h-24 text-center bg-card text-card-foreground hover:bg-primary hover:text-primary-foreground transition-all duration-200"
+                type="button"
+                className="flex flex-col items-center gap-2 rounded-xl py-2 text-center transition-colors active:bg-accent"
                 onClick={() => handleItemClick(item.value)}
               >
-                <item.icon className="h-6 w-6 mb-1" />
-                <span className="text-sm font-semibold">{item.label}</span>
-              </Button>
+                <IconTile icon={item.icon} tint={item.tint} size="card" />
+                <span className="text-sm font-medium text-foreground">
+                  {item.label}
+                </span>
+              </button>
             ))}
           </div>
         )}
 
-        {/* Full-width items */}
-        {fullWidthItems.length > 0 && (
-          <div className="flex flex-col gap-3 mt-4">
-            {fullWidthItems.map((item) => (
-              <Button
+        {rows.length > 0 && (
+          <div className="overflow-hidden rounded-2xl bg-raised">
+            {rows.map((item, index) => (
+              <button
                 key={item.value}
-                variant="outline"
-                className="flex items-center justify-center h-16 w-full text-center bg-card text-card-foreground hover:bg-primary hover:text-primary-foreground transition-all duration-200"
+                type="button"
+                className={cn(
+                  'flex w-full items-center gap-3 px-4 py-3 text-left transition-colors active:bg-accent',
+                  index > 0 && 'border-t border-border'
+                )}
                 onClick={() => handleItemClick(item.value)}
               >
-                <item.icon className="h-6 w-6 mr-2" />
-                <span className="text-base font-semibold">{item.label}</span>
-              </Button>
+                <IconTile icon={item.icon} tint={item.tint} size="row" />
+                <span className="flex-1 text-base font-semibold text-foreground">
+                  {item.label}
+                </span>
+                <ChevronRight className="h-5 w-5 text-muted-foreground" />
+              </button>
             ))}
           </div>
         )}

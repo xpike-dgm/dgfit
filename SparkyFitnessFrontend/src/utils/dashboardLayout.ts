@@ -332,12 +332,14 @@ export function generateDefaultLayouts(mealKeys: string[]): DashboardLayouts {
       out.push({ i, x: 0, y, w: cols, h, minW, minH });
       y += h;
     };
-    // DG FIT phone order: today's energy, today's workout, then food.
-    push('energy', 10, 6);
+    // DG FIT phone order follows the SparkyFitness app's Diary: food first,
+    // then exercise; the calorie ring lives on the Dashboard, so the detailed
+    // energy breakdown goes last.
+    for (const key of mealKeys) push(key, 4, 3);
     push('exercise', 4, 3);
     push('nutrition', 10, 6);
-    for (const key of mealKeys) push(key, 4, 3);
     push('water', 8, 5);
+    push('energy', 10, 6);
     return out;
   };
 

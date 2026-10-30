@@ -36,6 +36,8 @@ import {
   useRequestMagicLinkMutation,
 } from '@/hooks/Auth/useAuth';
 import { MagicLinkRequestDialog } from './MagicLinkRequestDialog';
+
+const DGFIT_ALTERNATIVE_LOGINS: boolean = false;
 import { DemoDisclaimerDialog } from './DemoDisclaimerDialog';
 import { useQueryClient } from '@tanstack/react-query';
 import { AuthResponse } from '@/types/auth';
@@ -625,35 +627,44 @@ const Auth = () => {
                           : t('auth.signIn', 'Sign In')}
                       </Button>
                     </form>
-                    <div className="relative my-6">
-                      <div className="absolute inset-0 flex items-center">
-                        <span className="w-full border-t" />
-                      </div>
-                      <div className="relative flex justify-center text-xs uppercase">
-                        <span className="bg-background px-2 text-muted-foreground">
-                          {t('auth.orSignInWith', 'Or sign in with')}
-                        </span>
-                      </div>
-                    </div>
-                    {passkeyEnabled && (
-                      <Button
-                        variant="outline"
-                        className="w-full bg-primary/5 hover:bg-primary/10 border-primary/20 flex items-center justify-center mb-2"
-                        onClick={handlePasskeySignIn}
-                        disabled={loading}
-                      >
-                        <Fingerprint className="h-4 w-4 mr-2 text-primary" />{' '}
-                        {t('auth.signInWithPasskey', 'Sign in with Passkey')}
-                      </Button>
+                    {/* DG FIT signs in with email and password only: magic
+                        links need outgoing mail, which the server has none of. */}
+                    {DGFIT_ALTERNATIVE_LOGINS && (
+                      <>
+                        <div className="relative my-6">
+                          <div className="absolute inset-0 flex items-center">
+                            <span className="w-full border-t" />
+                          </div>
+                          <div className="relative flex justify-center text-xs uppercase">
+                            <span className="bg-background px-2 text-muted-foreground">
+                              {t('auth.orSignInWith', 'Or sign in with')}
+                            </span>
+                          </div>
+                        </div>
+                        {passkeyEnabled && (
+                          <Button
+                            variant="outline"
+                            className="w-full bg-primary/5 hover:bg-primary/10 border-primary/20 flex items-center justify-center mb-2"
+                            onClick={handlePasskeySignIn}
+                            disabled={loading}
+                          >
+                            <Fingerprint className="h-4 w-4 mr-2 text-primary" />{' '}
+                            {t(
+                              'auth.signInWithPasskey',
+                              'Sign in with Passkey'
+                            )}
+                          </Button>
+                        )}
+                        <Button
+                          variant="outline"
+                          className="w-full dark:bg-gray-800 dark:hover:bg-gray-600 flex items-center justify-center mb-2"
+                          onClick={() => setIsMagicLinkRequestDialogOpen(true)}
+                        >
+                          <Zap className="h-4 w-4 mr-2" />{' '}
+                          {t('auth.requestMagicLink', 'Request Magic Link')}
+                        </Button>
+                      </>
                     )}
-                    <Button
-                      variant="outline"
-                      className="w-full dark:bg-gray-800 dark:hover:bg-gray-600 flex items-center justify-center mb-2"
-                      onClick={() => setIsMagicLinkRequestDialogOpen(true)}
-                    >
-                      <Zap className="h-4 w-4 mr-2" />{' '}
-                      {t('auth.requestMagicLink', 'Request Magic Link')}
-                    </Button>
                     {loginSettings?.oidc.enabled && (
                       <>
                         {loginSettings.oidc.providers?.map((provider) => (
@@ -839,7 +850,7 @@ const Auth = () => {
                 </Tabs>
               ) : (
                 <div className="space-y-4">
-                  {passkeyEnabled && (
+                  {DGFIT_ALTERNATIVE_LOGINS && passkeyEnabled && (
                     <Button
                       variant="outline"
                       className="w-full dark:bg-gray-800 dark:hover:bg-gray-600 flex items-center justify-center"

@@ -110,11 +110,11 @@ const NutritionSummaryCard = ({
   return (
     <Card className="h-full">
       <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-lg dark:text-slate-300">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <CardTitle className="text-lg">
             {t('diary.nutritionSummary', 'Nutrition Summary')}
           </CardTitle>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Button
               onClick={() => setIsCopyDialogOpen(true)}
               title={t('diary.copyAllToDate', 'Copy entire day to date')}
