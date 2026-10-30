@@ -1,0 +1,268 @@
+name: Build iOS & watchOS
+
+# Compile-only check for the native Apple side. The Android workflow covers
+# its own platform and `ci-tests.yml` covers the TypeScript, but nothing
+# compiled the Swift until this existed — so a broken watch target or Expo
+# native module could land unnoticed.
+#
+# Manual only. A macOS runner plus Expo prebuild is too expensive to run on
+# every push or pull request. Start it from the Actions tab when the watch
+# or native iOS code needs a compile check.
+#
+# Builds Debug rather than Release on purpose: the watch target's SwiftUI
+# previews and its `SampleDay` fixtures are `#if DEBUG`, so a Release build
+# would skip exactly the code most likely to rot.
+
+on:
+  workflow_dispatch:
+    inputs:
+      runner:
+        description: >-
+          Runner label: xcode-27 (preview image) to compile code guarded by
+          compiler(>=6.4), such as modules/on-device-nutrition. Anything else
+          runs on macos-latest, so a dispatch cannot pick another runner.
+        required: false
+        default: macos-latest
+        type: string
+      key_only:
+        description: >-
+          Only take the screenshots a layout change needs to be checked
+          against (about half), to get them back sooner.
+        required: false
+        default: false
+        type: boolean
+
+# A second push to the same branch makes the first build irrelevant.
+concurrency:
+  group: ios-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Compile iOS app and watchOS companion
+    runs-on: ${{ inputs.runner == 'xcode-27' && 'xcode-27' || 'macos-latest' }}
+    timeout-minutes: 100
+    permissions:
+      contents: read
+      actions: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Show toolchain
+        run: |
+          xcodebuild -version
+          echo "--- watchOS SDKs ---"
+          xcodebuild -showsdks | grep -i watch || echo "no watchOS SDK on this image"
+
+      # Must run from the repo root: the workspace patches @bacons/apple-targets,
+      # and that patch is what stops prebuild corrupting the widget target.
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Prebuild iOS project
+        working-directory: SparkyFitnessMobile
+        run: npx expo prebuild --platform ios
+
+      - name: List generated schemes
+        working-directory: SparkyFitnessMobile
+        run: xcodebuild -list -workspace ios/SparkyFitness.xcworkspace
+
+      # The simulator SDK may omit device-only FoundationModels/Vision types, so
+      # compile the on-device nutrition module for a real device too. Compile
+      # only (no signing). Fast: builds just that pod and its dependencies.
+      - name: Compile on-device nutrition module for device
+        if: ${{ inputs.runner == 'xcode-27' }}
+        working-directory: SparkyFitnessMobile
+        run: |
+          xcodebuild \
+            -workspace ios/SparkyFitness.xcworkspace \
+            -scheme 'OnDeviceNutritionModule' \
+            -configuration Debug \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build-device \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            build
+
+      # Scheme name comes from `name` in targets/watch/expo-target.config.js.
+      # Note it is NOT "SparkyFitness Watch" — there is a sibling
+      # SparkyFitnessWatchWidget target, so match this exactly.
+      - name: Build watchOS companion
+        working-directory: SparkyFitnessMobile
+        run: |
+          xcodebuild \
+            -workspace ios/SparkyFitness.xcworkspace \
+            -scheme 'SparkyFitnessWatch' \
+            -configuration Debug \
+            -destination 'generic/platform=watchOS Simulator' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            build
+
+      - name: Build iOS app
+        working-directory: SparkyFitnessMobile
+        run: |
+          xcodebuild \
+            -workspace ios/SparkyFitness.xcworkspace \
+            -scheme 'SparkyFitness' \
+            -configuration Debug \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            build
+
+      # Screenshots of the watch app, for PRs that change its UI. A simulator
+      # has no paired phone, so every page would otherwise render its "not
+      # synced yet" state — the DEBUG-only ScreenshotSeed fills the stores
+      # from SampleDay at launch instead. It is also the only way to capture
+      # a live heart rate: there is no sensor behind HKLiveWorkoutBuilder in
+      # a simulator, so the BPM layout never appears on real hardware here.
+      - name: Capture watch screenshots
+        working-directory: SparkyFitnessMobile
+        env:
+          KEY_ONLY: ${{ inputs.key_only }}
+        run: |
+          set -euo pipefail
+
+          APP="build/Build/Products/Debug-watchsimulator/SparkyFitnessWatch.app"
+          BUNDLE_ID="org.SparkyApps.SparkyFitnessMobile1.dev.watchkitapp"
+          mkdir -p screenshots
+
+          # The smallest and the largest watch on the image, so a layout that
+          # only fits one case shows up. A 40 mm screen is the tight one.
+          DEVICES=$(xcrun simctl list devices available -j | python3 -c "
+          import json, re, sys
+          found = []
+          for runtime, entries in json.load(sys.stdin)['devices'].items():
+              if 'watchOS' not in runtime:
+                  continue
+              for entry in entries:
+                  match = re.search(r'(\\d+)mm', entry['name'])
+                  if match:
+                      found.append((int(match.group(1)), entry['udid']))
+          found.sort()
+          if found:
+              print(found[0][0], found[0][1])
+              if found[-1][0] != found[0][0]:
+                  print(found[-1][0], found[-1][1])
+          ")
+          if [ -z "${DEVICES:-}" ]; then
+            echo 'No watchOS simulator available on this image:'
+            xcrun simctl list devices available
+            exit 1
+          fi
+
+          # $1 = output name, $2 = SPARKY_SCREENSHOT_WORKOUT, $3 = page,
+          # $4 = optional SPARKY_SCREENSHOT_SHEET, $5 = optional
+          # SPARKY_SCREENSHOT_OPTIONS (the phone's watch settings)
+          shoot() {
+            xcrun simctl terminate "$UDID" "$BUNDLE_ID" 2>/dev/null || true
+            SIMCTL_CHILD_SPARKY_SCREENSHOT_SEED=1 \
+            SIMCTL_CHILD_SPARKY_SCREENSHOT_WORKOUT="$2" \
+            SIMCTL_CHILD_SPARKY_SCREENSHOT_PAGE="$3" \
+            SIMCTL_CHILD_SPARKY_SCREENSHOT_SHEET="${4:-}" \
+            SIMCTL_CHILD_SPARKY_SCREENSHOT_OPTIONS="${5:-}" \
+              xcrun simctl launch "$UDID" "$BUNDLE_ID"
+            # SwiftUI needs a moment to settle, and the rest countdown needs
+            # to actually be counting before it is worth photographing.
+            sleep 8
+            xcrun simctl io "$UDID" screenshot "screenshots/$1-$SIZE.png"
+          }
+
+          # Screenshots outside the key set are skipped when key_only is on.
+          full() { [ "${KEY_ONLY:-false}" != "true" ]; }
+
+          while read -r SIZE UDID; do
+            echo "Using ${SIZE}mm watch simulator $UDID"
+            xcrun simctl boot "$UDID" || true
+            xcrun simctl bootstatus "$UDID" -b
+            xcrun simctl install "$UDID" "$APP"
+
+            shoot workout-active active workout
+            shoot workout-resting resting workout
+            full && shoot workout-no-metrics active workout "" nometrics
+            shoot workout-upnext active workout upnext upnext
+            full && shoot workout-swap active workout swap upnext
+            shoot workout-metrics active workout metrics nometrics
+            full && shoot workout-idle none workout
+            full && shoot workout-exercises active workout exercises
+            full && shoot workout-set-options active workout setoptions
+            full && shoot workout-exercise-options active workout exerciseoptions
+            full && shoot workout-actions active workout actions
+            full && shoot workout-rpe active workout rpe
+            full && shoot workout-update-alert active workout updatealert
+            full && shoot workout-timed timed workout
+            full && shoot workout-stopwatch stopwatch workout
+            full && shoot workout-interval interval workout
+            full && shoot goals none goals
+            full && shoot goals-large none goals "" large
+            full && shoot water none water
+            full && shoot water-large none water "" large
+            full && shoot medications none medications
+            full && shoot medications-dose none medications dose
+            full && shoot fasting none fasting
+            full && shoot fasting-running none fasting "" fast
+
+            # The same pages with larger text on, to compare with the
+            # original look above (this PR's "Larger text on the watch").
+            shoot workout-active-large active workout "" large
+            shoot workout-resting-large resting workout "" large
+            shoot workout-metrics-large active workout metrics large,nometrics
+            shoot workout-upnext-large active workout upnext large,upnext
+            full && shoot workout-exercise-options-large active workout exerciseoptions large
+            shoot workout-rpe-large active workout rpe large
+            full && shoot fasting-running-large none fasting "" large,fast
+
+            # A name too long to fit: the set screen and effort picker
+            # title should scroll rather than be cut off.
+            shoot workout-longname active workout "" longname
+            shoot workout-longname-large active workout "" longname,large
+            # Two later frames of the same screen: a scrolling title moves.
+            sleep 3
+            xcrun simctl io "$UDID" screenshot "screenshots/workout-longname-large-later-$SIZE.png"
+            sleep 3
+            xcrun simctl io "$UDID" screenshot "screenshots/workout-longname-large-later2-$SIZE.png"
+            shoot workout-resting-longname-large resting workout "" longname,large
+            shoot workout-rpe-longname active workout rpe longname
+            shoot workout-rpe-longname-large active workout rpe longname,large
+
+            # Larger text on everywhere else, with the original workout page.
+            shoot workout-active-large-classic active workout "" large,classicworkout
+            shoot workout-longname-large-classic active workout "" longname,large,classicworkout
+            shoot workout-rpe-longname-large-classic active workout rpe longname,large,classicworkout
+
+            # The workout picker and medications follow the text size too.
+            shoot workout-idle-large none workout "" large
+            shoot medications-large none medications "" large
+            shoot medications-dose-large none medications dose large
+          done <<< "$DEVICES"
+
+          ls -la screenshots
+
+      # Also on a timeout or failure, so the shots taken so far are kept.
+      - name: Upload watch screenshots
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: watch-screenshots
+          path: SparkyFitnessMobile/screenshots/*.png
+          if-no-files-found: error
