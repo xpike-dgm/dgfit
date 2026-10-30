@@ -222,15 +222,12 @@ const MiniNutritionTrends = ({
     );
   }
 
-  if (chartData.length === 0) {
-    return (
-      <div className="mt-4 p-3 text-center text-sm text-gray-500 bg-gray-50 dark:bg-gray-800 rounded-lg">
-        {t(
-          'diary.miniNutritionTrends.noTrendDataAvailableFor',
-          'No trend data available for the past 14 days'
-        )}
-      </div>
-    );
+  // A trend needs at least two logged days; one dot per row says nothing.
+  const loggedDays = chartData.filter(
+    (day) => (Number(day.calories) || 0) > 0
+  ).length;
+  if (loggedDays < 2) {
+    return null;
   }
 
   const summaryPreferences = nutrientDisplayPreferences.find(

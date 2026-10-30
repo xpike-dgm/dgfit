@@ -12,6 +12,7 @@ import {
 } from 'recharts';
 import type { ExerciseStatsSummaryResponse } from '@workspace/shared';
 import { useTranslation } from 'react-i18next';
+import { formatDayTr } from '@/utils/formatDay';
 
 interface CardioVolumeIntervalChartProps {
   summaryData?: ExerciseStatsSummaryResponse;
@@ -23,9 +24,9 @@ export const CardioVolumeIntervalChart = ({
   onIntervalChange,
 }: CardioVolumeIntervalChartProps) => {
   const { t } = useTranslation();
-  const [metric, setMetric] = useState<'distance' | 'duration' | 'calories'>(
-    'distance'
-  );
+  const [selectedMetric, setMetric] = useState<
+    'distance' | 'duration' | 'calories'
+  >('distance');
 
   if (
     !summaryData ||
@@ -57,12 +58,20 @@ export const CardioVolumeIntervalChart = ({
   const unitLabel = summaryData.unitSystem === 'imperial' ? 'mi' : 'km';
 
   const chartData = summaryData.intervalsBreakdown.map((pt) => ({
-    label: pt.label,
+    label: formatDayTr(pt.label),
     distance: Number(pt.distanceFormatted.toFixed(2)),
     duration: Math.round(pt.durationMinutes),
     calories: Math.round(pt.caloriesBurned),
     workouts: pt.workoutCount,
   }));
+
+  // A strength-only range has no distance; open on duration instead of an
+  // empty 0 km chart.
+  const metric =
+    selectedMetric === 'distance' &&
+    chartData.every((point) => point.distance === 0)
+      ? 'duration'
+      : selectedMetric;
 
   const dataKey =
     metric === 'distance'
@@ -196,16 +205,18 @@ export const CardioVolumeIntervalChart = ({
               axisLine={false}
               tick={{ fontSize: 11 }}
               tickFormatter={(value: number) =>
-                metric === 'distance'
-                  ? Number(value).toFixed(value >= 10 ? 0 : 1)
-                  : String(Math.round(value))
+                Number(value).toLocaleString('tr-TR', {
+                  maximumFractionDigits:
+                    metric === 'distance' && value < 10 ? 1 : 0,
+                })
               }
             />
             <Tooltip
               formatter={(val: unknown) => {
                 const n = Number(val ?? 0);
-                const shown =
-                  metric === 'distance' ? n.toFixed(2) : String(Math.round(n));
+                const shown = n.toLocaleString('tr-TR', {
+                  maximumFractionDigits: metric === 'distance' ? 2 : 0,
+                });
                 const suffix =
                   metric === 'distance'
                     ? unitLabel

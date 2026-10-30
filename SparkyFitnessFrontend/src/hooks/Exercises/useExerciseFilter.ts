@@ -10,7 +10,7 @@ export function useExerciseFilters() {
   const [ownershipFilter, setOwnershipFilter] =
     useState<ExerciseOwnershipFilter>('all');
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(isMobile ? 5 : 10);
+  const [itemsPerPage, setItemsPerPage] = useState(isMobile ? 20 : 10);
 
   const handleSetSearchTerm = (value: React.SetStateAction<string>) => {
     setSearchTerm(value);

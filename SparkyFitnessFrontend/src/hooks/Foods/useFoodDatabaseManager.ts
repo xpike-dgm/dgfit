@@ -52,7 +52,7 @@ export function useFoodDatabaseManager() {
     : ['calories', 'protein', 'carbs', 'fat', 'dietary_fiber'];
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [itemsPerPage, setItemsPerPage] = useState(isMobile ? 5 : 10);
+  const [itemsPerPage, setItemsPerPage] = useState(isMobile ? 20 : 10);
   const [currentPage, setCurrentPage] = useState(1);
   const [foodFilter, setFoodFilter] = useState<MealFilter>('all');
   const [providerFilter, setProviderFilter] = useState<string>('all');

@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { localizeMuscle } from '@/utils/exerciseTaxonomy';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { usePreferences } from '@/contexts/PreferencesContext';
 import {
@@ -82,7 +83,7 @@ const MuscleGroupRecoveryTracker = ({
             return (
               <div key={muscle} className="flex items-center justify-between">
                 <span className="font-medium capitalize">
-                  {t(`muscleGroups.${muscle.toLowerCase()}`, muscle)}
+                  {localizeMuscle(t, muscle)}
                 </span>
                 <span className="text-sm text-muted-foreground">{label}</span>
               </div>

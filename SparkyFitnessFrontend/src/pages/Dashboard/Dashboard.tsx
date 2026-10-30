@@ -352,7 +352,7 @@ const Dashboard = () => {
           </button>
         </div>
         <p className="mt-2 text-center text-xs text-caption">
-          Her dokunuş {pressMl} ml
+          Her dokunuşta {pressMl} ml
         </p>
       </SparkyCard>
 

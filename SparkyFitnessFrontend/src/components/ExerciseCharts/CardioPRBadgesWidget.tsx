@@ -20,6 +20,7 @@ import type {
   PrSportGroup,
 } from '@workspace/shared';
 import { useTranslation } from 'react-i18next';
+import { formatDayTr } from '@/utils/formatDay';
 import {
   exerciseDisplayLabel,
   personalRecordLabel,
@@ -170,7 +171,7 @@ export const CardioPRBadgesWidget = ({
                         </span>
                         <span className="flex items-center gap-0.5">
                           <Calendar className="w-2.5 h-2.5" />
-                          {pr.achievedAt}
+                          {formatDayTr(pr.achievedAt)}
                         </span>
                       </div>
                     </div>
@@ -229,7 +230,7 @@ export const CardioPRBadgesWidget = ({
                     </span>
                   </div>
                   <div className="text-[10px] text-muted-foreground">
-                    {st.achievedAt}
+                    {formatDayTr(st.achievedAt)}
                   </div>
                 </div>
               ))}

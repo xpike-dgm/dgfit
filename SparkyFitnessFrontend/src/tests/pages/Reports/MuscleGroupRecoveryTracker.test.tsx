@@ -4,7 +4,10 @@ import MuscleGroupRecoveryTracker from '@/pages/Reports/MuscleGroupRecoveryTrack
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (_key: string, defaultValue?: string) => defaultValue ?? _key,
+    t: (_key: string, defaultValue?: string | { defaultValue?: string }) =>
+      (typeof defaultValue === 'string'
+        ? defaultValue
+        : defaultValue?.defaultValue) ?? _key,
   }),
 }));
 

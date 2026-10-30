@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { localizeMuscle } from '@/utils/exerciseTaxonomy';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   BarChart,
@@ -24,7 +25,7 @@ const ExerciseVarietyScore = ({ varietyData }: ExerciseVarietyScoreProps) => {
   }
 
   const chartData = Object.entries(varietyData)
-    .map(([muscle, count]) => ({ muscle, count }))
+    .map(([muscle, count]) => ({ muscle: localizeMuscle(t, muscle), count }))
     .sort((a, b) => b.count - a.count);
   const height = Math.min(420, Math.max(180, chartData.length * 32));
 
