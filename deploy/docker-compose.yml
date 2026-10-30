@@ -1,0 +1,66 @@
+# DG FIT production stack (fit.dgmcraft.online).
+# Builds images from this repository; secrets live in /opt/dgfit/.env on the server.
+# Caddy on the host terminates TLS and proxies to 127.0.0.1:${DGFIT_PORT}.
+name: dgfit
+
+services:
+  db:
+    image: postgres:18.3-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: ${SPARKY_FITNESS_DB_NAME:-dgfit}
+      POSTGRES_USER: ${SPARKY_FITNESS_DB_USER:-dgfit}
+      POSTGRES_PASSWORD: ${SPARKY_FITNESS_DB_PASSWORD:?missing}
+    volumes:
+      - ${DGFIT_DATA:-/opt/dgfit/data}/postgresql:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks: [dgfit]
+
+  server:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.backend
+    image: dgfit-server:latest
+    restart: always
+    env_file: ${DGFIT_ENV_FILE:-/opt/dgfit/.env}
+    environment:
+      SPARKY_FITNESS_DB_HOST: db
+      SPARKY_FITNESS_DB_PORT: 5432
+      SPARKY_FITNESS_SERVER_PORT: 3010
+      NODE_ENV: production
+      # Caddy (host) + nginx (frontend container)
+      SPARKY_FITNESS_TRUSTED_PROXY_HOPS: 2
+    stop_grace_period: 20s
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ${DGFIT_DATA:-/opt/dgfit/data}/backup:/app/SparkyFitnessServer/backup
+      - ${DGFIT_DATA:-/opt/dgfit/data}/uploads:/app/SparkyFitnessServer/uploads
+    networks: [dgfit]
+
+  frontend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.frontend
+    image: dgfit-frontend:latest
+    restart: always
+    ports:
+      - "127.0.0.1:${DGFIT_PORT:-3920}:80"
+    environment:
+      SPARKY_FITNESS_FRONTEND_URL: ${SPARKY_FITNESS_FRONTEND_URL}
+      SPARKY_FITNESS_SERVER_HOST: server
+      SPARKY_FITNESS_SERVER_PORT: 3010
+      NGINX_RATE_LIMIT: 5r/s
+    depends_on:
+      - server
+    networks: [dgfit]
+
+networks:
+  dgfit:
+    driver: bridge
