@@ -405,7 +405,7 @@ export const CheckInForm: React.FC<CheckInFormProps> = ({
                 step="0.1"
                 value={bodyWaterPercentage}
                 onChange={(e) => setBodyWaterPercentage(e.target.value)}
-                placeholder="0.0"
+                placeholder="0,0"
               />
             </MeasurementField>
 

@@ -555,7 +555,7 @@ const FoodDatabaseManager = () => {
       {/* Food Database Section */}
       <Card>
         <CardHeader className="pb-4">
-          <CardTitle className="text-xl sm:text-2xl font-bold tracking-tight">
+          <CardTitle className="font-bold tracking-tight">
             {t('foodDatabaseManager.foodDatabase', 'Food Database')}
           </CardTitle>
         </CardHeader>

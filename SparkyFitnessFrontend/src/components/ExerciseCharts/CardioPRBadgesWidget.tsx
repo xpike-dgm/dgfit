@@ -112,89 +112,78 @@ export const CardioPRBadgesWidget = ({
       <CardContent className="space-y-4">
         {/* Cardio Distance PR Badges */}
         {showCardio &&
-          (prSections.length > 0 ? (
-            prSections.map((section) => (
-              <div key={section.key}>
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1.5">
-                  <section.Icon className="w-3.5 h-3.5" />
-                  {section.heading}
-                </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {section.items.map((pr: ExercisePersonalRecordItem) => (
-                    <div
-                      key={pr.id}
-                      className="p-3 rounded-lg border bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent border-amber-500/30 flex flex-col justify-between"
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-amber-700 dark:text-amber-400">
-                          {personalRecordLabel(pr.label, t)}
-                        </span>
-                        <Trophy className="w-4 h-4 text-amber-500" />
-                      </div>
-                      <div className="my-2">
-                        <div className="text-xl font-extrabold text-foreground">
-                          {pr.formattedTime}
+          (prSections.length > 0
+            ? prSections.map((section) => (
+                <div key={section.key}>
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1.5">
+                    <section.Icon className="w-3.5 h-3.5" />
+                    {section.heading}
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {section.items.map((pr: ExercisePersonalRecordItem) => (
+                      <div
+                        key={pr.id}
+                        className="p-3 rounded-lg border bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent border-amber-500/30 flex flex-col justify-between"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold text-amber-700 dark:text-amber-400">
+                            {personalRecordLabel(pr.label, t)}
+                          </span>
+                          <Trophy className="w-4 h-4 text-amber-500" />
                         </div>
-                        <div className="text-[11px] text-muted-foreground flex items-center gap-1">
-                          <Zap className="w-3 h-3 text-blue-500" />
-                          {t(
-                            'exerciseAnalytics.records.pace2',
-                            'Pace: {{formattedPace}}',
-                            { formattedPace: pr.formattedPace }
-                          )}
+                        <div className="my-2">
+                          <div className="text-xl font-extrabold text-foreground">
+                            {pr.formattedTime}
+                          </div>
+                          <div className="text-[11px] text-muted-foreground flex items-center gap-1">
+                            <Zap className="w-3 h-3 text-blue-500" />
+                            {t(
+                              'exerciseAnalytics.records.pace2',
+                              'Pace: {{formattedPace}}',
+                              { formattedPace: pr.formattedPace }
+                            )}
+                          </div>
+                        </div>
+                        <div className="text-[10px] text-muted-foreground flex items-center justify-between pt-1 border-t border-amber-500/20">
+                          <span
+                            className="truncate max-w-[120px]"
+                            title={
+                              pr.sportConfidence === 'inferred'
+                                ? t(
+                                    'exerciseAnalytics.records.sportInferredTitle',
+                                    {
+                                      defaultValue:
+                                        '{{activity}} — sport inferred from the activity name',
+                                      activity: exerciseDisplayLabel(
+                                        pr.activityName,
+                                        t,
+                                        false
+                                      ),
+                                    }
+                                  )
+                                : exerciseDisplayLabel(
+                                    pr.activityName,
+                                    t,
+                                    false
+                                  )
+                            }
+                          >
+                            {exerciseDisplayLabel(pr.activityName, t, false)}
+                            {pr.sportConfidence === 'inferred' && (
+                              <span>{' *'}</span>
+                            )}
+                          </span>
+                          <span className="flex items-center gap-0.5">
+                            <Calendar className="w-2.5 h-2.5" />
+                            {formatDayTr(pr.achievedAt)}
+                          </span>
                         </div>
                       </div>
-                      <div className="text-[10px] text-muted-foreground flex items-center justify-between pt-1 border-t border-amber-500/20">
-                        <span
-                          className="truncate max-w-[120px]"
-                          title={
-                            pr.sportConfidence === 'inferred'
-                              ? t(
-                                  'exerciseAnalytics.records.sportInferredTitle',
-                                  {
-                                    defaultValue:
-                                      '{{activity}} — sport inferred from the activity name',
-                                    activity: exerciseDisplayLabel(
-                                      pr.activityName,
-                                      t,
-                                      false
-                                    ),
-                                  }
-                                )
-                              : exerciseDisplayLabel(pr.activityName, t, false)
-                          }
-                        >
-                          {exerciseDisplayLabel(pr.activityName, t, false)}
-                          {pr.sportConfidence === 'inferred' && (
-                            <span>{' *'}</span>
-                          )}
-                        </span>
-                        <span className="flex items-center gap-0.5">
-                          <Calendar className="w-2.5 h-2.5" />
-                          {formatDayTr(pr.achievedAt)}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))
-          ) : (
-            <div>
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-                {t(
-                  'exerciseAnalytics.records.cardioMilestones',
-                  'Cardio Milestone PRs'
-                )}
-              </h4>
-              <div className="text-xs text-muted-foreground p-4 text-center border rounded-lg bg-muted/20">
-                {t(
-                  'exerciseAnalytics.records.noCardioRecords',
-                  'No cardio distance PRs recorded yet. Log or sync GPS activities (5k, 10k, Half Marathon).'
-                )}
-              </div>
-            </div>
-          ))}
+              ))
+            : null)}
 
         {/* Strength 1RM PRs */}
         {showStrength && strength1RMs.length > 0 && (

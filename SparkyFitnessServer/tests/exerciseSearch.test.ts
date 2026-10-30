@@ -8,7 +8,8 @@ vi.mock('../db/poolManager', () => ({
 
 // DG FIT searches the Turkish name plus the English free-exercise-db id, and
 // ranks exact Turkish/English names first.
-const SEARCH_TEXT = `(name || ' ' || CASE WHEN source = 'free-exercise-db' THEN replace(coalesce(source_id, ''), '_', ' ') ELSE '' END)`;
+const SEARCH_TEXT =
+  "(name || ' ' || CASE WHEN source = 'free-exercise-db' THEN replace(coalesce(source_id, ''), '_', ' ') ELSE '' END)";
 const EXACT_FIRST =
   "ORDER BY (CASE WHEN lower(name) = lower(trim(both '%' from $3::text))";
 
@@ -44,7 +45,7 @@ describe('exercise model search query builder', () => {
       expect(mockClient.query).toHaveBeenCalled();
       const [sql, params] = mockClient.query.mock.calls[0];
       expect(sql).not.toContain('ILIKE');
-      expect(sql).toContain('ORDER BY name ASC');
+      expect(sql).toContain('ORDER BY name COLLATE "tr-x-icu" ASC');
       // The only queryParams should be limit and offset
       expect(params).toEqual([10, 0]);
     });
@@ -73,7 +74,7 @@ describe('exercise model search query builder', () => {
       expect(sql).toContain(`${SEARCH_TEXT} ILIKE $1`);
       expect(sql).toContain(`${SEARCH_TEXT} ILIKE $2`);
       expect(sql).toContain(EXACT_FIRST);
-      expect(sql).toContain('length(name) ASC, name ASC');
+      expect(sql).toContain('length(name) ASC, name COLLATE "tr-x-icu" ASC');
     });
 
     it('cleans surrounding punctuation from search terms', async () => {

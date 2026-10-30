@@ -370,7 +370,7 @@ export const MindfulnessSection: React.FC<MindfulnessSectionProps> = ({
               <Sparkles className="w-4 h-4" />
               {t('mindfulness.stats.totalMinutes', 'Mindful Minutes Today')}
             </CardDescription>
-            <CardTitle className="text-3xl font-bold tracking-tight text-foreground">
+            <CardTitle className="font-bold tracking-tight text-foreground">
               {summary?.total_mindful_minutes ?? 0}{' '}
               <span className="text-sm font-normal text-muted-foreground">
                 min
@@ -447,7 +447,7 @@ export const MindfulnessSection: React.FC<MindfulnessSectionProps> = ({
           <CardHeader>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <CardTitle className="text-xl flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2">
                   <Wind className="w-5 h-5 text-blue-400" />
                   {getPatternName(patternKey)}
                 </CardTitle>
@@ -536,7 +536,7 @@ export const MindfulnessSection: React.FC<MindfulnessSectionProps> = ({
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-xl flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2">
                   <Timer className="w-5 h-5 text-purple-400" />
                   {t('mindfulness.timer.heading', 'Meditation Session Timer')}
                 </CardTitle>

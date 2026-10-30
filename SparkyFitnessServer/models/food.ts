@@ -206,7 +206,7 @@ async function searchFoods(
         const exactMatchParamIndex = paramIndex;
         queryParams.push(`%${name}%`);
         paramIndex++;
-        orderByClause = ` ORDER BY ${buildSqlExactMatchOrder("CONCAT(f.brand, ' ', f.name)", exactMatchParamIndex)}, f.name ASC`;
+        orderByClause = ` ORDER BY ${buildSqlExactMatchOrder("CONCAT(f.brand, ' ', f.name)", exactMatchParamIndex)}, f.name COLLATE "tr-x-icu" ASC`;
       }
     } else if (checkCustom) {
       query += ` AND f.name = $${paramIndex++}`;
@@ -771,7 +771,8 @@ async function getFoodsWithPagination(
       ${PREFERRED_DEFAULT_VARIANT_JOIN_SQL}
       WHERE ${whereClauses.join(' AND ')}
     `;
-    let orderByClause = 'f.name ASC, f.id ASC';
+    // Turkish collation, so Ç, Ğ, İ, Ö, Ş and Ü sort with their base letters.
+    let orderByClause = 'f.name COLLATE "tr-x-icu" ASC, f.id ASC';
     if (sortBy) {
       const [sortField, sortOrder] = sortBy.split(':');
       const nutritionSortFields = ['calories', 'protein', 'carbs', 'fat'];
@@ -782,9 +783,9 @@ async function getFoodsWithPagination(
         allowedSortOrders.includes(sortOrder)
       ) {
         if (nutritionSortFields.includes(sortField)) {
-          orderByClause = `fv.${sortField} ${sortOrder.toUpperCase()} NULLS LAST, f.name ASC, f.id ASC`;
+          orderByClause = `fv.${sortField} ${sortOrder.toUpperCase()} NULLS LAST, f.name COLLATE "tr-x-icu" ASC, f.id ASC`;
         } else {
-          orderByClause = `f.${sortField} ${sortOrder.toUpperCase()}, f.id ASC`;
+          orderByClause = `f.${sortField} COLLATE "tr-x-icu" ${sortOrder.toUpperCase()}, f.id ASC`;
         }
       } else {
         log(

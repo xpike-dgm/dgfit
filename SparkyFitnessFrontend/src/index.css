@@ -299,3 +299,9 @@
     min-width: 0;
   }
 }
+
+/* Recharts draws grid lines in #ccc unless told otherwise; keep them on the
+   hairline token so they stay quiet in dark mode. */
+.recharts-cartesian-grid line {
+  stroke: hsl(var(--border));
+}

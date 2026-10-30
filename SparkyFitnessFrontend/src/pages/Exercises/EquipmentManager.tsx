@@ -322,7 +322,7 @@ const EquipmentManager: React.FC = () => {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
         <div className="min-w-0">
-          <CardTitle className="text-xl sm:text-2xl font-bold tracking-tight">
+          <CardTitle className="font-bold tracking-tight">
             {t('equipment.title', 'Equipment')}
           </CardTitle>
           <CardDescription>

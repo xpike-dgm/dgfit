@@ -420,7 +420,7 @@ const WorkoutPlansManager = () => {
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-          <CardTitle className="text-xl sm:text-2xl font-bold tracking-tight">
+          <CardTitle className="font-bold tracking-tight">
             {t(
               'exercise.databaseManager.workoutPlansCardTitle',
               'Workout Plans'

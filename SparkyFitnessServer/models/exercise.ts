@@ -36,7 +36,7 @@ function exerciseSearchOrder(phraseParamIndex: number): string {
             WHEN ${buildSqlExactMatchOrder(EXERCISE_SEARCH_TEXT_SQL, phraseParamIndex)} = 0 OR (source = 'free-exercise-db' AND description ILIKE $${phraseParamIndex}::text) THEN 1
             ELSE 2 END),
             (CASE WHEN source = 'free-exercise-db' AND source_id = ANY(${POPULAR_EXERCISE_SOURCE_IDS_SQL}) THEN 0 ELSE 1 END),
-            length(name) ASC, name ASC`;
+            length(name) ASC, name COLLATE "tr-x-icu" ASC`;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -215,7 +215,7 @@ async function getExercisesWithPagination(
       queryParams.push(...muscleGroupFilter); // Push twice for primary and secondary muscles
       paramIndex += muscleGroupFilter.length * 2;
     }
-    let orderClause = 'name ASC';
+    let orderClause = 'name COLLATE "tr-x-icu" ASC';
     const selectQueryParams = [...queryParams];
     let selectParamIndex = paramIndex;
     if (searchTerm) {
@@ -436,7 +436,7 @@ async function searchExercises(
       queryParams.push(...muscleGroupFilter); // Push twice for primary and secondary muscles
       paramIndex += muscleGroupFilter.length * 2;
     }
-    let orderClause = 'name ASC';
+    let orderClause = 'name COLLATE "tr-x-icu" ASC';
     const selectQueryParams = [...queryParams];
     let selectParamIndex = paramIndex;
     if (name) {
@@ -534,7 +534,7 @@ async function searchExercisesPaginated(
       queryParams
     );
     const totalCount = countResult.rows[0]?.count ?? 0;
-    let orderClause = 'name ASC';
+    let orderClause = 'name COLLATE "tr-x-icu" ASC';
     const selectQueryParams = [...queryParams];
     let selectParamIndex = paramIndex;
     if (name) {

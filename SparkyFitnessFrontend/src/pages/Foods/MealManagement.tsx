@@ -594,7 +594,7 @@ const MealManagement: React.FC = () => {
     <>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between gap-2 pb-4">
-          <CardTitle className="text-xl sm:text-2xl font-bold tracking-tight">
+          <CardTitle className="font-bold tracking-tight">
             {t('mealManagement.manageMeals', 'Meal Management')}
           </CardTitle>
           <div className="flex gap-2">

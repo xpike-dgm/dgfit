@@ -67,7 +67,7 @@ const HeartRateAnalyticsCard: React.FC<HeartRateAnalyticsCardProps> = ({
               <div className="text-xs uppercase tracking-wider text-rose-500 font-bold">
                 SparkyFitness
               </div>
-              <CardTitle className="text-xl font-bold tracking-tight text-foreground">
+              <CardTitle className="font-bold tracking-tight text-foreground">
                 {t('reports.heartRateTab', 'Heart Rate Analytics')}
               </CardTitle>
             </div>
